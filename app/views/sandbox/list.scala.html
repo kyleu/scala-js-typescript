@@ -1,0 +1,19 @@
+@()(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@layout.simple("Sandbox List") {
+  <div class="row">
+    <div class="col s12">
+      <div class="content-panel">
+        <span class="panel-title">Sandbox Actions</span>
+
+        <ul class="collection">
+        @models.sandbox.SandboxTask.values.map { s =>
+          <li class="collection-item">
+            <a href="@controllers.routes.SandboxController.sandbox(s.id)">@s.name</a>
+            <div>@s.description</div>
+          </li>
+        }
+        </ul>
+      </div>
+    </div>
+  </div>
+}

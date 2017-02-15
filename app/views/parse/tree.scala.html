@@ -1,0 +1,4 @@
+@(tree: Seq[String])
+@tree.map { node =>
+  <div>@node.getClass.getSimpleName</div>
+}

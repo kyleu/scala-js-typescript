@@ -1,0 +1,32 @@
+GET         /                                        controllers.HomeController.home
+GET         /ping                                    controllers.HomeController.ping(timestamp: Long)
+GET         /robots.txt                              controllers.HomeController.robots
+GET         /*path/                                  controllers.HomeController.untrail(path: String)
+
+GET         /metrics                                 controllers.MetricsController.showMetrics
+GET         /sandbox                                 controllers.SandboxController.list
+GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
+
+GET         /test/:key                               controllers.TestController.test(key)
+GET         /script/:key                             controllers.TestController.script(key)
+
+# Assets
+GET         /browserconfig.xml                       controllers.Assets.at(path = "/public", file = "browserconfig.xml")
+GET         /manifest.json                           controllers.Assets.at(path = "/public", file = "manifest.json")
+
+GET         /android-chrome-192x192.png              controllers.Assets.at(path = "/public", file = "images/ui/favicon/android-chrome-192x192.png")
+GET         /android-chrome-512x512.png              controllers.Assets.at(path = "/public", file = "images/ui/favicon/android-chrome-512x512.png")
+GET         /apple-touch-icon-precomposed.png        controllers.Assets.at(path = "/public", file = "images/ui/favicon/apple-touch-icon-precomposed.png")
+GET         /apple-touch-icon.png                    controllers.Assets.at(path = "/public", file = "images/ui/favicon/apple-touch-icon.png")
+GET         /favicon-16x16.png                       controllers.Assets.at(path = "/public", file = "images/ui/favicon/favicon-16x16.png")
+GET         /favicon-32x32.png                       controllers.Assets.at(path = "/public", file = "images/ui/favicon/favicon-32x32.png")
+GET         /favicon.ico                             controllers.Assets.at(path = "/public", file = "images/ui/favicon/favicon.ico")
+GET         /favicon.png                             controllers.Assets.at(path = "/public", file = "images/ui/favicon/favicon.png")
+GET         /mstile-144x144.png                      controllers.Assets.at(path = "/public", file = "images/ui/favicon/mstile-144x144.png")
+GET         /mstile-150x150.png                      controllers.Assets.at(path = "/public", file = "images/ui/favicon/mstile-150x150.png")
+GET         /mstile-310x150.png                      controllers.Assets.at(path = "/public", file = "images/ui/favicon/mstile-310x150.png")
+GET         /mstile-310x310.png                      controllers.Assets.at(path = "/public", file = "images/ui/favicon/mstile-310x310.png")
+GET         /mstile-70x70.png                        controllers.Assets.at(path = "/public", file = "images/ui/favicon/mstile-70x70.png")
+GET         /safari-pinned-tab.svg                   controllers.Assets.at(path = "/public", file = "images/ui/favicon/safari-pinned-tab.svg")
+
+GET         /assets/*file                            controllers.Assets.versioned(path="/public", file: Asset)

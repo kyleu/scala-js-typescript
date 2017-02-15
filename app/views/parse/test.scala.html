@@ -1,0 +1,27 @@
+@(key: String, f: better.files.File, output: Either[String, Seq[String]], debug: Boolean)(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(key) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection with-header">
+          <div class="collection-header">
+            <h5>@f.name</h5>
+          </div>
+          <div class="collection-item">
+            <h5>Output</h5>
+            @if(output.isRight) {
+              <pre>@output.right.get</pre>
+            } else {
+              Error: @output.left.get
+            }
+          </div>
+          <div class="collection-item">
+            <h5>@f.name Content</h5>
+            <pre>@f.contentAsString</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

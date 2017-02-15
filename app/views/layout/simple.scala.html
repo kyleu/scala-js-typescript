@@ -1,0 +1,17 @@
+@(title: String, mainDivClass: String = "static-container container", scripts: Seq[String] = Nil)(content: Html)(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.materialize(title, scripts = scripts, stylesheets = Seq(controllers.routes.Assets.versioned("stylesheets/index.min.css").url)) {
+  <header>
+    <nav id="topnav" class="teal darken-2">
+      <a href="@controllers.routes.HomeController.home()" class="brand-logo center">@utils.Config.projectName</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="@mainDivClass">
+      @flash.get("error").map { err => <div class="flash-error z-depth-1">@Html(err)</div> }
+      @flash.get("success").map { success => <div class="flash-success z-depth-1">@Html(success)</div> }
+      @content
+    </div>
+  </main>
+}
