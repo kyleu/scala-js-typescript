@@ -3,7 +3,7 @@ package models.parse.sc
 import better.files._
 
 class PrinterFiles(path: String, pkg: String) {
-  val root = "test" / path
+  val root = "data" / "out" / path
 
   if (root.exists) {
     root.delete()

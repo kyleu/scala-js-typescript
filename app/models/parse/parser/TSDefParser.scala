@@ -175,8 +175,13 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val maybeAbstract: Parser[Boolean] = opt("abstract").map(_.isDefined)
   lazy val maybeProtected: Parser[Boolean] = opt("protected").map(_.isDefined)
+  lazy val maybePublic: Parser[Boolean] = opt("public").map(_.isDefined)
 
-  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean)] = maybeProtected ~ "static" ~> propertyName ^^ staticPropName | maybeProtected ~> propertyName ^^ nonStaticPropName
+  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean)] = {
+    val stat = maybePublic ~ maybeProtected ~ "static" ~> propertyName ^^ staticPropName
+    val dyn = maybePublic ~ maybeProtected ~> propertyName ^^ nonStaticPropName
+    stat | dyn
+  }
 
   val staticPropName = (p: PropertyName) => (p, true)
   val nonStaticPropName = (p: PropertyName) => (p, false)
