@@ -75,6 +75,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
 
   private[this] def printClass(sym: ClassSymbol) = {
     val sealedKw = if (sym.isSealed) "sealed " else ""
+    val abstractKw = if (sym.isAbstract) "abstract " else ""
     val kw = if (sym.isTrait) "trait" else "class"
     val constructorStr =
       if (sym.isTrait) ""
@@ -89,7 +90,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     if (currentJSNamespace != "" && !sym.isTrait) {
       pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
     }
-    p"$sealedKw$kw ${sym.name}"
+    p"$abstractKw$sealedKw$kw ${sym.name}"
     if (sym.tparams.nonEmpty) {
       p"[${sym.tparams}]"
     }

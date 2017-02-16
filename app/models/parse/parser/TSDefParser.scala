@@ -112,7 +112,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val optResultType = opt(":" ~> resultType)
 
-  lazy val resultType: Parser[TypeTree] = ("void" ^^^ TypeRefTree(CoreType("void"))) | typeDesc
+  lazy val resultType: Parser[TypeTree] = ("void" ^^^ TypeRefTree(CoreType("void"))) | typeDesc | ("this" ^^^ TypeRefTree(CoreType("dynamic")))
 
   lazy val optTypeAnnotation = opt(typeAnnotation)
 
@@ -169,22 +169,28 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
   lazy val indexMember: Parser[MemberTree] = ("[" ~> identifier ~ typeAnnotation <~ "]") ~ typeAnnotation ^^ IndexMember
 
   lazy val namedMember: Parser[MemberTree] = maybeStaticPropName ~ optionalMarker >> {
-    case (name, static) ~ optional =>
-      functionSignature ^^ (FunctionMember(name, optional, _, static)) | typeAnnotation ^^ (PropertyMember(name, optional, _, static))
+    case (name, static, prot) ~ optional =>
+      val f = functionSignature ^^ (FunctionMember(prot, name, optional, _, static))
+      val t = typeAnnotation ^^ (PropertyMember(prot, name, optional, _, static))
+      f | t
   }
 
   lazy val maybeAbstract: Parser[Boolean] = opt("abstract").map(_.isDefined)
   lazy val maybeProtected: Parser[Boolean] = opt("protected").map(_.isDefined)
   lazy val maybePublic: Parser[Boolean] = opt("public").map(_.isDefined)
 
-  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean)] = {
-    val stat = maybePublic ~ maybeProtected ~ "static" ~> propertyName ^^ staticPropName
-    val dyn = maybePublic ~ maybeProtected ~> propertyName ^^ nonStaticPropName
+  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean, Boolean)] = {
+    val stat = maybePublic ~ maybeProtected ~ "static" ~ propertyName ^^ {
+      case pub ~ prot ~ _ ~ prop => staticPropName(prop, prot)
+    }
+    val dyn = maybePublic ~ maybeProtected ~ propertyName ^^ {
+      case pub ~ prot ~ prop => nonStaticPropName(prop, prot)
+    }
     stat | dyn
   }
 
-  val staticPropName = (p: PropertyName) => (p, true)
-  val nonStaticPropName = (p: PropertyName) => (p, false)
+  val staticPropName = (p: PropertyName, prot: Boolean) => (p, true, prot)
+  val nonStaticPropName = (p: PropertyName, prot: Boolean) => (p, false, prot)
 
   lazy val identifier = identifierName ^^ Ident
 

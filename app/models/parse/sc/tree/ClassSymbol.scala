@@ -8,11 +8,13 @@ class ClassSymbol(nme: Name) extends ContainerSymbol(nme) {
   var companionModule: ModuleSymbol = _
   var isTrait: Boolean = true
   var isSealed: Boolean = false
+  var isAbstract: Boolean = false
 
   override def toString = {
     val sl = if (isSealed) { "sealed " } else { "" }
+    val a = if (isAbstract) { "abstract " } else { "" }
     val t = if (isTrait) { s"trait $name" } else { s"class $name" }
     val p = if (tparams.isEmpty) { "" } else { tparams.mkString("<", ", ", ">") }
-    sl + t + p
+    sl + a + t + p
   }
 }
