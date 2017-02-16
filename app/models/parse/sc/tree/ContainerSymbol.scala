@@ -45,8 +45,8 @@ class ContainerSymbol(nme: Name) extends Symbol(nme) {
     result
   }
 
-  def newField(name: Name): FieldSymbol = {
-    val result = new FieldSymbol(name)
+  def newField(name: Name, readonly: Boolean = false): FieldSymbol = {
+    val result = new FieldSymbol(name, readonly)
     members += result
     result
   }

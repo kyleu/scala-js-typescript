@@ -97,7 +97,7 @@ class Importer(val output: java.io.PrintWriter) {
         sym.tpe = typeToScala(tpe)
 
       case ValDecl(IdentName(name), TypeOrAny(tpe)) =>
-        val sym = owner.newField(name)
+        val sym = owner.newField(name, readonly = true)
         sym.tpe = typeToScala(tpe)
 
       case FunctionDecl(IdentName(name), signature) => processDefDecl(owner, name, signature)
@@ -162,25 +162,23 @@ class Importer(val output: java.io.PrintWriter) {
     }
   }
 
-  private def processPropertyDecl(owner: ContainerSymbol, name: Name,
-      tpe: TypeTree, protectName: Boolean = true) {
-    if (name.name != "prototype") {
-      tpe match {
-        case ObjectType(members) if members.forall(_.isInstanceOf[CallMember]) =>
-          // alternative notation for overload methods - #3
-          for (CallMember(signature) <- members)
-            processDefDecl(owner, name, signature, protectName)
-        case _ =>
-          val sym = owner.newField(name)
-          if (protectName)
-            sym.protectName()
-          sym.tpe = typeToScala(tpe)
-      }
+  private def processPropertyDecl(owner: ContainerSymbol, name: Name, tpe: TypeTree, protectName: Boolean = true) = if (name.name != "prototype") {
+    tpe match {
+      case ObjectType(members) if members.forall(_.isInstanceOf[CallMember]) =>
+        // alternative notation for overload methods - #3
+        for (CallMember(signature) <- members) {
+          processDefDecl(owner, name, signature, protectName)
+        }
+      case _ =>
+        val sym = owner.newField(name)
+        if (protectName) {
+          sym.protectName()
+        }
+        sym.tpe = typeToScala(tpe)
     }
   }
 
-  private def processDefDecl(owner: ContainerSymbol, name: Name,
-      signature: FunSignature, protectName: Boolean = true) {
+  private def processDefDecl(owner: ContainerSymbol, name: Name, signature: FunSignature, protectName: Boolean = true) {
     // Discard specialized signatures
     if (signature.params.exists(_.tpe.exists(_.isInstanceOf[ConstantType]))) {
       return
@@ -210,60 +208,52 @@ class Importer(val output: java.io.PrintWriter) {
     owner.removeIfDuplicate(sym)
   }
 
-  private def typeParamsToScala(tparams: List[TypeParam]): List[TypeParamSymbol] = {
-    for (TypeParam(TypeNameName(tparam), upperBound) <- tparams) yield
-      new TypeParamSymbol(tparam, upperBound map typeToScala)
+  private def typeParamsToScala(tparams: List[TypeParam]): List[TypeParamSymbol] = for (TypeParam(TypeNameName(tparam), upperBound) <- tparams) yield {
+    new TypeParamSymbol(tparam, upperBound map typeToScala)
   }
 
-  private def typeToScala(tpe: TypeTree): TypeRef =
-    typeToScala(tpe, anyAsDynamic = false)
+  private def typeToScala(tpe: TypeTree): TypeRef = typeToScala(tpe, anyAsDynamic = false)
 
-  private def typeToScala(tpe: TypeTree, anyAsDynamic: Boolean): TypeRef = {
-    tpe match {
-      case TypeRefTree(tpe: CoreType, Nil) => coreTypeToScala(tpe, anyAsDynamic)
+  private def typeToScala(tpe: TypeTree, anyAsDynamic: Boolean): TypeRef = tpe match {
+    case TypeRefTree(tpe: CoreType, Nil) => coreTypeToScala(tpe, anyAsDynamic)
 
-      case TypeRefTree(base, targs) =>
-        val baseTypeRef = base match {
-          case TypeName("Array") => QualifiedName.Array
-          case TypeName("Function") => QualifiedName.FunctionBase
-          case TypeNameName(name) => QualifiedName(name)
-          case QualifiedTypeName(qualifier, TypeNameName(name)) =>
-            val qual1 = qualifier map (x => Name(x.name))
-            QualifiedName(qual1 :+ name: _*)
-          case _: CoreType => throw new MatchError(base)
-        }
-        TypeRef(baseTypeRef, targs map typeToScala)
-
-      case ObjectType(List(IndexMember(_, TypeRefTree(CoreType("string"), _), valueType))) =>
-        val valueTpe = typeToScala(valueType)
-        TypeRef(QualifiedName.Dictionary, List(valueTpe))
-
-      case ObjectType(members) =>
-        // ???
-        TypeRef.Any
-
-      case FunctionType(FunSignature(tparams, params, Some(resultType))) => if (tparams.nonEmpty) {
-        // Type parameters in function types are not supported
-        TypeRef.Function
-      } else if (params.exists(_.tpe.exists(_.isInstanceOf[RepeatedType]))) {
-        // Repeated params in function types are not supported
-        TypeRef.Function
-      } else {
-        val paramTypes = for (FunParam(_, _, TypeOrAny(tpe)) <- params) yield typeToScala(tpe)
-        val resType = resultType match {
-          case TypeRefTree(CoreType("any"), Nil) => TypeRef.ScalaAny
-          case _ => typeToScala(resultType)
-        }
-        val targs = paramTypes :+ resType
-
-        TypeRef(QualifiedName.Function(params.size), targs)
+    case TypeRefTree(base, targs) =>
+      val baseTypeRef = base match {
+        case TypeName("Array") => QualifiedName.Array
+        case TypeName("Function") => QualifiedName.FunctionBase
+        case TypeNameName(name) => QualifiedName(name)
+        case QualifiedTypeName(qualifier, TypeNameName(name)) => QualifiedName(qualifier.map(x => Name(x.name)) :+ name: _*)
+        case _: CoreType => throw new MatchError(base)
       }
-      case UnionType(left, right) => TypeRef.Union(typeToScala(left), typeToScala(right))
-      case TypeQuery(expr) => TypeRef.Singleton(QualifiedName((expr.qualifier :+ expr.name).map(ident => Name(ident.name)): _*))
-      case TupleType(targs) => TypeRef(QualifiedName.Tuple(targs.length), targs map typeToScala)
-      case RepeatedType(underlying) => TypeRef(Name.REPEATED, List(typeToScala(underlying)))
-      case _ => TypeRef.Any
+      TypeRef(baseTypeRef, targs map typeToScala)
+
+    case ObjectType(List(IndexMember(_, TypeRefTree(CoreType("string"), _), valueType))) =>
+      val valueTpe = typeToScala(valueType)
+      TypeRef(QualifiedName.Dictionary, List(valueTpe))
+
+    case ObjectType(members) => TypeRef.Any
+
+    case FunctionType(FunSignature(tparams, params, Some(resultType))) => if (tparams.nonEmpty) {
+      // Type parameters in function types are not supported
+      TypeRef.Function
+    } else if (params.exists(_.tpe.exists(_.isInstanceOf[RepeatedType]))) {
+      // Repeated params in function types are not supported
+      TypeRef.Function
+    } else {
+      val paramTypes = for (FunParam(_, _, TypeOrAny(tpe)) <- params) yield typeToScala(tpe)
+      val resType = resultType match {
+        case TypeRefTree(CoreType("any"), Nil) => TypeRef.ScalaAny
+        case _ => typeToScala(resultType)
+      }
+      val targs = paramTypes :+ resType
+
+      TypeRef(QualifiedName.Function(params.size), targs)
     }
+    case UnionType(left, right) => TypeRef.Union(typeToScala(left), typeToScala(right))
+    case TypeQuery(expr) => TypeRef.Singleton(QualifiedName((expr.qualifier :+ expr.name).map(ident => Name(ident.name)): _*))
+    case TupleType(targs) => TypeRef(QualifiedName.Tuple(targs.length), targs map typeToScala)
+    case RepeatedType(underlying) => TypeRef(Name.REPEATED, List(typeToScala(underlying)))
+    case _ => TypeRef.Any
   }
 
   private def coreTypeToScala(tpe: CoreType, anyAsDynamic: Boolean = false): TypeRef = tpe.name match {

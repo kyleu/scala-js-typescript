@@ -62,6 +62,9 @@ case class StringLiteral(value: String) extends Literal with PropertyName {
   override def name = value
 }
 
+case class LineComment(text: String) extends DeclTree
+case class MultilineComment(text: String) extends DeclTree
+
 // Type descriptions
 case class TypeDecl(name: TypeName, tpe: TypeTree) extends DeclTree
 case class EnumDecl(name: TypeName, members: List[Ident]) extends DeclTree

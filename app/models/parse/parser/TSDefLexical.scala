@@ -4,6 +4,8 @@
  */
 package org.scalajs.tools.tsimporter.parser
 
+import org.scalajs.tools.tsimporter.parser.tree.LineComment
+
 import scala.util.parsing.input.CharArrayReader.EofCh
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.lexical._
@@ -76,11 +78,14 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
 
   // see `whitespace in `Scanners'
   override def whitespace: Parser[Any] = rep(
-      whitespaceChar
+    whitespaceChar
     | '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
     | '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
     | '/' ~ '*' ~ failure("unclosed comment")
   )
+
+  def singleLineComment: Parser[LineComment] = ('/' ~ '/' ~> rep(chrExcept(EofCh, '\n'))).map { x => LineComment(x.mkString) }
+  def multiLineComment: Parser[String] = ('/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/').map { x => x.toString }
 
   // utils
 

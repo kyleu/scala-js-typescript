@@ -1,159 +1,172 @@
-/* TypeScript importer for Scala.js
- * Copyright 2013-2014 LAMP/EPFL
- * @author  Sébastien Doeraene
- */
-
 package org.scalajs.tools.tsimporter.sc
 
 import java.io.PrintWriter
 
 import org.scalajs.tools.tsimporter.sc.tree._
 
-class Printer(private val output: PrintWriter, outputPackage: String) {
-  import Printer._
+class Printer(val output: PrintWriter, outputPackage: String) {
+  import PrinterHelper._
 
   private implicit val self = this
 
   private var currentJSNamespace = ""
 
-  def printSymbol(sym: tree.Symbol) {
-    val name = sym.name
-    sym match {
-      case comment: CommentSymbol =>
-        pln"/* ${comment.text} */"
+  private[this] def printComment(text: String) = pln"/* $text */"
 
-      case sym: PackageSymbol =>
-        val isRootPackage = name == Name.EMPTY
+  private[this] def printPackage(sym: PackageSymbol) = {
+    val isRootPackage = sym.name == Name.EMPTY
 
-        val parentPackage :+ thisPackage =
-          if (isRootPackage) outputPackage.split("\\.").toList.map(Name(_))
-          else List(name)
+    val parentPackage :+ thisPackage =
+      if (isRootPackage) outputPackage.split("\\.").toList.map(Name(_))
+      else List(sym.name)
 
-        if (parentPackage.nonEmpty) {
-          pln"package ${parentPackage.mkString(".")}"
-        }
+    if (parentPackage.nonEmpty) {
+      pln"package ${parentPackage.mkString(".")}"
+    }
 
-        if (isRootPackage) {
-          pln""
-          pln"import scala.scalajs.js"
-          pln"import js.annotation._"
-          pln"import js.|"
-        }
+    if (isRootPackage) {
+      pln""
+      pln"import scala.scalajs.js"
+      pln"import js.annotation._"
+      pln"import js.|"
+    }
 
-        val oldJSNamespace = currentJSNamespace
-        if (!isRootPackage)
-          currentJSNamespace += name.name + "."
+    val oldJSNamespace = currentJSNamespace
+    if (!isRootPackage)
+      currentJSNamespace += sym.name.name + "."
 
-        if (sym.members.nonEmpty) {
-          val (topLevels, packageObjectMembers) =
-            sym.members.partition(canBeTopLevel)
+    if (sym.members.nonEmpty) {
+      val (topLevels, packageObjectMembers) =
+        sym.members.partition(canBeTopLevel)
 
-          pln""
-          pln"package $thisPackage {"
+      pln""
+      pln"package $thisPackage {"
 
-          for (sym <- topLevels)
-            printSymbol(sym)
+      for (sym <- topLevels) {
+        printSymbol(sym)
+      }
 
-          if (packageObjectMembers.nonEmpty) {
-            val packageObjectName =
-              Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
-
-            pln""
-            if (currentJSNamespace == "") {
-              pln"@js.native"
-              pln"object $packageObjectName extends js.GlobalScope {"
-            } else {
-              val jsName = currentJSNamespace.init
-              pln"@js.native"
-              pln"""@js.annotation.JSName("$jsName")"""
-              pln"object $packageObjectName extends js.Object {"
-            }
-            for (sym <- packageObjectMembers)
-              printSymbol(sym)
-            pln"}"
-          }
-
-          pln""
-          pln"}"
-        }
-
-        currentJSNamespace = oldJSNamespace
-
-      case sym: ClassSymbol =>
-        val sealedKw = if (sym.isSealed) "sealed " else ""
-        val kw = if (sym.isTrait) "trait" else "class"
-        val constructorStr =
-          if (sym.isTrait) ""
-          else if (sym.members.exists(isParameterlessConstructor)) ""
-          else " protected ()"
-        val parents =
-          if (sym.parents.isEmpty) List(TypeRef.Object)
-          else sym.parents.toList
+      if (packageObjectMembers.nonEmpty) {
+        val packageObjectName =
+          Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
 
         pln""
-        pln"@js.native"
-        if (currentJSNamespace != "" && !sym.isTrait)
-          pln"""@js.annotation.JSName("$currentJSNamespace$name")"""
-        p"$sealedKw$kw $name"
-        if (sym.tparams.nonEmpty)
-          p"[${sym.tparams}]"
-
-        {
-          implicit val withSep = ListElemSeparator.WithKeyword
-          pln"$constructorStr extends $parents {"
-        }
-
-        printMemberDecls(sym)
-        pln"}"
-
-      case sym: ModuleSymbol =>
-        pln""
-        pln"@js.native"
-        if (currentJSNamespace != "")
-          pln"""@js.annotation.JSName("$currentJSNamespace$name")"""
-        pln"object $name extends js.Object {"
-        printMemberDecls(sym)
-        pln"}"
-
-      case sym: TypeAliasSymbol =>
-        p"  type $name"
-        if (sym.tparams.nonEmpty) {
-          p"[${sym.tparams}]"
-        }
-        pln" = ${sym.alias}"
-
-      case sym: FieldSymbol =>
-        sym.jsName foreach { jsName =>
-          pln"""  @js.annotation.JSName("$jsName")"""
-        }
-        pln"  var $name: ${sym.tpe} = js.native"
-
-      case sym: MethodSymbol =>
-        val params = sym.params
-
-        if (name == Name.CONSTRUCTOR) {
-          if (params.nonEmpty) {
-            pln"  def this($params) = this()"
-          }
+        if (currentJSNamespace == "") {
+          pln"@js.native"
+          pln"object $packageObjectName extends js.GlobalScope {"
         } else {
-          sym.jsName foreach { jsName =>
-            pln"""  @js.annotation.JSName("$jsName")"""
-          }
-          if (sym.isBracketAccess) {
-            pln"""  @JSBracketAccess"""
-          }
-          p"  def $name"
-          if (sym.tparams.nonEmpty) {
-            p"[${sym.tparams}]"
-          }
-          pln"($params): ${sym.resultType} = js.native"
+          val jsName = currentJSNamespace.init
+          pln"@js.native"
+          pln"""@js.annotation.JSName("$jsName")"""
+          pln"object $packageObjectName extends js.Object {"
         }
+        for (sym <- packageObjectMembers)
+          printSymbol(sym)
+        pln"}"
+      }
 
-      case sym: ParamSymbol => p"$name: ${sym.tpe}${if (sym.optional) " = js.native" else ""}"
+      pln""
+      pln"}"
+    }
 
-      case sym: TypeParamSymbol =>
-        p"$name"
-        sym.upperBound.foreach(bound => p" <: $bound")
+    currentJSNamespace = oldJSNamespace
+  }
+
+  private[this] def printClass(sym: ClassSymbol) = {
+    val sealedKw = if (sym.isSealed) "sealed " else ""
+    val kw = if (sym.isTrait) "trait" else "class"
+    val constructorStr =
+      if (sym.isTrait) ""
+      else if (sym.members.exists(isParameterlessConstructor)) ""
+      else " protected ()"
+    val parents =
+      if (sym.parents.isEmpty) List(TypeRef.Object)
+      else sym.parents.toList
+
+    pln""
+    pln"@js.native"
+    if (currentJSNamespace != "" && !sym.isTrait) {
+      pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
+    }
+    p"$sealedKw$kw ${sym.name}"
+    if (sym.tparams.nonEmpty) {
+      p"[${sym.tparams}]"
+    }
+
+    {
+      implicit val withSep = ListElemSeparator.WithKeyword
+      pln"$constructorStr extends $parents {"
+    }
+
+    printMemberDecls(sym)
+    pln"}"
+  }
+
+  private[this] def printModule(sym: ModuleSymbol) = {
+    pln""
+    pln"@js.native"
+    if (currentJSNamespace != "")
+      pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
+    pln"object ${sym.name} extends js.Object {"
+    printMemberDecls(sym)
+    pln"}"
+  }
+
+  private[this] def printTypeAlias(sym: TypeAliasSymbol) = {
+    p"  type ${sym.name}"
+    if (sym.tparams.nonEmpty) {
+      p"[${sym.tparams}]"
+    }
+    pln" = ${sym.alias}"
+  }
+
+  private[this] def printField(sym: FieldSymbol) = {
+    sym.jsName foreach { jsName =>
+      pln"""  @js.annotation.JSName("$jsName")"""
+    }
+    pln"  ${sym.decl} ${sym.name}: ${sym.tpe} = js.native"
+  }
+
+  private[this] def printMethod(sym: MethodSymbol) = {
+    val params = sym.params
+
+    if (sym.name == Name.CONSTRUCTOR) {
+      if (params.nonEmpty) {
+        pln"  def this($params) = this()"
+      }
+    } else {
+      sym.jsName foreach { jsName =>
+        pln"""  @js.annotation.JSName("$jsName")"""
+      }
+      if (sym.isBracketAccess) {
+        pln"""  @JSBracketAccess"""
+      }
+      p"  def ${sym.name}"
+      if (sym.tparams.nonEmpty) {
+        p"[${sym.tparams}]"
+      }
+      pln"($params): ${sym.resultType} = js.native"
+    }
+  }
+
+  private[this] def printParam(sym: ParamSymbol) = p"${sym.name}: ${sym.tpe}${if (sym.optional) " = js.native" else ""}"
+
+  private[this] def printTypeParam(sym: TypeParamSymbol) = {
+    p"${sym.name}"
+    sym.upperBound.foreach(bound => p" <: $bound")
+  }
+
+  def printSymbol(sym: tree.Symbol) {
+    sym match {
+      case s: CommentSymbol => printComment(s.text)
+      case s: PackageSymbol => printPackage(s)
+      case s: ClassSymbol => printClass(s)
+      case s: ModuleSymbol => printModule(s)
+      case s: TypeAliasSymbol => printTypeAlias(s)
+      case s: FieldSymbol => printField(s)
+      case s: MethodSymbol => printMethod(s)
+      case s: ParamSymbol => printParam(s)
+      case s: TypeParamSymbol => printTypeParam(s)
     }
   }
 
@@ -179,7 +192,7 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
     case TypeRef(typeName, targs) => p"$typeName[$targs]"
   }
 
-  private def print(x: Any) = x match {
+  def print(x: Any) = x match {
     case x: tree.Symbol => printSymbol(x)
     case x: TypeRef => printTypeRef(x)
     case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
@@ -188,46 +201,5 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
     case QualifiedName(Name.scala, name) => output.print(name)
     case QualifiedName(Name.java, Name.lang, name) => output.print(name)
     case _ => output.print(x)
-  }
-}
-
-object Printer {
-  private class ListElemSeparator(val s: String) extends AnyVal
-
-  private object ListElemSeparator {
-    val Comma = new ListElemSeparator(", ")
-    val WithKeyword = new ListElemSeparator(" with ")
-  }
-
-  private implicit class OutputHelper(val sc: StringContext) extends AnyVal {
-    def p(args: Any*)(implicit printer: Printer,
-        sep: ListElemSeparator = ListElemSeparator.Comma) {
-      val strings = sc.parts.iterator
-      val expressions = args.iterator
-
-      val output = printer.output
-      output.print(strings.next())
-      while (strings.hasNext) {
-        expressions.next() match {
-          case seq: Seq[_] =>
-            val iter = seq.iterator
-            if (iter.hasNext) {
-              printer.print(iter.next())
-              while (iter.hasNext) {
-                output.print(sep.s)
-                printer.print(iter.next())
-              }
-            }
-
-          case expr => printer.print(expr)
-        }
-        output.print(strings.next())
-      }
-    }
-
-    def pln(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma) {
-      p(args:_*)
-      printer.output.println()
-    }
   }
 }
