@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.parser.tree
+package models.parse.parser.tree
 
 import scala.util.parsing.input.Positional
 

@@ -1,11 +1,6 @@
-/* TypeScript importer for Scala.js
- * Copyright 2013-2014 LAMP/EPFL
- * @author  Sébastien Doeraene
- */
+package models.parse.parser
 
-package org.scalajs.tools.tsimporter.parser
-
-import org.scalajs.tools.tsimporter.parser.tree._
+import models.parse.parser.tree._
 
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.token._
@@ -17,31 +12,31 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
   val lexical: TSDefLexical = new TSDefLexical
 
   lexical.reserved ++= List(
-      // Value keywords
-      "true", "false",
+    // Value keywords
+    "true", "false",
 
-      // Current JavaScript keywords
-      "break", "case", "catch", "continue", "debugger", "default", "delete",
-      "do", "else", "finally", "for", "function", "if", "in", "instanceof",
-      "new", "return", "switch", "this", "throw", "try", "typeof", "var",
-      "void", "while", "with",
+    // Current JavaScript keywords
+    "break", "case", "catch", "continue", "debugger", "default", "delete",
+    "do", "else", "finally", "for", "function", "if", "in", "instanceof",
+    "new", "return", "switch", "this", "throw", "try", "typeof", "var",
+    "void", "while", "with",
 
-      // Future reserved keywords - some used in TypeScript
-      "class", "const", "enum", "export", "extends", "import", "super",
+    // Future reserved keywords - some used in TypeScript
+    "class", "const", "enum", "export", "extends", "import", "super",
 
-      // Future reserved keywords in Strict mode - some used in TypeScript
-      "implements", "interface", "let", "package", "private", "protected",
-      "public", "static", "yield",
+    // Future reserved keywords in Strict mode - some used in TypeScript
+    "implements", "interface", "let", "package", "private", "protected",
+    "public", "static", "yield",
 
-      // Additional keywords of TypeScript
-      "declare", "module", "type", "namespace"
+    // Additional keywords of TypeScript
+    "declare", "module", "type", "namespace"
   )
 
   lexical.delimiters ++= List(
-      "{", "}", "(", ")", "[", "]", "<", ">",
-      ".", ";", ",", "?", ":", "=", "|",
-      // TypeScript-specific
-      "...", "=>"
+    "{", "}", "(", ")", "[", "]", "<", ">",
+    ".", ";", ",", "?", ":", "=", "|",
+    // TypeScript-specific
+    "...", "=>"
   )
 
   def parseDefinitions(input: Reader[Char]) = phrase(ambientDeclarations)(new lexical.Scanner(input))
@@ -67,7 +62,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     ambientModuleDecl | ambientValDecl | ambientVarDecl | ambientFunctionDecl | ambientEnumDecl | ambientClassDecl | ambientInterfaceDecl | typeAliasDecl
   }
 
-  lazy val ambientVarDecl: Parser[DeclTree] =  "var" ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ VarDecl
+  lazy val ambientVarDecl: Parser[DeclTree] = "var" ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ VarDecl
 
   lazy val ambientValDecl: Parser[DeclTree] = ("const" | "let") ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ ValDecl
 
@@ -102,7 +97,8 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
       FunParam(i, o, Some(RepeatedType(t)))
     case _ ~ i ~ o ~ t =>
       Console.err.println(
-          s"Warning: Dropping repeated marker of param $i because its type $t is not an array type")
+        s"Warning: Dropping repeated marker of param $i because its type $t is not an array type"
+      )
       FunParam(i, o, t)
   }
 
@@ -173,13 +169,14 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
   lazy val indexMember: Parser[MemberTree] = ("[" ~> identifier ~ typeAnnotation <~ "]") ~ typeAnnotation ^^ IndexMember
 
   lazy val namedMember: Parser[MemberTree] = maybeStaticPropName ~ optionalMarker >> {
-    case (name, static) ~ optional => (
-        functionSignature ^^ (FunctionMember(name, optional, _, static))
-      | typeAnnotation ^^ (PropertyMember(name, optional, _, static))
-    )
+    case (name, static) ~ optional =>
+      functionSignature ^^ (FunctionMember(name, optional, _, static)) | typeAnnotation ^^ (PropertyMember(name, optional, _, static))
   }
 
-  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean)] = "static" ~> propertyName ^^ staticPropName | propertyName ^^ nonStaticPropName
+  lazy val maybeAbstract: Parser[Boolean] = opt("abstract").map(_.isDefined)
+  lazy val maybeProtected: Parser[Boolean] = opt("protected").map(_.isDefined)
+
+  lazy val maybeStaticPropName: Parser[(PropertyName, Boolean)] = maybeProtected ~ "static" ~> propertyName ^^ staticPropName | maybeProtected ~> propertyName ^^ nonStaticPropName
 
   val staticPropName = (p: PropertyName) => (p, true)
   val nonStaticPropName = (p: PropertyName) => (p, false)

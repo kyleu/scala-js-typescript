@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc
+package models.parse.sc
 
 object PrinterHelper {
   class ListElemSeparator(val s: String) extends AnyVal
@@ -13,7 +13,7 @@ object PrinterHelper {
       val strings = sc.parts.iterator
       val expressions = args.iterator
 
-      val output = printer.output
+      val output = printer.files.output
       output.print(strings.next())
       while (strings.hasNext) {
         expressions.next() match {
@@ -34,8 +34,8 @@ object PrinterHelper {
     }
 
     def pln(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma) {
-      p(args:_*)
-      printer.output.println()
+      p(args: _*)
+      printer.files.output.println()
     }
   }
 }

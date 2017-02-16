@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc.tree
+package models.parse.sc.tree
 
 class ParamSymbol(nme: Name) extends Symbol(nme) {
   def this(nme: Name, tpe: TypeRef) = {

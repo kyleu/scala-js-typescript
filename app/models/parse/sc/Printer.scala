@@ -1,19 +1,19 @@
-package org.scalajs.tools.tsimporter.sc
+package models.parse.sc
 
-import java.io.PrintWriter
+import models.parse.sc.tree._
 
-import org.scalajs.tools.tsimporter.sc.tree._
-
-class Printer(val output: PrintWriter, outputPackage: String) {
+class Printer(val files: PrinterFiles, outputPackage: String) {
   import PrinterHelper._
 
   private implicit val self = this
 
-  private var currentJSNamespace = ""
+  protected var currentJSNamespace = ""
 
   private[this] def printComment(text: String) = pln"/* $text */"
 
-  private[this] def printPackage(sym: PackageSymbol) = {
+  private[this] def canBeTopLevel(sym: tree.Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
+
+  private[this] def printPackage(sym: PackageSymbol, outputPackage: String) = {
     val isRootPackage = sym.name == Name.EMPTY
 
     val parentPackage :+ thisPackage =
@@ -32,12 +32,12 @@ class Printer(val output: PrintWriter, outputPackage: String) {
     }
 
     val oldJSNamespace = currentJSNamespace
-    if (!isRootPackage)
+    if (!isRootPackage) {
       currentJSNamespace += sym.name.name + "."
+    }
 
     if (sym.members.nonEmpty) {
-      val (topLevels, packageObjectMembers) =
-        sym.members.partition(canBeTopLevel)
+      val (topLevels, packageObjectMembers) = sym.members.partition(canBeTopLevel)
 
       pln""
       pln"package $thisPackage {"
@@ -60,8 +60,9 @@ class Printer(val output: PrintWriter, outputPackage: String) {
           pln"""@js.annotation.JSName("$jsName")"""
           pln"object $packageObjectName extends js.Object {"
         }
-        for (sym <- packageObjectMembers)
+        for (sym <- packageObjectMembers) {
           printSymbol(sym)
+        }
         pln"}"
       }
 
@@ -159,7 +160,7 @@ class Printer(val output: PrintWriter, outputPackage: String) {
   def printSymbol(sym: tree.Symbol) {
     sym match {
       case s: CommentSymbol => printComment(s.text)
-      case s: PackageSymbol => printPackage(s)
+      case s: PackageSymbol => printPackage(s, outputPackage)
       case s: ClassSymbol => printClass(s)
       case s: ModuleSymbol => printModule(s)
       case s: TypeAliasSymbol => printTypeAlias(s)
@@ -176,8 +177,6 @@ class Printer(val output: PrintWriter, outputPackage: String) {
       printSymbol(sym)
     }
   }
-
-  private def canBeTopLevel(sym: tree.Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
 
   private def isParameterlessConstructor(sym: tree.Symbol): Boolean = sym match {
     case sym: MethodSymbol => sym.name == Name.CONSTRUCTOR && sym.params.isEmpty
@@ -196,10 +195,10 @@ class Printer(val output: PrintWriter, outputPackage: String) {
     case x: tree.Symbol => printSymbol(x)
     case x: TypeRef => printTypeRef(x)
     case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
-      output.print("js.")
-      output.print(name)
-    case QualifiedName(Name.scala, name) => output.print(name)
-    case QualifiedName(Name.java, Name.lang, name) => output.print(name)
-    case _ => output.print(x)
+      files.output.print("js.")
+      files.output.print(name)
+    case QualifiedName(Name.scala, name) => files.output.print(name)
+    case QualifiedName(Name.java, Name.lang, name) => files.output.print(name)
+    case _ => files.output.print(x)
   }
 }

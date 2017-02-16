@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc.tree
+package models.parse.sc.tree
 
 import scala.collection.mutable
 

@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc.tree
+package models.parse.sc.tree
 
 import scala.language.implicitConversions
 
@@ -13,8 +13,8 @@ object QualifiedName {
   val Array = scala_js dot Name("Array")
   val Dictionary = scala_js dot Name("Dictionary")
   val FunctionBase = scala_js dot Name("Function")
-  def Function(arity: Int) = scala_js dot Name("Function"+arity)
-  def Tuple(arity: Int) = scala_js dot Name("Tuple"+arity)
+  def Function(arity: Int) = scala_js dot Name("Function" + arity)
+  def Tuple(arity: Int) = scala_js dot Name("Tuple" + arity)
   val Union = scala_js dot Name("|")
 }
 
@@ -27,7 +27,7 @@ case class QualifiedName(parts: Name*) {
     parts.mkString(".")
   }
 
-  def dot(name: Name) = QualifiedName(parts :+ name:_*)
-  def init = QualifiedName(parts.init:_*)
+  def dot(name: Name) = QualifiedName(parts :+ name: _*)
+  def init = QualifiedName(parts.init: _*)
   def last = parts.last
 }

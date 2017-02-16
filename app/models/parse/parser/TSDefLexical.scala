@@ -1,10 +1,4 @@
-/* TypeScript importer for Scala.js
- * Copyright 2013-2014 LAMP/EPFL
- * @author  Sébastien Doeraene
- */
-package org.scalajs.tools.tsimporter.parser
-
-import org.scalajs.tools.tsimporter.parser.tree.LineComment
+package models.parse.parser
 
 import scala.util.parsing.input.CharArrayReader.EofCh
 import scala.util.parsing.combinator._
@@ -25,16 +19,16 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
 
   def numericLiteral = (
     '0' ~> (
-        (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
-          digits => digits.foldLeft(0L)(_ * 16 + _).toString
-        }
+      (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
+        digits => digits.foldLeft(0L)(_ * 16 + _).toString
+      }
       | rep1(octalDigit) ^^ {
-          // not standard, but I guess it could happen nevertheless
-          digits => digits.foldLeft(0L)(_ * 8 + _).toString
-        }
+        // not standard, but I guess it could happen nevertheless
+        digits => digits.foldLeft(0L)(_ * 8 + _).toString
+      }
       | success("0")
     )
-    | stringOf1(digit) ~ opt(stringOf1('.', digit)) ^^ {
+      | stringOf1(digit) ~ opt(stringOf1('.', digit)) ^^ {
         case part1 ~ part2 => part1 + part2.getOrElse("")
       }
   ) ^^ NumericLit
@@ -46,30 +40,30 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
   def inQuoteChar(quoteChar: Char) = chrExcept('\\', quoteChar, EofCh) | pseudoChar
 
   def pseudoChar = '\\' ~> (
-      'x' ~> hexDigit ~ hexDigit ^^ {
-        case d1 ~ d0 => (16*d1 + d0).toChar
-      }
+    'x' ~> hexDigit ~ hexDigit ^^ {
+      case d1 ~ d0 => (16 * d1 + d0).toChar
+    }
     | 'u' ~> hexDigit ~ hexDigit ~ hexDigit ~ hexDigit ^^ {
-        case d3 ~ d2 ~ d1 ~ d0 => (4096*d3 + 256*d2 + 16*d1 + d0).toChar
-      }
+      case d3 ~ d2 ~ d1 ~ d0 => (4096 * d3 + 256 * d2 + 16 * d1 + d0).toChar
+    }
     | elem("", _ => true) ^^ {
-        case '0' => '\u0000'
-        case 'b' => '\u0008'
-        case 't' => '\u0009'
-        case 'n' => '\u000A'
-        case 'v' => '\u000B'
-        case 'f' => '\u000C'
-        case 'r' => '\u000D'
-        case c => c // including ' " \
-      }
+      case '0' => '\u0000'
+      case 'b' => '\u0008'
+      case 't' => '\u0009'
+      case 'n' => '\u000A'
+      case 'v' => '\u000B'
+      case 'f' => '\u000C'
+      case 'r' => '\u000D'
+      case c => c // including ' " \
+    }
   )
 
   def octalDigit = elem("octal digit", c => '0' <= c && c <= '7') ^^ (_ - '0')
 
   def hexDigit = accept("hex digit", {
-    case c @ ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9') => c - '0'
-    case c @ ('A'|'B'|'C'|'D'|'E'|'F') => c - 'A' + 10
-    case c @ ('a'|'b'|'c'|'d'|'e'|'f') => c - 'a' + 10
+    case c @ ('0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9') => c - '0'
+    case c @ ('A' | 'B' | 'C' | 'D' | 'E' | 'F') => c - 'A' + 10
+    case c @ ('a' | 'b' | 'c' | 'd' | 'e' | 'f') => c - 'a' + 10
   })
 
   // legal identifier chars
@@ -79,15 +73,10 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
   // see `whitespace in `Scanners'
   override def whitespace: Parser[Any] = rep(
     whitespaceChar
-    | '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
-    | '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
-    | '/' ~ '*' ~ failure("unclosed comment")
+      | '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
+      | '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
+      | '/' ~ '*' ~ failure("unclosed comment")
   )
-
-  def singleLineComment: Parser[LineComment] = ('/' ~ '/' ~> rep(chrExcept(EofCh, '\n'))).map { x => LineComment(x.mkString) }
-  def multiLineComment: Parser[String] = ('/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/').map { x => x.toString }
-
-  // utils
 
   def stringOf(p: => Parser[Char]): Parser[String] = rep(p) ^^ chars2string
   def stringOf1(p: => Parser[Char]): Parser[String] = rep1(p) ^^ chars2string

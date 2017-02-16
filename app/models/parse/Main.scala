@@ -1,20 +1,11 @@
-/* TypeScript importer for Scala.js
- * Copyright 2013-2014 LAMP/EPFL
- * @author  Sébastien Doeraene
- */
+package models.parse
 
-package org.scalajs.tools.tsimporter
-
-import java.io.{ Console => _, Reader => _, _ }
-
-import scala.collection.immutable.PagedSeq
-
-import org.scalajs.tools.tsimporter.parser.tree._
+import better.files._
+import models.parse.parser.tree._
 
 import scala.util.parsing.input._
 import parser.TSDefParser
 
-/** Entry point for the TypeScript importer of Scala.js */
 object Main {
   def main(args: Array[String]) {
     if (args.length < 2) {
@@ -28,28 +19,23 @@ object Main {
     }
 
     val inputFileName = args(0)
-    val outputFileName = args(1)
+    val outputPath = args(1)
     val outputPackage = if (args.length > 2) args(2) else "importedjs"
 
-    val definitions = parseDefinitions(readerForFile(inputFileName))
+    val definitions = parseDefinitions(readerForFile(inputFileName.toFile))
 
-    val output = new PrintWriter(new BufferedWriter(
-        new FileWriter(outputFileName)))
-    try {
-      process(definitions, output, outputPackage)
-    } finally {
-      output.close()
-    }
+    //val output = new PrintWriter(new BufferedWriter(new FileWriter(outputFileName)))
+    process(definitions, outputPath, outputPackage)
   }
 
-  private def process(definitions: List[DeclTree], output: PrintWriter, outputPackage: String) {
-    new Importer(output)(definitions, outputPackage)
+  private def process(definitions: List[DeclTree], path: String, outputPackage: String) {
+    new Importer(path)(definitions, outputPackage)
   }
 
   private def parseDefinitions(reader: Reader[Char]): List[DeclTree] = {
     val parser = new TSDefParser
     parser.parseDefinitions(reader) match {
-      case parser.Success(rawCode: List[org.scalajs.tools.tsimporter.parser.tree.DeclTree], _) => rawCode
+      case parser.Success(rawCode: List[models.parse.parser.tree.DeclTree], _) => rawCode
 
       case parser.NoSuccess(msg, next) =>
         val m = s"Parse error at ${next.pos.toString}:" + "\n  " + msg + "\n  Position: " + next.pos.longString
@@ -57,9 +43,5 @@ object Main {
     }
   }
 
-  /** Builds a [[scala.util.parsing.input.PagedSeqReader]] for a file
-   *
-   *  @param fileName name of the file to be read
-   */
-  private def readerForFile(fileName: String) = new PagedSeqReader(PagedSeq.fromReader(new BufferedReader(new FileReader(fileName))))
+  private def readerForFile(file: File): Reader[Char] = new CharSequenceReader(file.contentAsString, 0)
 }

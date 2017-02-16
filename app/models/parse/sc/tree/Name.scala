@@ -1,6 +1,6 @@
-package org.scalajs.tools.tsimporter.sc.tree
+package models.parse.sc.tree
 
-import org.scalajs.tools.tsimporter.Utils
+import models.parse.Utils
 
 object Name {
   val scala = Name("scala")

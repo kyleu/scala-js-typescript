@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc.tree
+package models.parse.sc.tree
 
 trait JSNameable extends Symbol {
   var jsName: Option[String] = None

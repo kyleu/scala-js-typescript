@@ -1,20 +1,45 @@
-/* TypeScript importer for Scala.js
- * Copyright 2013-2014 LAMP/EPFL
- * @author  Sébastien Doeraene
- */
+package models.parse
 
-package org.scalajs.tools.tsimporter
+import models.parse.sc.tree._
+import models.parse.parser.tree._
+import models.parse.sc.{Printer, PrinterFiles}
 
-import org.scalajs.tools.tsimporter.sc.tree._
-import org.scalajs.tools.tsimporter.parser.tree._
-import sc._
+object Importer {
+  private val AnyType = TypeRefTree(CoreType("any"))
+  private val DynamicType = TypeRefTree(CoreType("dynamic"))
 
-/** The meat and potatoes: the importer
+  private implicit class OptType(val optType: Option[TypeTree]) extends AnyVal {
+    @inline def orAny: TypeTree = optType.getOrElse(AnyType)
+    @inline def orDynamic: TypeTree = optType.getOrElse(DynamicType)
+  }
+
+  private object TypeOrAny {
+    @inline def unapply(optType: Option[TypeTree]) = Some(optType.orAny)
+  }
+
+  private object IdentName {
+    @inline def unapply(ident: Ident) = Some(Name(ident.name))
+  }
+
+  private object TypeNameName {
+    @inline def apply(typeName: Name) = TypeName(typeName.name)
+    @inline def unapply(typeName: TypeName) = Some(Name(typeName.name))
+  }
+
+  private object PropertyNameName {
+    @inline def unapply(propName: PropertyName) = Some(Name(propName.name))
+  }
+}
+
+/**
+ * The meat and potatoes: the importer
  *  It reads the TypeScript AST and produces (hopefully) equivalent Scala
  *  code.
  */
-class Importer(val output: java.io.PrintWriter) {
+class Importer(val path: String) {
   import Importer._
+
+  val files = new PrinterFiles(path, "Pixi")
 
   /** Entry point */
   def apply(declarations: List[DeclTree], outputPackage: String) {
@@ -24,7 +49,7 @@ class Importer(val output: java.io.PrintWriter) {
       processDecl(rootPackage, declaration)
     }
 
-    new Printer(output, outputPackage).printSymbol(rootPackage)
+    new Printer(files, outputPackage).printSymbol(rootPackage)
   }
 
   private def processDecl(owner: ContainerSymbol, declaration: DeclTree) {
@@ -70,7 +95,7 @@ class Importer(val output: java.io.PrintWriter) {
         val sym = owner.getClassOrCreate(name)
         sym.isTrait = false
         parent.foreach(sym.parents += typeToScala(_))
-        for {parent <- implements.map(typeToScala) if !sym.parents.contains(parent)} {
+        for { parent <- implements.map(typeToScala) if !sym.parents.contains(parent) } {
           sym.parents += parent
         }
         sym.tparams ++= typeParamsToScala(tparams)
@@ -81,7 +106,7 @@ class Importer(val output: java.io.PrintWriter) {
 
       case InterfaceDecl(TypeNameName(name), tparams, inheritance, members) =>
         val sym = owner.getClassOrCreate(name)
-        for {parent <- inheritance.map(typeToScala) if !sym.parents.contains(parent)} {
+        for { parent <- inheritance.map(typeToScala) if !sym.parents.contains(parent) } {
           sym.parents += parent
         }
         sym.tparams ++= typeParamsToScala(tparams)
@@ -102,7 +127,7 @@ class Importer(val output: java.io.PrintWriter) {
 
       case FunctionDecl(IdentName(name), signature) => processDefDecl(owner, name, signature)
 
-      case _ => owner.members += new CommentSymbol("??? "+declaration)
+      case _ => owner.members += new CommentSymbol("??? " + declaration)
     }
   }
 
@@ -158,7 +183,7 @@ class Importer(val output: java.io.PrintWriter) {
         setterSym.resultType = TypeRef.Unit
         setterSym.isBracketAccess = true
 
-      case _ => owner.members += new CommentSymbol("??? "+member)
+      case _ => owner.members += new CommentSymbol("??? " + member)
     }
   }
 
@@ -257,41 +282,14 @@ class Importer(val output: java.io.PrintWriter) {
   }
 
   private def coreTypeToScala(tpe: CoreType, anyAsDynamic: Boolean = false): TypeRef = tpe.name match {
-    case "any"       => if (anyAsDynamic) TypeRef.Dynamic else TypeRef.Any
-    case "dynamic"   => TypeRef.Dynamic
-    case "void"      => TypeRef.Unit
-    case "number"    => TypeRef.Double
-    case "bool"      => TypeRef.Boolean
-    case "boolean"   => TypeRef.Boolean
-    case "string"    => TypeRef.String
-    case "null"      => TypeRef.Null
+    case "any" => if (anyAsDynamic) TypeRef.Dynamic else TypeRef.Any
+    case "dynamic" => TypeRef.Dynamic
+    case "void" => TypeRef.Unit
+    case "number" => TypeRef.Double
+    case "bool" => TypeRef.Boolean
+    case "boolean" => TypeRef.Boolean
+    case "string" => TypeRef.String
+    case "null" => TypeRef.Null
     case "undefined" => TypeRef.Unit
-  }
-}
-
-object Importer {
-  private val AnyType = TypeRefTree(CoreType("any"))
-  private val DynamicType = TypeRefTree(CoreType("dynamic"))
-
-  private implicit class OptType(val optType: Option[TypeTree]) extends AnyVal {
-    @inline def orAny: TypeTree = optType.getOrElse(AnyType)
-    @inline def orDynamic: TypeTree = optType.getOrElse(DynamicType)
-  }
-
-  private object TypeOrAny {
-    @inline def unapply(optType: Option[TypeTree]) = Some(optType.orAny)
-  }
-
-  private object IdentName {
-    @inline def unapply(ident: Ident) = Some(Name(ident.name))
-  }
-
-  private object TypeNameName {
-    @inline def apply(typeName: Name) = TypeName(typeName.name)
-    @inline def unapply(typeName: TypeName) = Some(Name(typeName.name))
-  }
-
-  private object PropertyNameName {
-    @inline def unapply(propName: PropertyName) = Some(Name(propName.name))
   }
 }
