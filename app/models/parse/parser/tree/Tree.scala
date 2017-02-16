@@ -92,6 +92,4 @@ case class CallMember(signature: FunSignature) extends MemberTree
 case class ConstructorMember(signature: FunSignature) extends MemberTree
 case class IndexMember(indexName: Ident, indexType: TypeTree, valueType: TypeTree) extends MemberTree
 case class PropertyMember(prot: Boolean, name: PropertyName, optional: Boolean, tpe: TypeTree, static: Boolean) extends MemberTree
-case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean) extends MemberTree {
-  if (prot) println("###")
-}
+case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean) extends MemberTree

@@ -50,6 +50,7 @@ class Importer(val path: String) {
     }
 
     new Printer(files, outputPackage).printSymbol(rootPackage)
+    files.output.close()
   }
 
   private def processDecl(owner: ContainerSymbol, declaration: DeclTree) {

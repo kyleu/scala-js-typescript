@@ -1,31 +1,29 @@
 @(
     key: String,
     ts: better.files.File,
-    definitions: String,
+    definitions: Seq[models.parse.parser.tree.DeclTree],
     output: String,
     debug: Boolean
 )(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
   <div class="row">
     <div class="col s12">
-      <div class="panel-content">
-        <div class="collection with-header">
-          <div class="collection-header">
-            <h5>@key</h5>
-          </div>
-          <div class="collection-item">
-            <h5>Scala Output</h5>
-            <pre>@output</pre>
-          </div>
-          <div class="collection-item">
-            <h5>Parsed Tree</h5>
-            @definitions
-          </div>
-          <div class="collection-item">
-            <h5>Content</h5>
-            <pre>@ts.contentAsString</pre>
-          </div>
-        </div>
-      </div>
+      <ul class="collapsible" data-collapsible="accordion">
+        <li>
+          <div class="collapsible-header"><h5>@key</h5></div>
+        </li>
+        <li>
+          <div class="collapsible-header">Scala Output</div>
+          <div class="collapsible-body"><pre>@output</pre></div>
+        </li>
+        <li>
+          <div class="collapsible-header">Parsed Tree</div>
+          <div class="collapsible-body"><pre>@definitions</pre></div>
+        </li>
+        <li>
+          <div class="collapsible-header">TypeScript Input</div>
+          <div class="collapsible-body"><pre>@ts.contentAsString</pre></div>
+        </li>
+      </ul>
     </div>
   </div>
 }

@@ -52,7 +52,6 @@ class ContainerSymbol(nme: Name) extends Symbol(nme) {
   }
 
   def newMethod(prot: Boolean, name: Name): MethodSymbol = {
-    if (prot) println("$$$")
     val result = new MethodSymbol(prot, name)
     members += result
     result

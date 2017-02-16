@@ -19,4 +19,6 @@ class PrinterFiles(path: String, pkg: String) {
   def print(s: String) = {
     output.write(s)
   }
+
+  def read() = solo.contentAsString
 }
