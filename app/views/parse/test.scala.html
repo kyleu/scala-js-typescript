@@ -1,7 +1,7 @@
 @(
     key: String,
     f: better.files.File,
-    definitions: List[models.parse.parser.tree.DeclTree],
+    definitions: Either[String, List[models.parse.parser.tree.DeclTree]],
     output: String,
     debug: Boolean
 )(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
@@ -14,15 +14,15 @@
           </div>
           <div class="collection-item">
             <h5>Scala Output</h5>
-            <pre>@output</pre>
+            <pre style="margin: 10px;">@output</pre>
           </div>
           <div class="collection-item">
             <h5>Parsed Tree</h5>
-            @definitions
+            <div style="margin: 10px;">@definitions</div>
           </div>
           <div class="collection-item">
             <h5>Content</h5>
-            <pre>@f.contentAsString</pre>
+            <pre style="margin: 10px;">@f.contentAsString</pre>
           </div>
         </div>
       </div>

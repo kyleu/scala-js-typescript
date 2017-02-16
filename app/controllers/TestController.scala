@@ -26,10 +26,14 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val ts = dir / "index.d.ts"
     val content = ts.contentAsString
     val tree = TypeScriptImport.parse(content)
-    export(key, tree, key)
-    val res = (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+    val res = tree match {
+      case Right(t) =>
+        export(key, t, key)
+        (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+      case Left(err) => "Error: " + err
+    }
 
-    Future.successful(Ok(views.html.parse.script(dir.name, ts, tree, res.toString, app.config.debug)))
+    Future.successful(Ok(views.html.parse.script(dir.name, ts, tree, res, app.config.debug)))
   }
 
   def allTests() = act("script.all") { implicit request =>
@@ -41,8 +45,12 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val f = FileService.getDir("test") / s"$key.d.ts"
     val content = f.contentAsString
     val tree = TypeScriptImport.parse(content)
-    export(key, tree, key)
-    val res = (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+    val res = tree match {
+      case Right(t) =>
+        export(key, t, key)
+        val res = (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+      case Left(err) => "Error: " + err
+    }
     Future.successful(Ok(views.html.parse.test(key, f, tree, res.toString, app.config.debug)))
   }
 
