@@ -27,12 +27,12 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
           if (isRootPackage) outputPackage.split("\\.").toList.map(Name(_))
           else List(name)
 
-        if (!parentPackage.isEmpty) {
+        if (parentPackage.nonEmpty) {
           pln"package ${parentPackage.mkString(".")}"
         }
 
         if (isRootPackage) {
-          pln"";
+          pln""
           pln"import scala.scalajs.js"
           pln"import js.annotation._"
           pln"import js.|"
@@ -42,28 +42,28 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
         if (!isRootPackage)
           currentJSNamespace += name.name + "."
 
-        if (!sym.members.isEmpty) {
+        if (sym.members.nonEmpty) {
           val (topLevels, packageObjectMembers) =
             sym.members.partition(canBeTopLevel)
 
-          pln"";
+          pln""
           pln"package $thisPackage {"
 
           for (sym <- topLevels)
             printSymbol(sym)
 
-          if (!packageObjectMembers.isEmpty) {
+          if (packageObjectMembers.nonEmpty) {
             val packageObjectName =
               Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
 
-            pln"";
+            pln""
             if (currentJSNamespace == "") {
               pln"@js.native"
               pln"object $packageObjectName extends js.GlobalScope {"
             } else {
               val jsName = currentJSNamespace.init
-              pln"""@JSName("$jsName")"""
               pln"@js.native"
+              pln"""@js.annotation.JSName("$jsName")"""
               pln"object $packageObjectName extends js.Object {"
             }
             for (sym <- packageObjectMembers)
@@ -71,7 +71,7 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
             pln"}"
           }
 
-          pln"";
+          pln""
           pln"}"
         }
 
@@ -88,12 +88,12 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
           if (sym.parents.isEmpty) List(TypeRef.Object)
           else sym.parents.toList
 
-        pln"";
+        pln""
         pln"@js.native"
         if (currentJSNamespace != "" && !sym.isTrait)
-          pln"""@JSName("$currentJSNamespace$name")"""
+          pln"""@js.annotation.JSName("$currentJSNamespace$name")"""
         p"$sealedKw$kw $name"
-        if (!sym.tparams.isEmpty)
+        if (sym.tparams.nonEmpty)
           p"[${sym.tparams}]"
 
         {
@@ -105,23 +105,24 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
         pln"}"
 
       case sym: ModuleSymbol =>
-        pln"";
+        pln""
         pln"@js.native"
         if (currentJSNamespace != "")
-          pln"""@JSName("$currentJSNamespace$name")"""
+          pln"""@js.annotation.JSName("$currentJSNamespace$name")"""
         pln"object $name extends js.Object {"
         printMemberDecls(sym)
         pln"}"
 
       case sym: TypeAliasSymbol =>
         p"  type $name"
-        if (!sym.tparams.isEmpty)
+        if (sym.tparams.nonEmpty) {
           p"[${sym.tparams}]"
+        }
         pln" = ${sym.alias}"
 
       case sym: FieldSymbol =>
         sym.jsName foreach { jsName =>
-          pln"""  @JSName("$jsName")"""
+          pln"""  @js.annotation.JSName("$jsName")"""
         }
         pln"  var $name: ${sym.tpe} = js.native"
 
@@ -129,22 +130,24 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
         val params = sym.params
 
         if (name == Name.CONSTRUCTOR) {
-          if (!params.isEmpty)
+          if (params.nonEmpty) {
             pln"  def this($params) = this()"
+          }
         } else {
           sym.jsName foreach { jsName =>
-            pln"""  @JSName("$jsName")"""
+            pln"""  @js.annotation.JSName("$jsName")"""
           }
-          if (sym.isBracketAccess)
+          if (sym.isBracketAccess) {
             pln"""  @JSBracketAccess"""
+          }
           p"  def $name"
-          if (!sym.tparams.isEmpty)
+          if (sym.tparams.nonEmpty) {
             p"[${sym.tparams}]"
+          }
           pln"($params): ${sym.resultType} = js.native"
         }
 
-      case sym: ParamSymbol =>
-        p"$name: ${sym.tpe}${if (sym.optional) " = ???" else ""}"
+      case sym: ParamSymbol => p"$name: ${sym.tpe}${if (sym.optional) " = js.native" else ""}"
 
       case sym: TypeParamSymbol =>
         p"$name"
@@ -153,54 +156,36 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
   }
 
   private def printMemberDecls(owner: ContainerSymbol) {
-    val (constructors, others) =
-      owner.members.toList.partition(_.name == Name.CONSTRUCTOR)
-    for (sym <- constructors ++ others)
+    val (constructors, others) = owner.members.toList.partition(_.name == Name.CONSTRUCTOR)
+    for (sym <- constructors ++ others) {
       printSymbol(sym)
-  }
-
-  private def canBeTopLevel(sym: Symbol): Boolean =
-    sym.isInstanceOf[ContainerSymbol]
-
-  private def isParameterlessConstructor(sym: Symbol): Boolean = {
-    sym match {
-      case sym: MethodSymbol =>
-        sym.name == Name.CONSTRUCTOR && sym.params.isEmpty
-      case _ =>
-        false
     }
   }
 
-  def printTypeRef(tpe: TypeRef) {
-    tpe match {
-      case TypeRef(typeName, Nil) =>
-        p"$typeName"
+  private def canBeTopLevel(sym: Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
 
-      case TypeRef.Union(left, right) =>
-        p"$left | $right"
-
-      case TypeRef.Singleton(termRef) =>
-        p"$termRef.type"
-
-      case TypeRef.Repeated(underlying) =>
-        p"$underlying*"
-
-      case TypeRef(typeName, targs) =>
-        p"$typeName[$targs]"
-    }
+  private def isParameterlessConstructor(sym: Symbol): Boolean = sym match {
+    case sym: MethodSymbol => sym.name == Name.CONSTRUCTOR && sym.params.isEmpty
+    case _ => false
   }
 
-  private def print(x: Any) {
-    x match {
-      case x: Symbol => printSymbol(x)
-      case x: TypeRef => printTypeRef(x)
-      case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
-        output.print("js.")
-        output.print(name)
-      case QualifiedName(Name.scala, name) => output.print(name)
-      case QualifiedName(Name.java, Name.lang, name) => output.print(name)
-      case _ => output.print(x)
-    }
+  def printTypeRef(tpe: TypeRef) = tpe match {
+    case TypeRef(typeName, Nil) => p"$typeName"
+    case TypeRef.Union(left, right) => p"$left | $right"
+    case TypeRef.Singleton(termRef) => p"$termRef.type"
+    case TypeRef.Repeated(underlying) => p"$underlying*"
+    case TypeRef(typeName, targs) => p"$typeName[$targs]"
+  }
+
+  private def print(x: Any) = x match {
+    case x: Symbol => printSymbol(x)
+    case x: TypeRef => printTypeRef(x)
+    case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
+      output.print("js.")
+      output.print(name)
+    case QualifiedName(Name.scala, name) => output.print(name)
+    case QualifiedName(Name.java, Name.lang, name) => output.print(name)
+    case _ => output.print(x)
   }
 }
 
@@ -232,15 +217,13 @@ object Printer {
               }
             }
 
-          case expr =>
-            printer.print(expr)
+          case expr => printer.print(expr)
         }
         output.print(strings.next())
       }
     }
 
-    def pln(args: Any*)(implicit printer: Printer,
-        sep: ListElemSeparator = ListElemSeparator.Comma) {
+    def pln(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma) {
       p(args:_*)
       printer.output.println()
     }

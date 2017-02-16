@@ -2,60 +2,46 @@
  * Copyright 2013-2014 LAMP/EPFL
  * @author  Sébastien Doeraene
  */
-
 package org.scalajs.tools.tsimporter.parser
 
 import scala.util.parsing.input.CharArrayReader.EofCh
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.lexical._
 import scala.util.parsing.combinator.token._
-import collection.mutable.HashSet
+import scala.collection.mutable
 
 class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
   // see `token' in `Scanners'
-  def token: Parser[Token] = (
-      identifier
-    | numericLiteral
-    | stringLiteral
-    | EofCh ^^^ EOF
-    | delim
-    | failure("illegal character")
-  )
+  def token: Parser[Token] = identifier | numericLiteral | stringLiteral | EofCh ^^^ EOF | delim | failure("illegal character")
 
-  def identifier =
-    stringOf1(identifierStart, identifierPart) ^^ {
-      x => if (reserved contains x) Keyword(x) else Identifier(x)
-    }
+  def identifier = stringOf1(identifierStart, identifierPart) ^^ {
+    x => if (reserved contains x) Keyword(x) else Identifier(x)
+  }
 
-  def identifierStart =
-    elem("", isIdentifierStart) | (pseudoChar filter isIdentifierStart)
-  def identifierPart =
-    elem("", isIdentifierPart) | (pseudoChar filter isIdentifierPart)
+  def identifierStart = elem("", isIdentifierStart) | (pseudoChar filter isIdentifierStart)
+  def identifierPart = elem("", isIdentifierPart) | (pseudoChar filter isIdentifierPart)
 
   def numericLiteral = (
-      '0' ~> (
-          (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
-            digits => digits.foldLeft(0L)(_ * 16 + _).toString
-          }
-        | rep1(octalDigit) ^^ {
-            // not standard, but I guess it could happen nevertheless
-            digits => digits.foldLeft(0L)(_ * 8 + _).toString
-          }
-        | success("0")
-      )
+    '0' ~> (
+        (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
+          digits => digits.foldLeft(0L)(_ * 16 + _).toString
+        }
+      | rep1(octalDigit) ^^ {
+          // not standard, but I guess it could happen nevertheless
+          digits => digits.foldLeft(0L)(_ * 8 + _).toString
+        }
+      | success("0")
+    )
     | stringOf1(digit) ~ opt(stringOf1('.', digit)) ^^ {
-        case part1 ~ part2 => part1 + (part2.getOrElse(""))
+        case part1 ~ part2 => part1 + part2.getOrElse("")
       }
   ) ^^ NumericLit
 
-  def stringLiteral =
-    (quoted('\"') | quoted('\'')) ^^ StringLit
+  def stringLiteral = (quoted('\"') | quoted('\'')) ^^ StringLit
 
-  def quoted(quoteChar: Char) =
-    quoteChar ~> stringOf(inQuoteChar(quoteChar)) <~ quoteChar
+  def quoted(quoteChar: Char) = quoteChar ~> stringOf(inQuoteChar(quoteChar)) <~ quoteChar
 
-  def inQuoteChar(quoteChar: Char) =
-    chrExcept('\\', quoteChar, EofCh) | pseudoChar
+  def inQuoteChar(quoteChar: Char) = chrExcept('\\', quoteChar, EofCh) | pseudoChar
 
   def pseudoChar = '\\' ~> (
       'x' ~> hexDigit ~ hexDigit ^^ {
@@ -76,20 +62,17 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
       }
   )
 
-  def octalDigit =
-    elem("octal digit", c => '0' <= c && c <= '7') ^^ (_ - '0')
+  def octalDigit = elem("octal digit", c => '0' <= c && c <= '7') ^^ (_ - '0')
 
   def hexDigit = accept("hex digit", {
-    case c @ ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9') => (c - '0')
-    case c @ ('A'|'B'|'C'|'D'|'E'|'F') => (c - 'A' + 10)
-    case c @ ('a'|'b'|'c'|'d'|'e'|'f') => (c - 'a' + 10)
+    case c @ ('0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9') => c - '0'
+    case c @ ('A'|'B'|'C'|'D'|'E'|'F') => c - 'A' + 10
+    case c @ ('a'|'b'|'c'|'d'|'e'|'f') => c - 'a' + 10
   })
 
   // legal identifier chars
-  def isIdentifierStart(c: Char): Boolean =
-    c == '$' || c == '_' || c.isUnicodeIdentifierStart
-  def isIdentifierPart(c: Char): Boolean =
-    c == '$' || c.isUnicodeIdentifierPart
+  def isIdentifierStart(c: Char): Boolean = c == '$' || c == '_' || c.isUnicodeIdentifierStart
+  def isIdentifierPart(c: Char): Boolean = c == '$' || c.isUnicodeIdentifierPart
 
   // see `whitespace in `Scanners'
   override def whitespace: Parser[Any] = rep(
@@ -103,18 +86,17 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
 
   def stringOf(p: => Parser[Char]): Parser[String] = rep(p) ^^ chars2string
   def stringOf1(p: => Parser[Char]): Parser[String] = rep1(p) ^^ chars2string
-  def stringOf1(first: => Parser[Char], p: => Parser[Char]): Parser[String] =
-    rep1(first, p) ^^ chars2string
+  def stringOf1(first: => Parser[Char], p: => Parser[Char]): Parser[String] = rep1(first, p) ^^ chars2string
 
-  private def chars2string(chars: List[Char]) = chars mkString ""
+  private def chars2string(chars: List[Char]) = chars.mkString("")
 
   // reserved words and delimiters
 
-  /** The set of reserved identifiers: these will be returned as `Keyword's */
-  val reserved = new HashSet[String]
+  /** The set of reserved identifiers: these will be returned as Keywords */
+  val reserved = new mutable.HashSet[String]
 
   /** The set of delimiters (ordering does not matter) */
-  val delimiters = new HashSet[String]
+  val delimiters = new mutable.HashSet[String]
 
   private lazy val _delim: Parser[Token] = {
     /* construct parser for delimiters by |'ing together the parsers for the
@@ -122,14 +104,14 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
      * delimiter D will never be matched if there is another delimiter that is
      * a prefix of D
      */
-    def parseDelim(s: String): Parser[Token] =
-      accept(s.toList) ^^ { x => Keyword(s) }
+    def parseDelim(s: String): Parser[Token] = accept(s.toList) ^^ { x => Keyword(s) }
 
     val d = new Array[String](delimiters.size)
     delimiters.copyToArray(d, 0)
     scala.util.Sorting.quickSort(d)
-    (d.toList map parseDelim).foldRight(
-        failure("no matching delimiter"): Parser[Token])((x, y) => y | x)
+    d.toList.map(parseDelim).foldRight(failure("no matching delimiter"): Parser[Token]) { (x, y) =>
+      y | x
+    }
   }
 
   protected def delim: Parser[Token] = _delim

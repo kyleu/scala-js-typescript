@@ -19,8 +19,9 @@ class Importer(val output: java.io.PrintWriter) {
   def apply(declarations: List[DeclTree], outputPackage: String) {
     val rootPackage = new PackageSymbol(Name.EMPTY)
 
-    for (declaration <- declarations)
+    for (declaration <- declarations) {
       processDecl(rootPackage, declaration)
+    }
 
     new Printer(output, outputPackage).printSymbol(rootPackage)
   }
@@ -28,14 +29,18 @@ class Importer(val output: java.io.PrintWriter) {
   private def processDecl(owner: ContainerSymbol, declaration: DeclTree) {
     declaration match {
       case ModuleDecl(PropertyNameName(name), innerDecls) =>
-        assert(owner.isInstanceOf[PackageSymbol],
-            s"Found package $name in non-package $owner")
+        assert(owner.isInstanceOf[PackageSymbol], s"Found package $name in non-package $owner")
         val sym = owner.asInstanceOf[PackageSymbol].getPackageOrCreate(name)
 
-        for (innerDecl <- innerDecls)
+        for (innerDecl <- innerDecls) {
           processDecl(sym, innerDecl)
+        }
 
       case VarDecl(IdentName(name), Some(tpe @ ObjectType(members))) =>
+        val sym = owner.getModuleOrCreate(name)
+        processMembersDecls(owner, sym, members)
+
+      case ValDecl(IdentName(name), Some(tpe @ ObjectType(members))) =>
         val sym = owner.getModuleOrCreate(name)
         processMembersDecls(owner, sym, members)
 
@@ -64,25 +69,18 @@ class Importer(val output: java.io.PrintWriter) {
         val sym = owner.getClassOrCreate(name)
         sym.isTrait = false
         parent.foreach(sym.parents += typeToScala(_))
-        for {
-          parent <- implements.map(typeToScala)
-          if !sym.parents.contains(parent)
-        } {
+        for {parent <- implements.map(typeToScala) if !sym.parents.contains(parent)} {
           sym.parents += parent
         }
         sym.tparams ++= typeParamsToScala(tparams)
         processMembersDecls(owner, sym, members)
         if (!sym.members.exists(_.name == Name.CONSTRUCTOR)) {
-          processDefDecl(sym, Name.CONSTRUCTOR,
-              FunSignature(Nil, Nil, Some(TypeRefTree(CoreType("void")))))
+          processDefDecl(sym, Name.CONSTRUCTOR, FunSignature(Nil, Nil, Some(TypeRefTree(CoreType("void")))))
         }
 
       case InterfaceDecl(TypeNameName(name), tparams, inheritance, members) =>
         val sym = owner.getClassOrCreate(name)
-        for {
-          parent <- inheritance.map(typeToScala)
-          if !sym.parents.contains(parent)
-        } {
+        for {parent <- inheritance.map(typeToScala) if !sym.parents.contains(parent)} {
           sym.parents += parent
         }
         sym.tparams ++= typeParamsToScala(tparams)
@@ -97,62 +95,52 @@ class Importer(val output: java.io.PrintWriter) {
         val sym = owner.newField(name)
         sym.tpe = typeToScala(tpe)
 
-      case FunctionDecl(IdentName(name), signature) =>
-        processDefDecl(owner, name, signature)
+      case ValDecl(IdentName(name), TypeOrAny(tpe)) =>
+        val sym = owner.newField(name)
+        sym.tpe = typeToScala(tpe)
 
-      case _ =>
-        owner.members += new CommentSymbol("??? "+declaration)
+      case FunctionDecl(IdentName(name), signature) => processDefDecl(owner, name, signature)
+
+      case _ => owner.members += new CommentSymbol("??? "+declaration)
     }
   }
 
-  private def processMembersDecls(enclosing: ContainerSymbol,
-      owner: ContainerSymbol, members: List[MemberTree]) {
-
+  private def processMembersDecls(enclosing: ContainerSymbol, owner: ContainerSymbol, members: List[MemberTree]) {
     val OwnerName = owner.name
 
     lazy val companionClassRef = {
       val tparams = enclosing.findClass(OwnerName) match {
-        case Some(clazz) =>
-          clazz.tparams.toList.map(tp => TypeRefTree(TypeNameName(tp.name), Nil))
+        case Some(clazz) => clazz.tparams.toList.map(tp => TypeRefTree(TypeNameName(tp.name), Nil))
         case _ => Nil
       }
       TypeRefTree(TypeNameName(OwnerName), tparams)
     }
 
     for (member <- members) member match {
-      case CallMember(signature) =>
-        processDefDecl(owner, Name("apply"), signature, protectName = false)
+      case CallMember(signature) => processDefDecl(owner, Name("apply"), signature, protectName = false)
 
-      case ConstructorMember(sig @ FunSignature(tparamsIgnored, params, Some(resultType)))
-      if owner.isInstanceOf[ModuleSymbol] && resultType == companionClassRef =>
+      case ConstructorMember(sig @ FunSignature(tparamsIgnored, params, Some(resultType))) if owner.isInstanceOf[ModuleSymbol] && resultType == companionClassRef =>
         val classSym = enclosing.getClassOrCreate(owner.name)
         classSym.isTrait = false
-        processDefDecl(classSym, Name.CONSTRUCTOR,
-            FunSignature(Nil, params, Some(TypeRefTree(CoreType("void")))))
+        processDefDecl(classSym, Name.CONSTRUCTOR, FunSignature(Nil, params, Some(TypeRefTree(CoreType("void")))))
 
       case PropertyMember(PropertyNameName(name), opt, tpe, true) =>
-        assert(owner.isInstanceOf[ClassSymbol],
-            s"Cannot process static member $name in module definition")
+        assert(owner.isInstanceOf[ClassSymbol], s"Cannot process static member $name in module definition")
         val module = enclosing.getModuleOrCreate(owner.name)
         processPropertyDecl(module, name, tpe)
 
-      case PropertyMember(PropertyNameName(name), opt, tpe, _) =>
-        processPropertyDecl(owner, name, tpe)
+      case PropertyMember(PropertyNameName(name), opt, tpe, _) => processPropertyDecl(owner, name, tpe)
 
-      case FunctionMember(PropertyName("constructor"), _, signature, false)
-      if owner.isInstanceOf[ClassSymbol] =>
+      case FunctionMember(PropertyName("constructor"), _, signature, false) if owner.isInstanceOf[ClassSymbol] =>
         owner.asInstanceOf[ClassSymbol].isTrait = false
-        processDefDecl(owner, Name.CONSTRUCTOR,
-            FunSignature(Nil, signature.params, Some(TypeRefTree(CoreType("void")))))
+        processDefDecl(owner, Name.CONSTRUCTOR, FunSignature(Nil, signature.params, Some(TypeRefTree(CoreType("void")))))
 
       case FunctionMember(PropertyNameName(name), opt, signature, true) =>
-        assert(owner.isInstanceOf[ClassSymbol],
-            s"Cannot process static member $name in module definition")
+        assert(owner.isInstanceOf[ClassSymbol], s"Cannot process static member $name in module definition")
         val module = enclosing.getModuleOrCreate(owner.name)
         processDefDecl(module, name, signature)
 
-      case FunctionMember(PropertyNameName(name), opt, signature, _) =>
-        processDefDecl(owner, name, signature)
+      case FunctionMember(PropertyNameName(name), opt, signature, _) => processDefDecl(owner, name, signature)
 
       case IndexMember(IdentName(indexName), indexType, valueType) =>
         val indexTpe = typeToScala(indexType)
@@ -169,8 +157,7 @@ class Importer(val output: java.io.PrintWriter) {
         setterSym.resultType = TypeRef.Unit
         setterSym.isBracketAccess = true
 
-      case _ =>
-        owner.members += new CommentSymbol("??? "+member)
+      case _ => owner.members += new CommentSymbol("??? "+member)
     }
   }
 
@@ -194,12 +181,14 @@ class Importer(val output: java.io.PrintWriter) {
   private def processDefDecl(owner: ContainerSymbol, name: Name,
       signature: FunSignature, protectName: Boolean = true) {
     // Discard specialized signatures
-    if (signature.params.exists(_.tpe.exists(_.isInstanceOf[ConstantType])))
+    if (signature.params.exists(_.tpe.exists(_.isInstanceOf[ConstantType]))) {
       return
+    }
 
     val sym = owner.newMethod(name)
-    if (protectName)
+    if (protectName) {
       sym.protectName()
+    }
 
     sym.tparams ++= typeParamsToScala(signature.tparams)
 
@@ -215,7 +204,7 @@ class Importer(val output: java.io.PrintWriter) {
       sym.params += paramSym
     }
 
-    sym.resultType = typeToScala(signature.resultType.orDynamic, true)
+    sym.resultType = typeToScala(signature.resultType.orDynamic, anyAsDynamic = true)
 
     owner.removeIfDuplicate(sym)
   }
@@ -226,12 +215,11 @@ class Importer(val output: java.io.PrintWriter) {
   }
 
   private def typeToScala(tpe: TypeTree): TypeRef =
-    typeToScala(tpe, false)
+    typeToScala(tpe, anyAsDynamic = false)
 
   private def typeToScala(tpe: TypeTree, anyAsDynamic: Boolean): TypeRef = {
     tpe match {
-      case TypeRefTree(tpe: CoreType, Nil) =>
-        coreTypeToScala(tpe, anyAsDynamic)
+      case TypeRefTree(tpe: CoreType, Nil) => coreTypeToScala(tpe, anyAsDynamic)
 
       case TypeRefTree(base, targs) =>
         val baseTypeRef = base match {
@@ -240,7 +228,7 @@ class Importer(val output: java.io.PrintWriter) {
           case TypeNameName(name) => QualifiedName(name)
           case QualifiedTypeName(qualifier, TypeNameName(name)) =>
             val qual1 = qualifier map (x => Name(x.name))
-            QualifiedName((qual1 :+ name): _*)
+            QualifiedName(qual1 :+ name: _*)
           case _: CoreType => throw new MatchError(base)
         }
         TypeRef(baseTypeRef, targs map typeToScala)
@@ -253,59 +241,40 @@ class Importer(val output: java.io.PrintWriter) {
         // ???
         TypeRef.Any
 
-      case FunctionType(FunSignature(tparams, params, Some(resultType))) =>
-        if (!tparams.isEmpty) {
-          // Type parameters in function types are not supported
-          TypeRef.Function
-        } else if (params.exists(_.tpe.exists(_.isInstanceOf[RepeatedType]))) {
-          // Repeated params in function types are not supported
-          TypeRef.Function
-        } else {
-          val paramTypes =
-            for (FunParam(_, _, TypeOrAny(tpe)) <- params)
-              yield typeToScala(tpe)
-          val resType = resultType match {
-            case TypeRefTree(CoreType("any"), Nil) => TypeRef.ScalaAny
-            case _ => typeToScala(resultType)
-          }
-          val targs = paramTypes :+ resType
-
-          TypeRef(QualifiedName.Function(params.size), targs)
+      case FunctionType(FunSignature(tparams, params, Some(resultType))) => if (tparams.nonEmpty) {
+        // Type parameters in function types are not supported
+        TypeRef.Function
+      } else if (params.exists(_.tpe.exists(_.isInstanceOf[RepeatedType]))) {
+        // Repeated params in function types are not supported
+        TypeRef.Function
+      } else {
+        val paramTypes = for (FunParam(_, _, TypeOrAny(tpe)) <- params) yield typeToScala(tpe)
+        val resType = resultType match {
+          case TypeRefTree(CoreType("any"), Nil) => TypeRef.ScalaAny
+          case _ => typeToScala(resultType)
         }
+        val targs = paramTypes :+ resType
 
-      case UnionType(left, right) =>
-        TypeRef.Union(typeToScala(left), typeToScala(right))
-
-      case TypeQuery(expr) =>
-        TypeRef.Singleton(QualifiedName((expr.qualifier :+ expr.name).map(
-            ident => Name(ident.name)): _*))
-
-      case TupleType(targs) =>
-          TypeRef(QualifiedName.Tuple(targs.length), targs map typeToScala)
-
-      case RepeatedType(underlying) =>
-        TypeRef(Name.REPEATED, List(typeToScala(underlying)))
-
-      case _ =>
-        // ???
-        TypeRef.Any
+        TypeRef(QualifiedName.Function(params.size), targs)
+      }
+      case UnionType(left, right) => TypeRef.Union(typeToScala(left), typeToScala(right))
+      case TypeQuery(expr) => TypeRef.Singleton(QualifiedName((expr.qualifier :+ expr.name).map(ident => Name(ident.name)): _*))
+      case TupleType(targs) => TypeRef(QualifiedName.Tuple(targs.length), targs map typeToScala)
+      case RepeatedType(underlying) => TypeRef(Name.REPEATED, List(typeToScala(underlying)))
+      case _ => TypeRef.Any
     }
   }
 
-  private def coreTypeToScala(tpe: CoreType,
-      anyAsDynamic: Boolean = false): TypeRef = {
-
-    tpe.name match {
-      case "any"       => if (anyAsDynamic) TypeRef.Dynamic else TypeRef.Any
-      case "dynamic"   => TypeRef.Dynamic
-      case "void"      => TypeRef.Unit
-      case "number"    => TypeRef.Double
-      case "bool"      => TypeRef.Boolean
-      case "boolean"   => TypeRef.Boolean
-      case "string"    => TypeRef.String
-      case "null"      => TypeRef.Null
-      case "undefined" => TypeRef.Unit
-    }
+  private def coreTypeToScala(tpe: CoreType, anyAsDynamic: Boolean = false): TypeRef = tpe.name match {
+    case "any"       => if (anyAsDynamic) TypeRef.Dynamic else TypeRef.Any
+    case "dynamic"   => TypeRef.Dynamic
+    case "void"      => TypeRef.Unit
+    case "number"    => TypeRef.Double
+    case "bool"      => TypeRef.Boolean
+    case "boolean"   => TypeRef.Boolean
+    case "string"    => TypeRef.String
+    case "null"      => TypeRef.Null
+    case "undefined" => TypeRef.Unit
   }
 }
 
@@ -323,19 +292,15 @@ object Importer {
   }
 
   private object IdentName {
-    @inline def unapply(ident: Ident) =
-      Some(Name(ident.name))
+    @inline def unapply(ident: Ident) = Some(Name(ident.name))
   }
 
   private object TypeNameName {
-    @inline def apply(typeName: Name) =
-      TypeName(typeName.name)
-    @inline def unapply(typeName: TypeName) =
-      Some(Name(typeName.name))
+    @inline def apply(typeName: Name) = TypeName(typeName.name)
+    @inline def unapply(typeName: TypeName) = Some(Name(typeName.name))
   }
 
   private object PropertyNameName {
-    @inline def unapply(propName: PropertyName) =
-      Some(Name(propName.name))
+    @inline def unapply(propName: PropertyName) = Some(Name(propName.name))
   }
 }

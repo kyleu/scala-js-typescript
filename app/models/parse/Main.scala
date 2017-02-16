@@ -42,23 +42,18 @@ object Main {
     }
   }
 
-  private def process(definitions: List[DeclTree], output: PrintWriter,
-      outputPackage: String) {
+  private def process(definitions: List[DeclTree], output: PrintWriter, outputPackage: String) {
     new Importer(output)(definitions, outputPackage)
   }
 
   private def parseDefinitions(reader: Reader[Char]): List[DeclTree] = {
     val parser = new TSDefParser
     parser.parseDefinitions(reader) match {
-      case parser.Success(rawCode, _) =>
-        rawCode
+      case parser.Success(rawCode: List[Trees.DeclTree], _) => rawCode
 
       case parser.NoSuccess(msg, next) =>
-        Console.err.println(
-            "Parse error at %s\n".format(next.pos.toString) +
-            msg + "\n" +
-            next.pos.longString)
-        sys.exit(2)
+        val m = s"Parse error at ${next.pos.toString}:" + "\n  " + msg + "\n  Position: " + next.pos.longString
+        throw new IllegalStateException(m)
     }
   }
 
@@ -66,8 +61,5 @@ object Main {
    *
    *  @param fileName name of the file to be read
    */
-  private def readerForFile(fileName: String) = {
-    new PagedSeqReader(PagedSeq.fromReader(
-        new BufferedReader(new FileReader(fileName))))
-  }
+  private def readerForFile(fileName: String) = new PagedSeqReader(PagedSeq.fromReader(new BufferedReader(new FileReader(fileName))))
 }
