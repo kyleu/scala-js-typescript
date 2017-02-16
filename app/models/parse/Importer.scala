@@ -5,7 +5,8 @@
 
 package org.scalajs.tools.tsimporter
 
-import Trees.{ TypeRef => TypeRefTree, _ }
+import org.scalajs.tools.tsimporter.sc.tree._
+import org.scalajs.tools.tsimporter.parser.tree._
 import sc._
 
 /** The meat and potatoes: the importer

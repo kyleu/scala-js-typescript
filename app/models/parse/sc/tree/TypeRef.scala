@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc
+package org.scalajs.tools.tsimporter.sc.tree
 
 case class TypeRef(typeName: QualifiedName, targs: List[TypeRef] = Nil) {
   override def toString = s"$typeName[${targs.mkString(", ")}]"

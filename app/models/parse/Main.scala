@@ -9,7 +9,7 @@ import java.io.{ Console => _, Reader => _, _ }
 
 import scala.collection.immutable.PagedSeq
 
-import Trees._
+import org.scalajs.tools.tsimporter.parser.tree._
 
 import scala.util.parsing.input._
 import parser.TSDefParser
@@ -49,7 +49,7 @@ object Main {
   private def parseDefinitions(reader: Reader[Char]): List[DeclTree] = {
     val parser = new TSDefParser
     parser.parseDefinitions(reader) match {
-      case parser.Success(rawCode: List[Trees.DeclTree], _) => rawCode
+      case parser.Success(rawCode: List[org.scalajs.tools.tsimporter.parser.tree.DeclTree], _) => rawCode
 
       case parser.NoSuccess(msg, next) =>
         val m = s"Parse error at ${next.pos.toString}:" + "\n  " + msg + "\n  Position: " + next.pos.longString

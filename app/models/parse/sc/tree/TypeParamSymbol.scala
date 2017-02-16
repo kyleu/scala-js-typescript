@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc
+package org.scalajs.tools.tsimporter.sc.tree
 
 class TypeParamSymbol(nme: Name, val upperBound: Option[TypeRef]) extends Symbol(nme) {
   override def toString = {

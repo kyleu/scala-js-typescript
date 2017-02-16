@@ -7,6 +7,8 @@ package org.scalajs.tools.tsimporter.sc
 
 import java.io.PrintWriter
 
+import org.scalajs.tools.tsimporter.sc.tree._
+
 class Printer(private val output: PrintWriter, outputPackage: String) {
   import Printer._
 
@@ -14,7 +16,7 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
 
   private var currentJSNamespace = ""
 
-  def printSymbol(sym: Symbol) {
+  def printSymbol(sym: tree.Symbol) {
     val name = sym.name
     sym match {
       case comment: CommentSymbol =>
@@ -162,9 +164,9 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
     }
   }
 
-  private def canBeTopLevel(sym: Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
+  private def canBeTopLevel(sym: tree.Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
 
-  private def isParameterlessConstructor(sym: Symbol): Boolean = sym match {
+  private def isParameterlessConstructor(sym: tree.Symbol): Boolean = sym match {
     case sym: MethodSymbol => sym.name == Name.CONSTRUCTOR && sym.params.isEmpty
     case _ => false
   }
@@ -178,7 +180,7 @@ class Printer(private val output: PrintWriter, outputPackage: String) {
   }
 
   private def print(x: Any) = x match {
-    case x: Symbol => printSymbol(x)
+    case x: tree.Symbol => printSymbol(x)
     case x: TypeRef => printTypeRef(x)
     case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
       output.print("js.")

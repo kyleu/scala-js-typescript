@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc
+package org.scalajs.tools.tsimporter.sc.tree
 
 class ModuleSymbol(nme: Name) extends ContainerSymbol(nme) {
   var companionClass: ClassSymbol = _

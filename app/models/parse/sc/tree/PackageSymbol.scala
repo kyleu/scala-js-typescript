@@ -1,4 +1,4 @@
-package org.scalajs.tools.tsimporter.sc
+package org.scalajs.tools.tsimporter.sc.tree
 
 class PackageSymbol(nme: Name) extends ContainerSymbol(nme) {
   override def toString = s"package $name"

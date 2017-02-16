@@ -5,7 +5,7 @@
 
 package org.scalajs.tools.tsimporter.parser
 
-import org.scalajs.tools.tsimporter.Trees._
+import org.scalajs.tools.tsimporter.parser.tree._
 
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.token._
@@ -116,7 +116,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val optResultType = opt(":" ~> resultType)
 
-  lazy val resultType: Parser[TypeTree] = ("void" ^^^ TypeRef(CoreType("void"))) | typeDesc
+  lazy val resultType: Parser[TypeTree] = ("void" ^^^ TypeRefTree(CoreType("void"))) | typeDesc
 
   lazy val optTypeAnnotation = opt(typeAnnotation)
 
@@ -134,8 +134,8 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val baseTypeDesc: Parser[TypeTree] = typeRef | objectType | functionType | typeQuery | tupleType | "(" ~> typeDesc <~ ")"
 
-  lazy val typeRef: Parser[TypeRef] = baseTypeRef ~ opt(typeArgs) ^^ {
-    case base ~ optTargs => TypeRef(base, optTargs getOrElse Nil)
+  lazy val typeRef: Parser[TypeRefTree] = baseTypeRef ~ opt(typeArgs) ^^ {
+    case base ~ optTargs => TypeRefTree(base, optTargs getOrElse Nil)
   }
 
   lazy val baseTypeRef: Parser[BaseTypeRef] = rep1sep("void" | ident, ".") ^^ { parts =>
@@ -206,10 +206,10 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
   }
 
   object ArrayType {
-    def apply(elem: TypeTree): TypeRef = TypeRef(TypeName("Array"), List(elem))
+    def apply(elem: TypeTree): TypeRefTree = TypeRefTree(TypeName("Array"), List(elem))
 
-    def unapply(typeRef: TypeRef): Option[TypeTree] = typeRef match {
-      case TypeRef(TypeName("Array"), List(elem)) => Some(elem)
+    def unapply(typeRef: TypeRefTree): Option[TypeTree] = typeRef match {
+      case TypeRefTree(TypeName("Array"), List(elem)) => Some(elem)
       case _ => None
     }
   }
