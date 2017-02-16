@@ -1,12 +1,21 @@
-@(key: String, ts: better.files.File, definitions: Either[String, Seq[String]], output: String, debug: Boolean)(
-    implicit request: Request[AnyContent], session: Session, flash: Flash
-)@layout.simple(key) {
+@import models.parse.ScriptToken
+@(
+    key: String,
+    ts: better.files.File,
+    definitions: Either[String, Seq[ScriptToken]],
+    output: String,
+    debug: Boolean
+)(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
   <div class="row">
     <div class="col s12">
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
             <h5>@key</h5>
+          </div>
+          <div class="collection-item">
+            <h5>Scala Output</h5>
+            <pre>@output</pre>
           </div>
           <div class="collection-item">
             <h5>Parsed Tree</h5>
@@ -17,11 +26,7 @@
             }
           </div>
           <div class="collection-item">
-            <h5>@ts.name Output</h5>
-            <pre>@output</pre>
-          </div>
-          <div class="collection-item">
-            <h5>@ts.name Content</h5>
+            <h5>Content</h5>
             <pre>@ts.contentAsString</pre>
           </div>
         </div>

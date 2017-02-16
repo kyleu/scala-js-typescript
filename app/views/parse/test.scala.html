@@ -1,23 +1,32 @@
-@(key: String, f: better.files.File, output: Either[String, Seq[String]], debug: Boolean)(
-    implicit request: Request[AnyContent], session: Session, flash: Flash
-)@layout.simple(key) {
+@import models.parse.ScriptToken
+@(
+    key: String,
+    f: better.files.File,
+    definitions: Either[String, Seq[ScriptToken]],
+    output: String,
+    debug: Boolean
+)(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
   <div class="row">
     <div class="col s12">
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
-            <h5>@f.name</h5>
+            <h5>@key</h5>
           </div>
           <div class="collection-item">
-            <h5>Output</h5>
-            @if(output.isRight) {
-              <pre>@output.right.get</pre>
+            <h5>Scala Output</h5>
+            <pre>@output</pre>
+          </div>
+          <div class="collection-item">
+            <h5>Parsed Tree</h5>
+            @if(definitions.isRight) {
+              @views.html.parse.tree(definitions.right.get)
             } else {
-              Error: @output.left.get
+              <pre>Error: @definitions.left.get</pre>
             }
           </div>
           <div class="collection-item">
-            <h5>@f.name Content</h5>
+            <h5>Content</h5>
             <pre>@f.contentAsString</pre>
           </div>
         </div>

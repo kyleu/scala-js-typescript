@@ -1,4 +1,3 @@
-@(tree: Seq[String])
-@tree.map { node =>
-  <div>@node.getClass.getSimpleName</div>
-}
+@import models.parse.ScriptToken
+@(tree: Seq[ScriptToken])
+<pre>@{tree.map(_.toScript).mkString}</pre>

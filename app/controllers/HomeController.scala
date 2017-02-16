@@ -1,18 +1,13 @@
 package controllers
 
 import play.api.mvc.Action
-import services.file.FileService
 import utils.Application
 
 import scala.concurrent.Future
 
 @javax.inject.Singleton
-class HomeController @javax.inject.Inject() (override val app: Application) extends BaseController {
-  def home() = act("home") { implicit request =>
-    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).toSeq
-    val tests = FileService.getDir("test").list.toSeq.map(_.name.stripSuffix(".d.ts"))
-    Future.successful(Ok(views.html.index(scripts, tests, app.config.debug)))
-  }
+class HomeController @javax.inject.Inject() (override val app: Application, testController: TestController) extends BaseController {
+  def home() = testController.index()
 
   def untrail(path: String) = Action.async {
     Future.successful(MovedPermanently(s"/$path"))

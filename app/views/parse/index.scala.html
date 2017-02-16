@@ -5,6 +5,7 @@
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
+            <a href="@controllers.routes.TestController.allTests()" class="right teal-text">Process All</a>
             <h5>@utils.NumberUtils.withCommas(tests.size) Available Tests</h5>
           </div>
           @tests.map { test =>
@@ -18,6 +19,7 @@
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
+            <a href="@controllers.routes.TestController.allScripts()" class="right teal-text">Process All</a>
             <h5>@utils.NumberUtils.withCommas(scripts.size) Available Libraries</h5>
           </div>
           @scripts.map { script =>
