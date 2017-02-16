@@ -43,7 +43,7 @@ case class QualifiedIdent(qualifier: List[Ident], name: Ident) extends Tree
 case class ModuleDecl(name: PropertyName, members: List[DeclTree]) extends DeclTree
 case class ValDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
 case class VarDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
-case class FunctionDecl(name: Ident, signature: FunSignature) extends DeclTree
+case class FunctionDecl(prot: Boolean, name: Ident, signature: FunSignature) extends DeclTree
 
 // Function signature
 case class FunSignature(tparams: List[TypeParam], params: List[FunParam], resultType: Option[TypeTree]) extends Tree
@@ -68,7 +68,7 @@ case class MultilineComment(text: String) extends DeclTree
 // Type descriptions
 case class TypeDecl(name: TypeName, tpe: TypeTree) extends DeclTree
 case class EnumDecl(name: TypeName, members: List[Ident]) extends DeclTree
-case class ClassDecl(name: TypeName, tparams: List[TypeParam], parent: Option[TypeRefTree], implements: List[TypeRefTree], membmers: List[MemberTree]) extends DeclTree
+case class ClassDecl(abst: Boolean, name: TypeName, tparams: List[TypeParam], parent: Option[TypeRefTree], implements: List[TypeRefTree], members: List[MemberTree]) extends DeclTree
 case class InterfaceDecl(name: TypeName, tparams: List[TypeParam], inheritance: List[TypeRefTree], members: List[MemberTree]) extends DeclTree
 case class TypeAliasDecl(name: TypeName, tparams: List[TypeParam], alias: TypeTree) extends DeclTree
 case class TypeRefTree(name: BaseTypeRef, tparams: List[TypeTree] = Nil) extends TypeTree
@@ -92,4 +92,6 @@ case class CallMember(signature: FunSignature) extends MemberTree
 case class ConstructorMember(signature: FunSignature) extends MemberTree
 case class IndexMember(indexName: Ident, indexType: TypeTree, valueType: TypeTree) extends MemberTree
 case class PropertyMember(prot: Boolean, name: PropertyName, optional: Boolean, tpe: TypeTree, static: Boolean) extends MemberTree
-case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean) extends MemberTree
+case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean) extends MemberTree {
+  if (prot) println("###")
+}

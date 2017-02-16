@@ -74,16 +74,21 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
   }
 
   private[this] def printClass(sym: ClassSymbol) = {
-    val sealedKw = if (sym.isSealed) "sealed " else ""
-    val abstractKw = if (sym.isAbstract) "abstract " else ""
-    val kw = if (sym.isTrait) "trait" else "class"
-    val constructorStr =
-      if (sym.isTrait) ""
-      else if (sym.members.exists(isParameterlessConstructor)) ""
-      else " protected ()"
-    val parents =
-      if (sym.parents.isEmpty) List(TypeRef.Object)
-      else sym.parents.toList
+    val sealedKw = if (sym.isSealed) { "sealed " } else { "" }
+    val abstractKw = if (sym.isAbstract) { "abstract " } else { "" }
+    val kw = if (sym.isTrait) { "trait" } else { "class" }
+    val constructorStr = if (sym.isTrait) {
+      ""
+    } else if (sym.members.exists(isParameterlessConstructor)) {
+      ""
+    } else {
+      " protected ()"
+    }
+    val parents = if (sym.parents.isEmpty) {
+      List(TypeRef.Object)
+    } else {
+      sym.parents.toList
+    }
 
     pln""
     pln"@js.native"
@@ -123,10 +128,10 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
   }
 
   private[this] def printField(sym: FieldSymbol) = {
-    sym.jsName foreach { jsName =>
+    sym.jsName.foreach { jsName =>
       pln"""  @js.annotation.JSName("$jsName")"""
     }
-    pln"  ${sym.decl} ${sym.name}: ${sym.tpe} = js.native"
+    pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpe} = js.native"
   }
 
   private[this] def printMethod(sym: MethodSymbol) = {
@@ -134,16 +139,16 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
 
     if (sym.name == Name.CONSTRUCTOR) {
       if (params.nonEmpty) {
-        pln"  def this($params) = this()"
+        pln"  ${sym.p}def this($params) = this()"
       }
     } else {
-      sym.jsName foreach { jsName =>
+      sym.jsName.foreach { jsName =>
         pln"""  @js.annotation.JSName("$jsName")"""
       }
       if (sym.isBracketAccess) {
         pln"""  @JSBracketAccess"""
       }
-      p"  def ${sym.name}"
+      p"  ${sym.p}def ${sym.name}"
       if (sym.tparams.nonEmpty) {
         p"[${sym.tparams}]"
       }

@@ -66,13 +66,17 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val ambientValDecl: Parser[DeclTree] = ("const" | "let") ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ ValDecl
 
-  lazy val ambientFunctionDecl: Parser[DeclTree] = "function" ~> identifier ~ functionSignature <~ opt(";") ^^ FunctionDecl
+  lazy val ambientFunctionDecl: Parser[DeclTree] = maybeProtected ~ "function" ~ identifier ~ functionSignature ~ opt(";") ^^ {
+    case prot ~ _ ~ id ~ sig ~ _ => FunctionDecl(prot, id, sig)
+  }
 
   lazy val ambientEnumDecl: Parser[DeclTree] = "enum" ~> typeName ~ ("{" ~> ambientEnumBody <~ "}") ^^ EnumDecl
 
   lazy val ambientEnumBody: Parser[List[Ident]] = repsep(identifier <~ opt("=" ~ numericLit), ",") <~ opt(",")
 
-  lazy val ambientClassDecl: Parser[DeclTree] = "class" ~> typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock <~ opt(";") ^^ ClassDecl
+  lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ "class" ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ opt(";") ^^ {
+    case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ => ClassDecl(abst, name, params, parent, impls, members)
+  }
 
   lazy val ambientInterfaceDecl: Parser[DeclTree] = "interface" ~> typeName ~ tparams ~ intfInheritance ~ memberBlock <~ opt(";") ^^ InterfaceDecl
 

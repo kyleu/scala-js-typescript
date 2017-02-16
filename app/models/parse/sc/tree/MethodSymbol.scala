@@ -2,21 +2,22 @@ package models.parse.sc.tree
 
 import scala.collection.mutable
 
-class MethodSymbol(nme: Name) extends Symbol(nme) with JSNameable {
+class MethodSymbol(prot: Boolean, nme: Name) extends Symbol(nme) with JSNameable {
   val tparams = new mutable.ListBuffer[TypeParamSymbol]
   val params = new mutable.ListBuffer[ParamSymbol]
   var resultType: TypeRef = TypeRef.Dynamic
-
   var isBracketAccess: Boolean = false
+  val p = if (prot) { "protected " } else { "" }
 
   override def toString = {
     val bracketAccessStr = if (isBracketAccess) { "@JSBracketAccess " } else { "" }
+
     val tparamsStr = if (tparams.isEmpty) {
       ""
     } else {
       tparams.mkString("[", ", ", "]")
     }
-    s"$jsNameStr${bracketAccessStr}def $name$tparamsStr(${params.mkString(", ")}): $resultType"
+    s"$jsNameStr$bracketAccessStr${p}def $name$tparamsStr(${params.mkString(", ")}): $resultType"
   }
 
   def paramTypes = params.map(_.tpe)

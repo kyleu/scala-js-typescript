@@ -82,18 +82,19 @@ class Importer(val path: String) {
         // Module
         val sym = owner.getModuleOrCreate(name)
         for (IdentName(name) <- members) {
-          val m = sym.newField(name)
+          val m = sym.newField(prot = false, name)
           m.protectName()
           m.tpe = TypeRef(tsym.name)
         }
-        val applySym = sym.newMethod(Name("apply"))
+        val applySym = sym.newMethod(prot = false, Name("apply"))
         applySym.params += new ParamSymbol(Name("value"), TypeRef(tsym.name))
         applySym.resultType = TypeRef.String
         applySym.isBracketAccess = true
 
-      case ClassDecl(TypeNameName(name), tparams, parent, implements, members) =>
+      case ClassDecl(abst, TypeNameName(name), tparams, parent, implements, members) =>
         val sym = owner.getClassOrCreate(name)
         sym.isTrait = false
+        sym.isAbstract = abst
         parent.foreach(sym.parents += typeToScala(_))
         for { parent <- implements.map(typeToScala) if !sym.parents.contains(parent) } {
           sym.parents += parent
@@ -101,7 +102,7 @@ class Importer(val path: String) {
         sym.tparams ++= typeParamsToScala(tparams)
         processMembersDecls(owner, sym, members)
         if (!sym.members.exists(_.name == Name.CONSTRUCTOR)) {
-          processDefDecl(sym, Name.CONSTRUCTOR, FunSignature(Nil, Nil, Some(TypeRefTree(CoreType("void")))))
+          processDefDecl(sym, Name.CONSTRUCTOR, FunSignature(Nil, Nil, Some(TypeRefTree(CoreType("void")))), protectName = true, prot = false)
         }
 
       case InterfaceDecl(TypeNameName(name), tparams, inheritance, members) =>
@@ -118,14 +119,14 @@ class Importer(val path: String) {
         sym.alias = typeToScala(alias)
 
       case VarDecl(IdentName(name), TypeOrAny(tpe)) =>
-        val sym = owner.newField(name)
+        val sym = owner.newField(prot = false, name)
         sym.tpe = typeToScala(tpe)
 
       case ValDecl(IdentName(name), TypeOrAny(tpe)) =>
-        val sym = owner.newField(name, readonly = true)
+        val sym = owner.newField(prot = false, name, readonly = true)
         sym.tpe = typeToScala(tpe)
 
-      case FunctionDecl(IdentName(name), signature) => processDefDecl(owner, name, signature)
+      case FunctionDecl(prot, IdentName(name), signature) => processDefDecl(owner, name, signature, protectName = true, prot = prot)
 
       case _ => owner.members += new CommentSymbol("??? " + declaration)
     }
@@ -143,41 +144,41 @@ class Importer(val path: String) {
     }
 
     for (member <- members) member match {
-      case CallMember(signature) => processDefDecl(owner, Name("apply"), signature, protectName = false)
+      case CallMember(signature) => processDefDecl(owner, Name("apply"), signature, protectName = false, prot = false)
 
       case ConstructorMember(sig @ FunSignature(tparamsIgnored, params, Some(resultType))) if owner.isInstanceOf[ModuleSymbol] && resultType == companionClassRef =>
         val classSym = enclosing.getClassOrCreate(owner.name)
         classSym.isTrait = false
-        processDefDecl(classSym, Name.CONSTRUCTOR, FunSignature(Nil, params, Some(TypeRefTree(CoreType("void")))))
+        processDefDecl(classSym, Name.CONSTRUCTOR, FunSignature(Nil, params, Some(TypeRefTree(CoreType("void")))), protectName = true, prot = false)
 
-      case PropertyMember(proc, PropertyNameName(name), opt, tpe, true) =>
+      case PropertyMember(prot, PropertyNameName(name), opt, tpe, true) =>
         assert(owner.isInstanceOf[ClassSymbol], s"Cannot process static member $name in module definition")
         val module = enclosing.getModuleOrCreate(owner.name)
-        processPropertyDecl(module, name, tpe)
+        processPropertyDecl(prot, module, name, tpe)
 
-      case PropertyMember(proc, PropertyNameName(name), opt, tpe, _) => processPropertyDecl(owner, name, tpe)
+      case PropertyMember(prot, PropertyNameName(name), opt, tpe, _) => processPropertyDecl(prot, owner, name, tpe)
 
-      case FunctionMember(proc, PropertyName("constructor"), _, signature, false) if owner.isInstanceOf[ClassSymbol] =>
+      case FunctionMember(prot, PropertyName("constructor"), _, signature, false) if owner.isInstanceOf[ClassSymbol] =>
         owner.asInstanceOf[ClassSymbol].isTrait = false
-        processDefDecl(owner, Name.CONSTRUCTOR, FunSignature(Nil, signature.params, Some(TypeRefTree(CoreType("void")))))
+        processDefDecl(owner, Name.CONSTRUCTOR, FunSignature(Nil, signature.params, Some(TypeRefTree(CoreType("void")))), protectName = true, prot = prot)
 
-      case FunctionMember(proc, PropertyNameName(name), opt, signature, true) =>
+      case FunctionMember(prot, PropertyNameName(name), opt, signature, true) =>
         assert(owner.isInstanceOf[ClassSymbol], s"Cannot process static member $name in module definition")
         val module = enclosing.getModuleOrCreate(owner.name)
-        processDefDecl(module, name, signature)
+        processDefDecl(module, name, signature, protectName = true, prot = prot)
 
-      case FunctionMember(proc, PropertyNameName(name), opt, signature, _) => processDefDecl(owner, name, signature)
+      case FunctionMember(prot, PropertyNameName(name), opt, signature, _) => processDefDecl(owner, name, signature, protectName = true, prot = prot)
 
       case IndexMember(IdentName(indexName), indexType, valueType) =>
         val indexTpe = typeToScala(indexType)
         val valueTpe = typeToScala(valueType)
 
-        val getterSym = owner.newMethod(Name("apply"))
+        val getterSym = owner.newMethod(prot = false, Name("apply"))
         getterSym.params += new ParamSymbol(indexName, indexTpe)
         getterSym.resultType = valueTpe
         getterSym.isBracketAccess = true
 
-        val setterSym = owner.newMethod(Name("update"))
+        val setterSym = owner.newMethod(prot = false, Name("update"))
         setterSym.params += new ParamSymbol(indexName, indexTpe)
         setterSym.params += new ParamSymbol(Name("v"), valueTpe)
         setterSym.resultType = TypeRef.Unit
@@ -187,15 +188,15 @@ class Importer(val path: String) {
     }
   }
 
-  private def processPropertyDecl(owner: ContainerSymbol, name: Name, tpe: TypeTree, protectName: Boolean = true) = if (name.name != "prototype") {
+  private def processPropertyDecl(prot: Boolean, owner: ContainerSymbol, name: Name, tpe: TypeTree, protectName: Boolean = true) = if (name.name != "prototype") {
     tpe match {
       case ObjectType(members) if members.forall(_.isInstanceOf[CallMember]) =>
         // alternative notation for overload methods - #3
         for (CallMember(signature) <- members) {
-          processDefDecl(owner, name, signature, protectName)
+          processDefDecl(owner, name, signature, protectName, prot = prot)
         }
       case _ =>
-        val sym = owner.newField(name)
+        val sym = owner.newField(prot, name)
         if (protectName) {
           sym.protectName()
         }
@@ -203,13 +204,13 @@ class Importer(val path: String) {
     }
   }
 
-  private def processDefDecl(owner: ContainerSymbol, name: Name, signature: FunSignature, protectName: Boolean = true, prot: Boolean = false) {
+  private def processDefDecl(owner: ContainerSymbol, name: Name, signature: FunSignature, protectName: Boolean, prot: Boolean) {
     // Discard specialized signatures
     if (signature.params.exists(_.tpe.exists(_.isInstanceOf[ConstantType]))) {
       return
     }
 
-    val sym = owner.newMethod(name)
+    val sym = owner.newMethod(prot, name)
     if (protectName) {
       sym.protectName()
     }

@@ -45,14 +45,15 @@ class ContainerSymbol(nme: Name) extends Symbol(nme) {
     result
   }
 
-  def newField(name: Name, readonly: Boolean = false): FieldSymbol = {
-    val result = new FieldSymbol(name, readonly)
+  def newField(prot: Boolean, name: Name, readonly: Boolean = false): FieldSymbol = {
+    val result = new FieldSymbol(prot, name, readonly)
     members += result
     result
   }
 
-  def newMethod(name: Name): MethodSymbol = {
-    val result = new MethodSymbol(name)
+  def newMethod(prot: Boolean, name: Name): MethodSymbol = {
+    if (prot) println("$$$")
+    val result = new MethodSymbol(prot, name)
     members += result
     result
   }
