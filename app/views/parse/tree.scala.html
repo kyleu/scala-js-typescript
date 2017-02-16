@@ -1,3 +1,2 @@
-@import models.parse.ScriptToken
-@(tree: Seq[ScriptToken])
-<pre>@{tree.map(_.toScript).mkString}</pre>
+@(tree: String)
+<pre>@tree</pre>

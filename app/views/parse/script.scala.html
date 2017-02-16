@@ -1,8 +1,7 @@
-@import models.parse.ScriptToken
 @(
     key: String,
     ts: better.files.File,
-    definitions: Either[String, Seq[ScriptToken]],
+    definitions: String,
     output: String,
     debug: Boolean
 )(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
@@ -19,11 +18,7 @@
           </div>
           <div class="collection-item">
             <h5>Parsed Tree</h5>
-            @if(definitions.isRight) {
-              @views.html.parse.tree(definitions.right.get)
-            } else {
-              <pre>Error: @definitions.left.get</pre>
-            }
+            @definitions
           </div>
           <div class="collection-item">
             <h5>Content</h5>

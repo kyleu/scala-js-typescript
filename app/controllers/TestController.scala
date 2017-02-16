@@ -24,10 +24,7 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val ts = dir / "index.d.ts"
     val content = ts.contentAsString
     val tree = TypeScriptImport.parse(content)
-    val res = tree match {
-      case Left(err) => "Parse Error: " + err
-      case Right(decls) => ScalaExport.print(decls)
-    }
+    val res = tree
 
     Future.successful(Ok(views.html.parse.script(dir.name, ts, tree, res, app.config.debug)))
   }
@@ -41,10 +38,7 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val f = FileService.getDir("test") / s"$key.d.ts"
     val content = f.contentAsString
     val ret = TypeScriptImport.parse(content)
-    val res = ret match {
-      case Left(err) => "Parse Error: " + err
-      case Right(decls) => ScalaExport.print(decls)
-    }
+    val res = ScalaExport.print(Seq(ret))
     Future.successful(Ok(views.html.parse.test(key, f, ret, res, app.config.debug)))
   }
 }
