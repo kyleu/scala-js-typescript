@@ -21,14 +21,14 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     "void", "while", "with",
 
     // Future reserved keywords - some used in TypeScript
-    "class", "const", "enum", "export", "extends", "import", "super",
+    "class", "const", "enum", "export", "as", "extends", "import", "super",
 
     // Future reserved keywords in Strict mode - some used in TypeScript
     "implements", "interface", "let", "package", "private", "protected",
     "public", "static", "yield",
 
     // Additional keywords of TypeScript
-    "declare", "module", "type", "namespace"
+    "declare", "module", "type", "namespace", "abstract"
   )
 
   lexical.delimiters ++= List("{", "}", "(", ")", "[", "]", "<", ">", ".", ";", ",", "?", ":", "=", "|", "...", "=>")
@@ -37,10 +37,12 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val ambientDeclarations: Parser[List[DeclTree]] = rep(ambientDeclaration)
 
+  val exportDelaration = "export" ~> "=" ~> identifier <~ opt(";") ^^ ExportDecl
+  val exportNamespaceDelaration = "export" ~> "as" ~> "namespace" ~> identifier <~ opt(";") ^^ ExportDecl
   val moduleDelaration = opt("declare") ~> opt("export") ~> moduleElementDecl1
   val commentDeclaration = "//" ^^ (_ => LineCommentDecl("Single Line Comment!"))
 
-  lazy val ambientDeclaration: Parser[DeclTree] = commentDeclaration | moduleDelaration
+  lazy val ambientDeclaration: Parser[DeclTree] = commentDeclaration | moduleDelaration | exportDelaration | exportNamespaceDelaration
 
   lazy val ambientModuleDecl: Parser[DeclTree] = ("module" | "namespace") ~> rep1sep(propertyName, ".") ~ moduleBody ^^ {
     case nameParts ~ body => nameParts.init.foldRight(ModuleDecl(nameParts.last, body))((name, inner) => ModuleDecl(name, inner :: Nil))

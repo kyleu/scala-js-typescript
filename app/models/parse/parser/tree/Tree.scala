@@ -40,6 +40,7 @@ object Ident extends (String => Ident) {
 case class QualifiedIdent(qualifier: List[Ident], name: Ident) extends Tree
 
 // Declarations
+case class ExportDecl(v: Ident) extends DeclTree
 case class ModuleDecl(name: PropertyName, members: List[DeclTree]) extends DeclTree
 case class ValDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
 case class VarDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
