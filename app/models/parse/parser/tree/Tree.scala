@@ -62,13 +62,15 @@ case class StringLiteral(value: String) extends Literal with PropertyName {
   override def name = value
 }
 
-case class LineComment(text: String) extends DeclTree
-case class MultilineComment(text: String) extends DeclTree
+case class LineCommentDecl(text: String) extends DeclTree
+case class MultilineCommentDecl(text: String) extends DeclTree
 
 // Type descriptions
 case class TypeDecl(name: TypeName, tpe: TypeTree) extends DeclTree
 case class EnumDecl(name: TypeName, members: List[Ident]) extends DeclTree
-case class ClassDecl(abst: Boolean, name: TypeName, tparams: List[TypeParam], parent: Option[TypeRefTree], implements: List[TypeRefTree], members: List[MemberTree]) extends DeclTree
+case class ClassDecl(
+  abst: Boolean, name: TypeName, tparams: List[TypeParam], parent: Option[TypeRefTree], impls: List[TypeRefTree], members: List[MemberTree]
+) extends DeclTree
 case class InterfaceDecl(name: TypeName, tparams: List[TypeParam], inheritance: List[TypeRefTree], members: List[MemberTree]) extends DeclTree
 case class TypeAliasDecl(name: TypeName, tparams: List[TypeParam], alias: TypeTree) extends DeclTree
 case class TypeRefTree(name: BaseTypeRef, tparams: List[TypeTree] = Nil) extends TypeTree

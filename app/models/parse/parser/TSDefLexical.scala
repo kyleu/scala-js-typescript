@@ -3,12 +3,29 @@ package models.parse.parser
 import scala.util.parsing.input.CharArrayReader.EofCh
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.lexical._
-import scala.util.parsing.combinator.token._
 import scala.collection.mutable
+import scala.util.parsing.input.CharSequenceReader
 
-class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
-  // see `token' in `Scanners'
-  def token: Parser[Token] = identifier | numericLiteral | stringLiteral | EofCh ^^^ EOF | delim | failure("illegal character")
+class TSDefLexical extends Lexical with TSTokens with ImplicitConversions {
+  private[this] val commentLineParser = '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
+  private[this] val commentMultiParser = '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
+  private[this] val commentUnclosedParser = '/' ~ '*' ~ failure("unclosed comment")
+
+  // see `whitespace in `Scanners'
+  override def whitespace: Parser[Any] = rep(whitespaceChar | commentLineParser | commentMultiParser | commentUnclosedParser)
+
+  override def token: Parser[Token] = singleLineComment | identifier | numericLiteral | stringLiteral | EofCh ^^^ EOF | delim | failure("illegal character")
+
+  def tokens = rep(token)
+  def tokenizeString(s: String) = phrase(tokens)(new CharSequenceReader(s, 0))
+
+  def singleLineComment = '/' ~ '/' ~ rep(chrExcept(EofCh, '\n')) ^^ {
+    case _ ~ _ ~ text => LineComment(text.mkString)
+  }
+
+  def multiLineComment = ('/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/') ^^ {
+    case _ ~ _ ~ text ~ _ ~ _ => MultilineComment(text.mkString)
+  }
 
   def identifier = stringOf1(identifierStart, identifierPart) ^^ {
     x => if (reserved contains x) Keyword(x) else Identifier(x)
@@ -17,21 +34,17 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
   def identifierStart = elem("", isIdentifierStart) | (pseudoChar filter isIdentifierStart)
   def identifierPart = elem("", isIdentifierPart) | (pseudoChar filter isIdentifierPart)
 
-  def numericLiteral = (
-    '0' ~> (
-      (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
-        digits => digits.foldLeft(0L)(_ * 16 + _).toString
-      }
-      | rep1(octalDigit) ^^ {
-        // not standard, but I guess it could happen nevertheless
-        digits => digits.foldLeft(0L)(_ * 8 + _).toString
-      }
-      | success("0")
-    )
-      | stringOf1(digit) ~ opt(stringOf1('.', digit)) ^^ {
-        case part1 ~ part2 => part1 + part2.getOrElse("")
-      }
-  ) ^^ NumericLit
+  private[this] val hexNum = (elem('x') | 'X') ~> rep1(hexDigit) ^^ {
+    digits => digits.foldLeft(0L)(_ * 16 + _).toString
+  }
+  private[this] val octalNum = rep1(octalDigit) ^^ {
+    digits => digits.foldLeft(0L)(_ * 8 + _).toString
+  }
+  private[this] val digitNum = stringOf1(digit) ~ opt(stringOf1('.', digit)) ^^ {
+    case part1 ~ part2 => part1 + part2.getOrElse("")
+  }
+
+  def numericLiteral = ('0' ~> (hexNum | octalNum | success("0")) | digitNum) ^^ NumericLit
 
   def stringLiteral = (quoted('\"') | quoted('\'')) ^^ StringLit
 
@@ -70,14 +83,6 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
   def isIdentifierStart(c: Char): Boolean = c == '$' || c == '_' || c.isUnicodeIdentifierStart
   def isIdentifierPart(c: Char): Boolean = c == '$' || c.isUnicodeIdentifierPart
 
-  // see `whitespace in `Scanners'
-  override def whitespace: Parser[Any] = rep(
-    whitespaceChar
-      | '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
-      | '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
-      | '/' ~ '*' ~ failure("unclosed comment")
-  )
-
   def stringOf(p: => Parser[Char]): Parser[String] = rep(p) ^^ chars2string
   def stringOf1(p: => Parser[Char]): Parser[String] = rep1(p) ^^ chars2string
   def stringOf1(first: => Parser[Char], p: => Parser[Char]): Parser[String] = rep1(first, p) ^^ chars2string
@@ -103,9 +108,7 @@ class TSDefLexical extends Lexical with StdTokens with ImplicitConversions {
     val d = new Array[String](delimiters.size)
     delimiters.copyToArray(d, 0)
     scala.util.Sorting.quickSort(d)
-    d.toList.map(parseDelim).foldRight(failure("no matching delimiter"): Parser[Token]) { (x, y) =>
-      y | x
-    }
+    d.toList.map(parseDelim).foldRight(failure("no matching delimiter"): Parser[Token])((x, y) => y | x)
   }
 
   protected def delim: Parser[Token] = _delim

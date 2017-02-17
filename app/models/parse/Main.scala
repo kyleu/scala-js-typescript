@@ -25,11 +25,11 @@ object Main {
     val definitions = parseDefinitions(readerForFile(inputFileName.toFile))
 
     //val output = new PrintWriter(new BufferedWriter(new FileWriter(outputFileName)))
-    process(definitions, outputPath, outputPackage)
+    process(inputFileName, definitions, outputPath, outputPackage)
   }
 
-  private def process(definitions: List[DeclTree], path: String, outputPackage: String) {
-    new Importer(path)(definitions, outputPackage)
+  private def process(key: String, definitions: List[DeclTree], path: String, outputPackage: String) {
+    new Importer(key, path)(definitions, outputPackage)
   }
 
   private def parseDefinitions(reader: Reader[Char]): List[DeclTree] = {

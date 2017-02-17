@@ -16,19 +16,14 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
   private[this] def printPackage(sym: PackageSymbol, outputPackage: String) = {
     val isRootPackage = sym.name == Name.EMPTY
 
-    val parentPackage :+ thisPackage =
-      if (isRootPackage) outputPackage.split("\\.").toList.map(Name(_))
-      else List(sym.name)
+    val parentPackage :+ thisPackage = if (isRootPackage) {
+      outputPackage.split("\\.").toList.map(Name(_))
+    } else {
+      List(sym.name)
+    }
 
     if (parentPackage.nonEmpty) {
       pln"package ${parentPackage.mkString(".")}"
-    }
-
-    if (isRootPackage) {
-      pln""
-      pln"import scala.scalajs.js"
-      pln"import js.annotation._"
-      pln"import js.|"
     }
 
     val oldJSNamespace = currentJSNamespace
@@ -39,23 +34,26 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     if (sym.members.nonEmpty) {
       val (topLevels, packageObjectMembers) = sym.members.partition(canBeTopLevel)
 
-      pln""
-      pln"package $thisPackage {"
+      files.pushPackage(thisPackage)
 
       for (sym <- topLevels) {
+        files.setActiveObject(sym.name)
         printSymbol(sym)
+        files.clearActiveObject(sym.name)
       }
 
       if (packageObjectMembers.nonEmpty) {
-        val packageObjectName =
-          Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
+        val packageObjectName = Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
 
         pln""
         if (currentJSNamespace == "") {
+          files.setActiveObject(packageObjectName)
           pln"@js.native"
-          pln"object $packageObjectName extends js.GlobalScope {"
+          pln"@js.annotation.JSGlobalScope"
+          pln"object $packageObjectName extends js.Object {"
         } else {
           val jsName = currentJSNamespace.init
+          files.setActiveObject(packageObjectName)
           pln"@js.native"
           pln"""@js.annotation.JSName("$jsName")"""
           pln"object $packageObjectName extends js.Object {"
@@ -64,10 +62,10 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
           printSymbol(sym)
         }
         pln"}"
+        files.clearActiveObject(packageObjectName)
       }
 
-      pln""
-      pln"}"
+      files.popPackage(thisPackage)
     }
 
     currentJSNamespace = oldJSNamespace
@@ -100,10 +98,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
       p"[${sym.tparams}]"
     }
 
-    {
-      implicit val withSep = ListElemSeparator.WithKeyword
-      pln"$constructorStr extends $parents {"
-    }
+    plnw"$constructorStr extends $parents {"
 
     printMemberDecls(sym)
     pln"}"
@@ -112,8 +107,9 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
   private[this] def printModule(sym: ModuleSymbol) = {
     pln""
     pln"@js.native"
-    if (currentJSNamespace != "")
+    if (currentJSNamespace != "") {
       pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
+    }
     pln"object ${sym.name} extends js.Object {"
     printMemberDecls(sym)
     pln"}"
@@ -131,7 +127,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     sym.jsName.foreach { jsName =>
       pln"""  @js.annotation.JSName("$jsName")"""
     }
-    pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpe} = js.native"
+    pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpeTranslated} = js.native"
   }
 
   private[this] def printMethod(sym: MethodSymbol) = {
@@ -146,7 +142,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
         pln"""  @js.annotation.JSName("$jsName")"""
       }
       if (sym.isBracketAccess) {
-        pln"""  @JSBracketAccess"""
+        pln"""  @js.annotation.JSBracketAccess"""
       }
       p"  ${sym.p}def ${sym.name}"
       if (sym.tparams.nonEmpty) {
@@ -156,7 +152,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     }
   }
 
-  private[this] def printParam(sym: ParamSymbol) = p"${sym.name}: ${sym.tpe}${if (sym.optional) " = js.native" else ""}"
+  private[this] def printParam(sym: ParamSymbol) = p"${sym.name}: ${sym.tpe}${if (sym.optional && sym.allowDefaults) " = js.native" else ""}"
 
   private[this] def printTypeParam(sym: TypeParamSymbol) = {
     p"${sym.name}"
@@ -201,10 +197,10 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     case x: tree.Symbol => printSymbol(x)
     case x: TypeRef => printTypeRef(x)
     case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
-      files.output.print("js.")
-      files.output.print(name)
-    case QualifiedName(Name.scala, name) => files.output.print(name)
-    case QualifiedName(Name.java, Name.lang, name) => files.output.print(name)
-    case _ => files.output.print(x)
+      files.print("js.")
+      files.print(name.toString)
+    case QualifiedName(Name.scala, name) => files.print(name.toString)
+    case QualifiedName(Name.java, Name.lang, name) => files.print(name.toString)
+    case _ => files.print(x.toString)
   }
 }

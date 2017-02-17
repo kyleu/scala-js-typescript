@@ -28,8 +28,8 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) =>
-        export(key, t, key)
-        (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+        export(key, key, t, key)
+        (FileService.getDir("out") / key / s"$key.scala").contentAsString
       case Left(err) => "Error: " + err
     }
 
@@ -47,13 +47,13 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) =>
-        export(key, t, key)
-        val res = (FileService.getDir("out") / key / "Pixi.scala").contentAsString
+        export(key, key, t, key)
+        val res = (FileService.getDir("out") / key / "package.scala").contentAsString
       case Left(err) => "Error: " + err
     }
     Future.successful(Ok(views.html.parse.test(key, f, tree, res.toString, app.config.debug)))
   }
 
-  private[this] def export(path: String, definitions: List[DeclTree], outPackage: String) = new Importer(path)(definitions, outPackage)
+  private[this] def export(key: String, path: String, definitions: List[DeclTree], outPackage: String) = new Importer(key, path)(definitions, outPackage)
 
 }

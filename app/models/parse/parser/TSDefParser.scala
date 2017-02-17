@@ -3,13 +3,12 @@ package models.parse.parser
 import models.parse.parser.tree._
 
 import scala.util.parsing.combinator._
-import scala.util.parsing.combinator.token._
 import scala.util.parsing.combinator.syntactical._
 import scala.util.parsing.input._
 
 class TSDefParser extends StdTokenParsers with ImplicitConversions {
-  type Tokens = StdTokens
-  val lexical: TSDefLexical = new TSDefLexical
+  override type Tokens = TSTokens
+  override val lexical: TSDefLexical = new TSDefLexical
 
   lexical.reserved ++= List(
     // Value keywords
@@ -32,24 +31,19 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     "declare", "module", "type", "namespace"
   )
 
-  lexical.delimiters ++= List(
-    "{", "}", "(", ")", "[", "]", "<", ">",
-    ".", ";", ",", "?", ":", "=", "|",
-    // TypeScript-specific
-    "...", "=>"
-  )
+  lexical.delimiters ++= List("{", "}", "(", ")", "[", "]", "<", ">", ".", ";", ",", "?", ":", "=", "|", "...", "=>")
 
   def parseDefinitions(input: Reader[Char]) = phrase(ambientDeclarations)(new lexical.Scanner(input))
 
   lazy val ambientDeclarations: Parser[List[DeclTree]] = rep(ambientDeclaration)
 
-  lazy val ambientDeclaration: Parser[DeclTree] = opt("declare") ~> opt("export") ~> moduleElementDecl1
+  val moduleDelaration = opt("declare") ~> opt("export") ~> moduleElementDecl1
+  val commentDeclaration = "//" ^^ (_ => LineCommentDecl("Single Line Comment!"))
+
+  lazy val ambientDeclaration: Parser[DeclTree] = commentDeclaration | moduleDelaration
 
   lazy val ambientModuleDecl: Parser[DeclTree] = ("module" | "namespace") ~> rep1sep(propertyName, ".") ~ moduleBody ^^ {
-    case nameParts ~ body =>
-      nameParts.init.foldRight(ModuleDecl(nameParts.last, body)) {
-        (name, inner) => ModuleDecl(name, inner :: Nil)
-      }
+    case nameParts ~ body => nameParts.init.foldRight(ModuleDecl(nameParts.last, body))((name, inner) => ModuleDecl(name, inner :: Nil))
   }
 
   lazy val moduleBody: Parser[List[DeclTree]] = "{" ~> rep(moduleElementDecl) <~ "}" ^^ (_.flatten)
@@ -95,15 +89,9 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
   lazy val functionSignature = tparams ~ ("(" ~> repsep(functionParam, ",") <~ ")") ~ optResultType ^^ FunSignature
 
   lazy val functionParam = repeatedParamMarker ~ identifier ~ optionalMarker ~ optParamType ^^ {
-    case false ~ i ~ o ~ t =>
-      FunParam(i, o, t)
-    case _ ~ i ~ o ~ Some(ArrayType(t)) =>
-      FunParam(i, o, Some(RepeatedType(t)))
-    case _ ~ i ~ o ~ t =>
-      Console.err.println(
-        s"Warning: Dropping repeated marker of param $i because its type $t is not an array type"
-      )
-      FunParam(i, o, t)
+    case false ~ i ~ o ~ t => FunParam(i, o, t)
+    case _ ~ i ~ o ~ Some(ArrayType(t)) => FunParam(i, o, Some(RepeatedType(t)))
+    case _ ~ i ~ o ~ t => FunParam(i, o, t)
   }
 
   lazy val repeatedParamMarker = opt("...") ^^ (_.isDefined)
@@ -122,14 +110,10 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val typeAnnotation = ":" ~> typeDesc
 
-  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc, "|") ^^ {
-    _.reduceLeft(UnionType)
-  }
+  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc, "|") ^^ (_.reduceLeft(UnionType))
 
   lazy val singleTypeDesc: Parser[TypeTree] = baseTypeDesc ~ rep("[" ~ "]") ^^ {
-    case base ~ arrayDims => (base /: arrayDims) {
-      (elem, _) => ArrayType(elem)
-    }
+    case base ~ arrayDims => (base /: arrayDims)((elem, _) => ArrayType(elem))
   }
 
   lazy val baseTypeDesc: Parser[TypeTree] = typeRef | objectType | functionType | typeQuery | tupleType | "(" ~> typeDesc <~ ")"

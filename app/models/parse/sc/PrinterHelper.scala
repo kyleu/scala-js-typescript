@@ -13,8 +13,7 @@ object PrinterHelper {
       val strings = sc.parts.iterator
       val expressions = args.iterator
 
-      val output = printer.files.output
-      output.print(strings.next())
+      printer.files.print(strings.next())
       while (strings.hasNext) {
         expressions.next() match {
           case seq: Seq[_] =>
@@ -22,20 +21,25 @@ object PrinterHelper {
             if (iter.hasNext) {
               printer.print(iter.next())
               while (iter.hasNext) {
-                output.print(sep.s)
+                printer.files.print(sep.s)
                 printer.print(iter.next())
               }
             }
 
           case expr => printer.print(expr)
         }
-        output.print(strings.next())
+        printer.files.print(strings.next())
       }
     }
 
-    def pln(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma) {
-      p(args: _*)
-      printer.files.output.println()
+    def pln(args: Any*)(implicit printer: Printer) {
+      p(args: _*)(printer, ListElemSeparator.Comma)
+      printer.files.print("\n")
+    }
+
+    def plnw(args: Any*)(implicit printer: Printer) {
+      p(args: _*)(printer, ListElemSeparator.WithKeyword)
+      printer.files.print("\n")
     }
   }
 }
