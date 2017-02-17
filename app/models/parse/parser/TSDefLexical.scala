@@ -14,6 +14,10 @@ class TSDefLexical extends Lexical with TSTokens with ImplicitConversions {
   // see `whitespace in `Scanners'
   override def whitespace: Parser[Any] = rep(whitespaceChar | commentLineParser | commentMultiParser | commentUnclosedParser)
 
+  case class WhitespaceToken(chars: String) extends Token {
+    override def toString = chars
+  }
+
   override def token: Parser[Token] = singleLineComment | identifier | numericLiteral | stringLiteral | EofCh ^^^ EOF | delim | failure("illegal character")
 
   def tokens = rep(token)

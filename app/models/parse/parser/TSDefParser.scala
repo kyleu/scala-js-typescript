@@ -28,8 +28,14 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     "public", "static", "yield",
 
     // Additional keywords of TypeScript
-    "declare", "module", "type", "namespace", "abstract"
+    "declare", "module", "type", "namespace", "abstract", "//"
   )
+
+  def logIndex[T](p: => Parser[T])(t: String, name: String): Parser[T] = Parser { in =>
+    val r = p(in)
+    println(s"$t / $name -> ${r.next.pos.line}:${r.next.pos.column}")
+    r
+  }
 
   lexical.delimiters ++= List("{", "}", "(", ")", "[", "]", "<", ">", ".", ";", ",", "?", ":", "=", "|", "...", "=>")
 
@@ -44,7 +50,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val ambientDeclaration: Parser[DeclTree] = commentDeclaration | moduleDelaration | exportDelaration | exportNamespaceDelaration
 
-  lazy val ambientModuleDecl: Parser[DeclTree] = ("module" | "namespace") ~> rep1sep(propertyName, ".") ~ moduleBody ^^ {
+  lazy val ambientModuleDecl: Parser[DeclTree] = ("module" | "namespace") ~> rep1sep(logIndex(propertyName)("module", propertyName.toString), ".") ~ moduleBody ^^ {
     case nameParts ~ body => nameParts.init.foldRight(ModuleDecl(nameParts.last, body))((name, inner) => ModuleDecl(name, inner :: Nil))
   }
 
@@ -58,25 +64,25 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     ambientModuleDecl | ambientValDecl | ambientVarDecl | ambientFunctionDecl | ambientEnumDecl | ambientClassDecl | ambientInterfaceDecl | typeAliasDecl
   }
 
-  lazy val ambientVarDecl: Parser[DeclTree] = "var" ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ VarDecl
+  lazy val ambientVarDecl: Parser[DeclTree] = "var" ~> logIndex(identifier)("var", identifier.toString) ~ optTypeAnnotation <~ opt(";") ^^ VarDecl
 
-  lazy val ambientValDecl: Parser[DeclTree] = ("const" | "let") ~> identifier ~ optTypeAnnotation <~ opt(";") ^^ ValDecl
+  lazy val ambientValDecl: Parser[DeclTree] = ("const" | "let") ~> logIndex(identifier)("val", identifier.toString) ~ optTypeAnnotation <~ opt(";") ^^ ValDecl
 
-  lazy val ambientFunctionDecl: Parser[DeclTree] = maybeProtected ~ "function" ~ identifier ~ functionSignature ~ opt(";") ^^ {
+  lazy val ambientFunctionDecl: Parser[DeclTree] = maybeProtected ~ "function" ~ logIndex(identifier)("def", identifier.toString) ~ functionSignature ~ opt(";") ^^ {
     case prot ~ _ ~ id ~ sig ~ _ => FunctionDecl(prot, id, sig)
   }
 
-  lazy val ambientEnumDecl: Parser[DeclTree] = "enum" ~> typeName ~ ("{" ~> ambientEnumBody <~ "}") ^^ EnumDecl
+  lazy val ambientEnumDecl: Parser[DeclTree] = "enum" ~> logIndex(typeName)("var", typeName.toString) ~ ("{" ~> ambientEnumBody <~ "}") ^^ EnumDecl
 
   lazy val ambientEnumBody: Parser[List[Ident]] = repsep(identifier <~ opt("=" ~ numericLit), ",") <~ opt(",")
 
-  lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ "class" ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ opt(";") ^^ {
+  lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ "class" ~ logIndex(typeName)("class", typeName.toString) ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ opt(";") ^^ {
     case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ => ClassDecl(abst, name, params, parent, impls, members)
   }
 
-  lazy val ambientInterfaceDecl: Parser[DeclTree] = "interface" ~> typeName ~ tparams ~ intfInheritance ~ memberBlock <~ opt(";") ^^ InterfaceDecl
+  lazy val ambientInterfaceDecl: Parser[DeclTree] = "interface" ~> logIndex(typeName)("interface", typeName.toString) ~ tparams ~ intfInheritance ~ memberBlock <~ opt(";") ^^ InterfaceDecl
 
-  lazy val typeAliasDecl: Parser[DeclTree] = "type" ~> typeName ~ tparams ~ ("=" ~> typeDesc) <~ opt(";") ^^ TypeAliasDecl
+  lazy val typeAliasDecl: Parser[DeclTree] = "type" ~> logIndex(typeName)("alias", typeName.toString) ~ tparams ~ ("=" ~> typeDesc) <~ opt(";") ^^ TypeAliasDecl
 
   lazy val tparams = "<" ~> rep1sep(typeParam, ",") <~ ">" | success(Nil)
 
@@ -90,7 +96,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
 
   lazy val functionSignature = tparams ~ ("(" ~> repsep(functionParam, ",") <~ ")") ~ optResultType ^^ FunSignature
 
-  lazy val functionParam = repeatedParamMarker ~ identifier ~ optionalMarker ~ optParamType ^^ {
+  lazy val functionParam = repeatedParamMarker ~ logIndex(identifier)("identifier", identifier.toString) ~ optionalMarker ~ optParamType ^^ {
     case false ~ i ~ o ~ t => FunParam(i, o, t)
     case _ ~ i ~ o ~ Some(ArrayType(t)) => FunParam(i, o, Some(RepeatedType(t)))
     case _ ~ i ~ o ~ t => FunParam(i, o, t)
@@ -162,7 +168,7 @@ class TSDefParser extends StdTokenParsers with ImplicitConversions {
     case (name, static, prot) ~ optional =>
       val f = functionSignature ^^ (FunctionMember(prot, name, optional, _, static))
       val t = typeAnnotation ^^ (PropertyMember(prot, name, optional, _, static))
-      f | t
+      logIndex(f | t)("member", f.toString)
   }
 
   lazy val maybeAbstract: Parser[Boolean] = opt("abstract").map(_.isDefined)
