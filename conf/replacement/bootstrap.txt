@@ -1,0 +1,13 @@
+-
+import org.scalajs.dom.raw._
+-
+     * @param event a chart event
+=
+     * @param the name of the color set
+     * @param colorSetName the name of the color set
+=
+     * @param an array of colors.
+     * @param colorSetArray an array of colors.
+=
+     * @param the information used by this culture
+     * @param info the information used by this culture

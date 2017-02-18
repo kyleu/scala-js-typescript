@@ -1,0 +1,2 @@
+-
+  def `then`(doneFilter: js.Function, failFilter: js.Function, progressFilter: js.Function): JQueryPromise[Unit] = js.native

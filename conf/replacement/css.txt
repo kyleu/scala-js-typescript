@@ -1,0 +1,16 @@
+-
+import org.scalajs.dom.raw._
++
+import org.scalajs.css.Css.AtRule
+=
+   * @param {string} code - CSS code.
+   * @param code - CSS code.
+=
+   * @param {ParserOptions} options - CSS parser options.
+   * @param options - CSS parser options.
+=
+   * @param {Stylesheet} stylesheet - AST tree.
+   * @param stylesheet - AST tree.
+=
+   * @param {StringifyOptions} options - AST tree to string serializaiton options.
+   * @param options - AST tree to string serializaiton options.

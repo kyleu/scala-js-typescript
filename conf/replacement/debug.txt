@@ -1,0 +1,7 @@
+-
+import org.scalajs.dom.raw._
+-
+import scala.scalajs.js.|
+=
+  var debug: debug.IDebug = js.native
+  var debug: org.scalajs.debug.debug.IDebug = js.native
