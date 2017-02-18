@@ -14,6 +14,7 @@ object ExcludedMembers {
       "JQueryInputEventObject" -> Set("metaKey", "pageX", "pageY"),
       "JQueryMouseEventObject" -> Set("pageX", "pageY")
     ))
+    case object JQueryUI extends Exclusions("jqueryui", files = Map("DialogOptions" -> Set("open", "close")))
     case object PixiJS extends Exclusions("pixi.js", global = Set("clone"), files = Map(
       "BaseRenderTexture" -> Set("height", "width", "realHeight", "realWidth", "resolution", "scaleMode", "hasLoaded", "destroy", "once", "on", "off"),
       "BaseTexture" -> Set("on", "once"),

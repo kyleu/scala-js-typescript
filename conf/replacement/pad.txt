@@ -1,0 +1,3 @@
+=
+  def pad(text: String, length: Double, options: js.Any = js.native): String = js.native
+  def pad(text: String, length: Double, options: js.Any): String = js.native

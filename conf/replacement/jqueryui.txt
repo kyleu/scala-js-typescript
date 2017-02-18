@@ -1,0 +1,24 @@
++
+import org.scalajs.dom.raw._
+import scala.scalajs.js.Date
+=
+  var beforeShow: js.Function2[Element, js.Any, JQueryUI.DatepickerOptions] = js.native
+  var beforeShow: js.Function2[Element, js.Any, DatepickerOptions] = js.native
+=
+  var click: js.Function1[JQueryEventObject, Any] = js.native
+  var click: js.Function1[js.Dynamic, Any] = js.native
+=
+  def apply(event: JQueryEventObject, ui: SortableUIParams): Unit = js.native
+  def apply(event: js.Dynamic, ui: SortableUIParams): Unit = js.native
+=
+  var jqXHR: JQueryXHR = js.native
+  var jqXHR: js.Dynamic = js.native
+=
+trait TabsEvent[UI] extends js.Object {
+trait TabsEvent[T] extends js.Object {
+=
+  def apply(event: Event, ui: UI): Unit = js.native
+  def apply(event: Event, ui: T): Unit = js.native
+*
+": JQueryEasingFunction"
+": js.Dynamic"
