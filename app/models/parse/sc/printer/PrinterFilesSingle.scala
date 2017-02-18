@@ -6,12 +6,6 @@ import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 
 case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends PrinterFiles {
-  private[this] val dir = "data" / "projects" / "_megaproject" / "src" / "main" / "scala" / "org" / "scalajs"
-
-  if (!dir.exists) {
-    throw new IllegalStateException(s"Missing output directory [${dir.path}].")
-  }
-
   file.append(s"package org.scalajs.${project.keyNormalized}\n")
 
   file.append("\n")

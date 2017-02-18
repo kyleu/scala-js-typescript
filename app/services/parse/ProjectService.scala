@@ -17,9 +17,7 @@ case class ProjectService(project: ProjectDefinition) {
     val srcDir = srcRoot / project.keyNormalized
     srcDir.createDirectories()
 
-    val srcFile = srcDir / (project.keyNormalized + ".scala")
-    srcFile.createIfNotExists()
-    srcFile
+    srcDir
   }
 
   private[this] def copyFiles() = {

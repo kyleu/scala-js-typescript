@@ -3,13 +3,19 @@ package models.parse.sc.printer
 import better.files._
 import models.parse.sc.tree.Name
 
-case class PrinterFilesMulti(path: String) extends PrinterFiles {
+case class PrinterFilesMulti(root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = None
   private[this] var activeObject: Option[Name] = None
   private[this] var activeFile: Option[File] = None
 
-  private[this] val root = "data" / "out" / path
+  val textContent = new StringBuilder
+
+  private[this] def log(s: String) = {
+    val key = stack.map(_._1.name).mkString(".") + "." + activeObject.map(_.name).getOrElse("???")
+    textContent.append(key + ": " + s + "\n")
+  }
+
   if (root.exists) {
     root.delete()
   }
@@ -71,9 +77,12 @@ case class PrinterFilesMulti(path: String) extends PrinterFiles {
     case None => //throw new IllegalStateException(s"Attempt to clear active object with none active.")
   }
 
-  def print(s: String) = activeFile match {
-    case Some(file) => file.append(s)
-    case None => rootObj.append(s)
+  def print(s: String) = {
+    log(s)
+    activeFile match {
+      case Some(file) => file.append(s)
+      case None => rootObj.append(s)
+    }
   }
 
   override def onComplete() = {

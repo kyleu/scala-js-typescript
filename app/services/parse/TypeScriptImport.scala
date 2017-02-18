@@ -8,10 +8,7 @@ import scala.util.parsing.input.CharSequenceReader
 object TypeScriptImport {
   def parse(s: String): Either[String, scala.List[DeclTree]] = {
     val parser = new TSDefParser()
-    testParser(parser, s)
-  }
 
-  private[this] def testParser(parser: TSDefParser, s: String) = {
     parser.parseDefinitions(new CharSequenceReader(s, 0)) match {
       case parser.Success(rawCode: List[models.parse.parser.tree.DeclTree], _) => Right(rawCode)
 
