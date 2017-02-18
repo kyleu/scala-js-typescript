@@ -1,6 +1,6 @@
 package models.parse.sc.tree
 
-import models.parse.sc.Transformations
+import models.parse.sc.transform.Transformations
 
 class FieldSymbol(prot: Boolean, nme: Name, readonly: Boolean) extends Symbol(nme) with JSNameable {
   var tpe: TypeRef = TypeRef.Any

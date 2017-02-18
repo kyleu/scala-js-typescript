@@ -7,6 +7,7 @@ class ParamSymbol(nme: Name) extends Symbol(nme) {
   }
 
   var optional: Boolean = false
+  var readonly: Boolean = false
   var allowDefaults: Boolean = true
   var tpe: TypeRef = TypeRef.Any
 

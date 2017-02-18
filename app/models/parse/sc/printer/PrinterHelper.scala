@@ -1,4 +1,4 @@
-package models.parse.sc
+package models.parse.sc.printer
 
 object PrinterHelper {
   class ListElemSeparator(val s: String) extends AnyVal

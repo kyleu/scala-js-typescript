@@ -10,4 +10,8 @@ trait TSTokens extends StdTokens {
   case class MultilineComment(chars: String) extends Token {
     override def toString = "/*" + chars + "*/"
   }
+
+  case class Whitespace(chars: String) extends Token {
+    override def toString = "[whitespace]"
+  }
 }

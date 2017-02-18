@@ -1,5 +1,6 @@
-package models.parse.sc
+package models.parse.sc.printer
 
+import models.parse.sc.tree
 import models.parse.sc.tree._
 
 class Printer(val files: PrinterFiles, outputPackage: String) {
@@ -9,7 +10,11 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
 
   protected var currentJSNamespace = ""
 
-  private[this] def printComment(text: String) = pln"/* $text */"
+  private[this] def printComment(text: String, multiline: Boolean) = if (multiline) {
+    pln"  /*$text*/"
+  } else {
+    pln"  //$text"
+  }
 
   private[this] def canBeTopLevel(sym: tree.Symbol): Boolean = sym.isInstanceOf[ContainerSymbol]
 
@@ -161,7 +166,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
 
   def printSymbol(sym: tree.Symbol) {
     sym match {
-      case s: CommentSymbol => printComment(s.text)
+      case s: CommentSymbol => printComment(s.text, s.multiline)
       case s: PackageSymbol => printPackage(s, outputPackage)
       case s: ClassSymbol => printClass(s)
       case s: ModuleSymbol => printModule(s)
@@ -170,6 +175,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
       case s: MethodSymbol => printMethod(s)
       case s: ParamSymbol => printParam(s)
       case s: TypeParamSymbol => printTypeParam(s)
+      case x => throw new IllegalStateException(s"Unhandled symbol [$x].")
     }
   }
 

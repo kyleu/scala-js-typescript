@@ -1,4 +1,4 @@
-package models.parse.sc
+package models.parse.sc.transform
 
 import models.parse.sc.tree.{Name, QualifiedName}
 

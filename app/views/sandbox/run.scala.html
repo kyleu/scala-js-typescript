@@ -5,8 +5,9 @@
     <div class="col s12">
       <div class="card">
         <div class="card-content">
+          <div class="right">@result.status (@{result.elapsed}ms)</div>
           <span class="card-title">@s.name Result</span>
-          <div class="sandbox-result" style="margin: 20px 0;">@result</div>
+          <div class="sandbox-result" style="margin: 20px 0;"><pre>@result.result</pre></div>
         </div>
       </div>
     </div>

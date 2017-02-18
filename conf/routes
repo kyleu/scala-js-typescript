@@ -7,8 +7,6 @@ GET         /metrics                                 controllers.MetricsControll
 GET         /sandbox                                 controllers.SandboxController.list
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
 
-GET         /test                                    controllers.TestController.allTests
-GET         /test/:key                               controllers.TestController.test(key)
 GET         /script                                  controllers.TestController.allScripts
 GET         /script/:key                             controllers.TestController.script(key)
 

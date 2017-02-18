@@ -1,9 +1,9 @@
-package models.parse.sc
+package models.parse.sc.printer
 
 import better.files._
 import models.parse.sc.tree.Name
 
-class PrinterFilesMulti(path: String) {
+class PrinterFilesMulti(path: String) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = None
   private[this] var activeObject: Option[Name] = None
@@ -17,7 +17,7 @@ class PrinterFilesMulti(path: String) {
 
   val rootObj = root / "package.scala"
 
-  def pushPackage(pkg: Name) = {
+  override def pushPackage(pkg: Name) = {
     val dir = activeDir match {
       case Some(active) => active / pkg.name
       case None => root / pkg.name
@@ -30,7 +30,7 @@ class PrinterFilesMulti(path: String) {
     println(s"Pushed [${pkg.name}] to package history.")
   }
 
-  def popPackage(pkg: Name) = {
+  override def popPackage(pkg: Name) = {
     val popped = stack.pop()
     if (pkg != popped._1) {
       throw new IllegalStateException(s"Observed [$popped], not expected [$pkg].")
@@ -39,7 +39,7 @@ class PrinterFilesMulti(path: String) {
     println(s"Popped [${pkg.name}] from package history.")
   }
 
-  def setActiveObject(n: Name) = activeObject match {
+  override def setActiveObject(n: Name) = activeObject match {
     case Some(active) => // throw new IllegalStateException(s"Attempt to set active object to [${n.name}] before clearing [$active].")
     case None =>
       activeObject = Some(n)
@@ -60,7 +60,7 @@ class PrinterFilesMulti(path: String) {
       println(s"Set active object to [${n.name}].")
   }
 
-  def clearActiveObject(n: Name) = activeObject match {
+  override def clearActiveObject(n: Name) = activeObject match {
     case Some(active) => if (n == active) {
       activeFile = None
       activeObject = None

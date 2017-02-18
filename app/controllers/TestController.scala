@@ -1,7 +1,7 @@
 package controllers
 
 import models.parse.Importer
-import models.parse.parser.tree.DeclTree
+import models.parse.sc.printer.{Printer, PrinterFilesMulti, PrinterFilesSingle}
 import services.file.FileService
 import services.parse.TypeScriptImport
 import utils.Application
@@ -12,8 +12,7 @@ import scala.concurrent.Future
 class TestController @javax.inject.Inject() (override val app: Application) extends BaseController {
   def index() = act("index") { implicit request =>
     val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).toSeq
-    val tests = FileService.getDir("test").list.toSeq.map(_.name.stripSuffix(".d.ts"))
-    Future.successful(Ok(views.html.parse.index(scripts, tests, app.config.debug)))
+    Future.successful(Ok(views.html.parse.index(scripts, app.config.debug)))
   }
 
   def allScripts() = act("script.all") { implicit request =>
@@ -28,32 +27,30 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) =>
-        export(key, key, t, key)
-        (FileService.getDir("out") / key / s"$key.scala").contentAsString
+        val pkg = new Importer(key).apply(t)
+
+        val single = new PrinterFilesSingle(key)
+        new Printer(single, key).printSymbol(pkg)
+
+        //val multi = new PrinterFilesMulti(key)
+        //new Printer(multi, key).printSymbol(pkg)
+
+        single.file.contentAsString
       case Left(err) => "Error: " + err
     }
 
     Future.successful(Ok(views.html.parse.script(dir.name, ts, tree, res, app.config.debug)))
   }
 
-  def allTests() = act("script.all") { implicit request =>
-    val tests = FileService.getDir("test").list.toSeq.map(_.name.stripSuffix(".d.ts"))
-    Future.successful(Ok(views.html.parse.allTests(tests, app.config.debug)))
-  }
+  private[this] def createProject(key: String) = {
+    val root = FileService.getDir("projects")
+    val src = root / "_template"
+    val dest = root / key
 
-  def test(key: String) = act(s"detail.$key") { implicit request =>
-    val f = FileService.getDir("test") / s"$key.d.ts"
-    val content = f.contentAsString
-    val tree = TypeScriptImport.parse(content)
-    val res = tree match {
-      case Right(t) =>
-        export(key, key, t, key)
-        val res = (FileService.getDir("out") / key / "package.scala").contentAsString
-      case Left(err) => "Error: " + err
+    if (dest.exists) {
+      dest.delete()
     }
-    Future.successful(Ok(views.html.parse.test(key, f, tree, res.toString, app.config.debug)))
+
+    src.copyTo(dest)
   }
-
-  private[this] def export(key: String, path: String, definitions: List[DeclTree], outPackage: String) = new Importer(key, path)(definitions, outPackage)
-
 }

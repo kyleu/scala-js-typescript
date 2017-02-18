@@ -40,7 +40,7 @@ object Ident extends (String => Ident) {
 case class QualifiedIdent(qualifier: List[Ident], name: Ident) extends Tree
 
 // Declarations
-case class ExportDecl(v: Ident) extends DeclTree
+case class ExportDecl(v: String) extends DeclTree
 case class ModuleDecl(name: PropertyName, members: List[DeclTree]) extends DeclTree
 case class ValDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
 case class VarDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
@@ -63,8 +63,16 @@ case class StringLiteral(value: String) extends Literal with PropertyName {
   override def name = value
 }
 
+case class WhitespaceDecl(text: String) extends DeclTree
+
 case class LineCommentDecl(text: String) extends DeclTree
 case class MultilineCommentDecl(text: String) extends DeclTree
+
+case class LineCommentType(text: String) extends TypeTree
+case class MultilineCommentType(text: String) extends TypeTree
+
+case class LineCommentMember(text: String) extends MemberTree
+case class MultilineCommentMember(text: String) extends MemberTree
 
 // Type descriptions
 case class TypeDecl(name: TypeName, tpe: TypeTree) extends DeclTree
@@ -94,5 +102,5 @@ case class RepeatedType(underlying: TypeTree) extends TypeTree
 case class CallMember(signature: FunSignature) extends MemberTree
 case class ConstructorMember(signature: FunSignature) extends MemberTree
 case class IndexMember(indexName: Ident, indexType: TypeTree, valueType: TypeTree) extends MemberTree
-case class PropertyMember(prot: Boolean, name: PropertyName, optional: Boolean, tpe: TypeTree, static: Boolean) extends MemberTree
-case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean) extends MemberTree
+case class PropertyMember(prot: Boolean, name: PropertyName, optional: Boolean, tpe: TypeTree, static: Boolean, readonly: Boolean) extends MemberTree
+case class FunctionMember(prot: Boolean, name: PropertyName, optional: Boolean, signature: FunSignature, static: Boolean, readonly: Boolean) extends MemberTree

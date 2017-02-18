@@ -28,9 +28,5 @@ object SandboxTask extends Enum[SandboxTask] {
     override def call(app: Application) = Future.successful("All good!")
   }
 
-  case object Parse extends SandboxTask("parse", "Parse Test", "Parsing test for TypeScript.") {
-    override def call(app: Application) = Future.successful(TestParser.test())
-  }
-
   override val values = findValues
 }

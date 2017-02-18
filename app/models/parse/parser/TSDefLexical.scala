@@ -7,29 +7,27 @@ import scala.collection.mutable
 import scala.util.parsing.input.CharSequenceReader
 
 class TSDefLexical extends Lexical with TSTokens with ImplicitConversions {
-  private[this] val commentLineParser = '/' ~ '/' ~ rep(chrExcept(EofCh, '\n'))
-  private[this] val commentMultiParser = '/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/'
-  private[this] val commentUnclosedParser = '/' ~ '*' ~ failure("unclosed comment")
+  override def whitespace: Parser[Any] = rep(elem("whitespace", _ => false))
 
-  // see `whitespace in `Scanners'
-  override def whitespace: Parser[Any] = rep(whitespaceChar | commentLineParser | commentMultiParser | commentUnclosedParser)
-
-  case class WhitespaceToken(chars: String) extends Token {
-    override def toString = chars
+  override def token: Parser[Token] = {
+    multiLineCommentParser |
+      singleLineCommentParser |
+      whitespaceParser |
+      identifier |
+      numericLiteral |
+      stringLiteral |
+      EofCh ^^^ EOF |
+      delim |
+      failure("illegal character")
   }
-
-  override def token: Parser[Token] = singleLineComment | identifier | numericLiteral | stringLiteral | EofCh ^^^ EOF | delim | failure("illegal character")
 
   def tokens = rep(token)
   def tokenizeString(s: String) = phrase(tokens)(new CharSequenceReader(s, 0))
 
-  def singleLineComment = '/' ~ '/' ~ rep(chrExcept(EofCh, '\n')) ^^ {
-    case _ ~ _ ~ text => LineComment(text.mkString)
-  }
+  val whitespaceParser = rep1(whitespaceChar) ^^ { c => Whitespace("?") }
 
-  def multiLineComment = ('/' ~ '*' ~ rep(not('*' ~ '/') ~> chrExcept(EofCh)) ~ '*' ~ '/') ^^ {
-    case _ ~ _ ~ text ~ _ ~ _ => MultilineComment(text.mkString)
-  }
+  val singleLineCommentParser = '/' ~> '/' ~> rep1(chrExcept(EofCh, '\n')) ^^ { text => LineComment(text.mkString) }
+  val multiLineCommentParser = ('/' ~> '*' ~> rep1(not('*' ~ '/') ~> chrExcept(EofCh)) <~ '*' <~ '/') ^^ { text => MultilineComment(text.mkString) }
 
   def identifier = stringOf1(identifierStart, identifierPart) ^^ {
     x => if (reserved contains x) Keyword(x) else Identifier(x)
