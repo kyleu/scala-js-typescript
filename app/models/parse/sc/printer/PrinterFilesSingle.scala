@@ -4,7 +4,7 @@ import better.files._
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 
-class PrinterFilesSingle(key: String) extends PrinterFiles {
+case class PrinterFilesSingle(key: String, file: File) extends PrinterFiles {
   private[this] val dir = "data" / "projects" / "_megaproject" / "src" / "main" / "scala" / "org" / "scalajs"
 
   if (!dir.exists) {
@@ -12,11 +12,6 @@ class PrinterFilesSingle(key: String) extends PrinterFiles {
   }
 
   val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
-
-  val file = dir / s"$keyNormalized.scala"
-  if (file.exists) {
-    file.delete()
-  }
 
   file.append(s"package org.scalajs.$keyNormalized\n")
 

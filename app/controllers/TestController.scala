@@ -3,7 +3,7 @@ package controllers
 import models.parse.Importer
 import models.parse.sc.printer.{Printer, PrinterFilesMulti, PrinterFilesSingle}
 import services.file.FileService
-import services.parse.TypeScriptImport
+import services.parse.{ProjectService, TypeScriptImport}
 import utils.Application
 
 import scala.concurrent.Future
@@ -27,13 +27,16 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) =>
+        val proj = ProjectService(key)
+        val srcFile = proj.create()
+
         val pkg = new Importer(key).apply(t)
 
-        val single = new PrinterFilesSingle(key)
+        val single = PrinterFilesSingle(key, srcFile)
         new Printer(single, key).printSymbol(pkg)
         single.onComplete()
 
-        //val multi = new PrinterFilesMulti(key)
+        //val multi = PrinterFilesMulti(key)
         //new Printer(multi, key).printSymbol(pkg)
 
         single.file.contentAsString
@@ -41,17 +44,5 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     }
 
     Future.successful(Ok(views.html.parse.script(dir.name, ts, tree, res, app.config.debug)))
-  }
-
-  private[this] def createProject(key: String) = {
-    val root = FileService.getDir("projects")
-    val src = root / "_template"
-    val dest = root / key
-
-    if (dest.exists) {
-      dest.delete()
-    }
-
-    src.copyTo(dest)
   }
 }

@@ -3,7 +3,7 @@ package models.parse.sc.printer
 import better.files._
 import models.parse.sc.tree.Name
 
-class PrinterFilesMulti(path: String) extends PrinterFiles {
+case class PrinterFilesMulti(path: String) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = None
   private[this] var activeObject: Option[Name] = None
