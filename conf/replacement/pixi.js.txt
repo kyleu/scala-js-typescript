@@ -11,29 +11,31 @@ package pixi
 -
   var TEXT_STYLE_CHANGED: CONST.TEXT_STYLE_CHANGED.type = js.native
 -
-    var gl: glCore.type = js.native
+  var gl: glCore.type = js.native
 -
-    def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
+  def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
+-
+  def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
 +
 import org.scalajs.dom.raw._
 import scala.scalajs.js.typedarray._
 -
-    def this(points: Point*) = this()
+  def this(points: Point*) = this()
 =
-    def this(points: Double*) = this()
-    def this(points: (Point | Double)*) = this()
+  def this(points: Double*) = this()
+  def this(points: (Point | Double)*) = this()
 =
   object PIXI extends js.Object {
   object PIXIObj extends js.Object {
 =
-    var extract: extract.CanvasExtract = js.native
-    var extract: org.scalajs.pixijs.PIXI.extract.CanvasExtract = js.native
+  var extract: extract.CanvasExtract = js.native
+  var extract: org.scalajs.pixijs.PIXI.extract.CanvasExtract = js.native
 =
-    var extract: extract.WebGLExtract = js.native
-    var extract: org.scalajs.pixijs.PIXI.extract.WebGLExtract  = js.native
+  var extract: extract.WebGLExtract = js.native
+  var extract: org.scalajs.pixijs.PIXI.extract.WebGLExtract  = js.native
 =
   var URL_FILE_EXTENSION: `js.RegExp` | String = js.native
-  var URL_FILE_EXTENSION: `js.RegExp` | String = js.native
+  var URL_FILE_EXTENSION: js.RegExp | String = js.native
 =
   var RETINA_PREFIX: `js.RegExp` = js.native
   var RETINA_PREFIX: js.RegExp = js.native
@@ -47,8 +49,8 @@ import scala.scalajs.js.typedarray._
   type RETINA_PREFIX = `js.RegExp` | String
   type RETINA_PREFIX = js.RegExp | String
 =
-      var uploadFunction: js.Function6[js.Array[PIXI.DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
-      var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
+  var uploadFunction: js.Function6[js.Array[PIXI.DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
+  var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
 *
 " PIXI."
 " "

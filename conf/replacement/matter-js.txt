@@ -1,3 +1,15 @@
 =
 object `Matter-js` extends js.Object {
 object Matterjs extends js.Object {
+*
+"@property "
+"property: "
+*
+"@method "
+"method: "
+*
+"@type "
+"type: "
+*
+"@default "
+"default: "

@@ -1,3 +1,5 @@
+-
+import scala.scalajs.js.|
 =
 object Less extends js.Object {
 object LessObj extends js.Object {

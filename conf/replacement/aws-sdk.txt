@@ -2,11 +2,35 @@
 import org.scalajs.dom.raw._
 import scala.scalajs.js.Date
 =
+  var Data: Buffer | String | Blob = js.native
+  var Data: Array[_] | String | Blob = js.native
+=
     var Data: Buffer | String | Blob = js.native
     var Data: Array[_] | String | Blob = js.native
 =
+  var SSECustomerKey: Buffer | String = js.native
+  var SSECustomerKey: Array[_] | String = js.native
+=
     var SSECustomerKey: Buffer | String = js.native
     var SSECustomerKey: Array[_] | String = js.native
+=
+class DynamoDB protected () extends js.Object {
+class DynamoDBObj protected () extends js.Object {
+=
+class CloudFormation protected () extends js.Object {
+class CloudFormationObj protected () extends js.Object {
+=
+class Lambda protected () extends js.Object {
+class LambdaObj protected () extends js.Object {
+=
+class AutoScaling protected () extends js.Object {
+class AutoScalingObj protected () extends js.Object {
+=
+class SQS protected () extends js.Object {
+class SQSObj protected () extends js.Object {
+=
+class SES protected () extends js.Object {
+class SESObj protected () extends js.Object {
 =
 trait AwsError extends Error {
 trait AwsError extends js.Error {

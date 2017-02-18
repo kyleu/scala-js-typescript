@@ -9,3 +9,6 @@ object Materializecss extends js.Object {
 =
   var Materialize: Materialize.Materialize = js.native
   var Materialize: org.scalajs.materializecss.Materialize.Materialize = js.native
+*
+"@name "
+"@param "

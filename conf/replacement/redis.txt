@@ -1,0 +1,14 @@
+-
+import org.scalajs.dom.raw._
+=
+trait RedisClient extends EventEmitter {
+trait RedisClient extends js.Object {
+=
+  def createClient(unix_socket: String, options: ClientOpts = js.native): RedisClient = js.native
+  def createClient(unix_socket: String, options: ClientOpts): RedisClient = js.native
+=
+  def createClient(options: ClientOpts = js.native): RedisClient = js.native
+  def createClient(options: ClientOpts): RedisClient = js.native
+=
+trait RedisClient extends NodeJS.EventEmitter {
+trait RedisClient extends js.Object {

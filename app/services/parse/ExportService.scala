@@ -17,7 +17,8 @@ case class ExportService(key: String, t: List[DeclTree]) {
     if (!dir.exists) {
       throw new IllegalStateException(s"Missing output directory [${dir.path}].")
     }
-    val srcFile = dir / (project.keyNormalized + ".scala")
+    val srcFile = dir / project.keyNormalized / (project.keyNormalized + ".scala")
+    srcFile.createIfNotExists(createParents = true)
     val single = PrinterFilesSingle(project, srcFile)
     printer(single, decls)
     single.file.contentAsString
@@ -59,10 +60,7 @@ case class ExportService(key: String, t: List[DeclTree]) {
     val trimmedLines = Seq(nameLine, urlLine, authorsLine, defsLine)
 
     val remaining = t.filter {
-      case c: LineCommentDecl =>
-        println(trimmedLines)
-        println(c.text)
-        !trimmedLines.contains(c.text.trim)
+      case c: LineCommentDecl => !trimmedLines.contains(c.text.trim)
       case _ => true
     }
 

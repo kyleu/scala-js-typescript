@@ -6,6 +6,10 @@ import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 
 case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends PrinterFiles {
+  if (file.exists) {
+    file.delete()
+  }
+
   file.append(s"package org.scalajs.${project.keyNormalized}\n")
 
   file.append("\n")
