@@ -1,0 +1,11 @@
+-
+import org.scalajs.dom.raw._
+=
+object `Materialize-css` extends js.Object {
+object Materializecss extends js.Object {
+=
+  var data: js.Array[Materialize.ChipDataObject] = js.native
+  var data: js.Array[ChipDataObject] = js.native
+=
+  var Materialize: Materialize.Materialize = js.native
+  var Materialize: org.scalajs.materializecss.Materialize.Materialize = js.native

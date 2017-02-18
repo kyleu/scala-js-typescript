@@ -1,2 +1,5 @@
 -
 import org.scalajs.dom.raw._
++
+import scala.scalajs.js.|
+import scala.scalajs.js.Date

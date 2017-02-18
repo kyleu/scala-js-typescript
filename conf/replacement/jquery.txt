@@ -1,2 +1,13 @@
 -
   def `then`(doneFilter: js.Function, failFilter: js.Function, progressFilter: js.Function): JQueryPromise[Unit] = js.native
+=
+     * @param arguments An argument, or array of arguments, to pass to the callbacks in the list.
+     * @param args An argument, or array of arguments, to pass to the callbacks in the list.
+-
+     * @name toArray
+-
+     * @alias toArray
+-
+     * @param doneFilter A function that is called when the Deferred is resolved.
+-
+     * @param failFilter An optional function that is called when the Deferred is rejected.

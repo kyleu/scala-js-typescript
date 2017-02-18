@@ -31,6 +31,7 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
 
         val single = new PrinterFilesSingle(key)
         new Printer(single, key).printSymbol(pkg)
+        single.onComplete()
 
         //val multi = new PrinterFilesMulti(key)
         //new Printer(multi, key).printSymbol(pkg)

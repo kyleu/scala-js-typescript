@@ -1,6 +1,7 @@
 package models.parse.sc.printer
 
 import better.files._
+import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 
 class PrinterFilesSingle(key: String) extends PrinterFiles {
@@ -10,18 +11,19 @@ class PrinterFilesSingle(key: String) extends PrinterFiles {
     throw new IllegalStateException(s"Missing output directory [${dir.path}].")
   }
 
-  val file = dir / s"$key.scala"
+  val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
+
+  val file = dir / s"$keyNormalized.scala"
   if (file.exists) {
     file.delete()
   }
 
-  file.append(s"package org.scalajs.$key\n")
+  file.append(s"package org.scalajs.$keyNormalized\n")
 
   file.append("\n")
   file.append("import scala.scalajs.js\n")
   file.append("import scala.scalajs.js.|\n")
   file.append("import org.scalajs.dom.raw._\n")
-  file.append("\n")
 
   override def pushPackage(pkg: Name) = {
     val p = pkg.name.replaceAllLiterally("-", "")
@@ -32,6 +34,9 @@ class PrinterFilesSingle(key: String) extends PrinterFiles {
   override def print(s: String) = file.append(s)
 
   override def onComplete() = {
-
+    val replacements = ReplacementManager.getReplacements(key)
+    val newContent = replacements.replace(file.lines.toArray[String]).mkString("\n")
+    file.delete()
+    file.write(newContent)
   }
 }

@@ -1,0 +1,8 @@
+-
+  def add(target: Object, propName: String, items: js.Array[String]): GUIController = js.native
+=
+  def add(target: Object, propName: String, items: js.Array[Double]): GUIController = js.native
+  def add(target: Object, propName: String, items: js.Array[(String | Double)]): GUIController = js.native
+=
+object `Dat-gui` extends js.Object {
+object Datgui extends js.Object {

@@ -1,0 +1,3 @@
+=
+object `Matter-js` extends js.Object {
+object Matterjs extends js.Object {

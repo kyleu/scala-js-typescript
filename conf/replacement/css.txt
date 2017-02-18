@@ -1,6 +1,7 @@
 -
 import org.scalajs.dom.raw._
 +
+import scala.scalajs.js.|
 import org.scalajs.css.Css.AtRule
 =
    * @param {string} code - CSS code.

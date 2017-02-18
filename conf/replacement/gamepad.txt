@@ -1,0 +1,3 @@
+=
+object Gamepad extends js.Object {
+object GamepadObj extends js.Object {
