@@ -51,7 +51,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
     }
     simple | namespaced
   }
-  val moduleDelaration = opt(ws("declare")) ~> opt(ws("export")) ~> moduleElementDecl1
+  val moduleDelaration = opt(ws("declare")) ~> opt(ws("export")) ~> opt(ws("declare")) ~> moduleElementDecl1
 
   lazy val commentDecl = ws(accept("CommentDecl", {
     case lexical.LineComment(text) => LineCommentDecl(text)

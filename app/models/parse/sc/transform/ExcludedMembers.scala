@@ -8,6 +8,9 @@ object ExcludedMembers {
   }
 
   object Exclusions extends Enum[Exclusions] {
+    case object AWSSDK extends Exclusions("aws-sdk", files = Map(
+      "ClientConfig" -> Set("credentials", "region")
+    ))
     case object CanvasJS extends Exclusions("canvasjs", files = Map("ChartDataPoint" -> Set("legendMarkerColor")))
     case object JQuery extends Exclusions("jquery", files = Map(
       "BaseJQueryEventObject" -> Set("currentTarget", "preventDefault", "stopImmediatePropagation", "stopPropagation", "target"),
