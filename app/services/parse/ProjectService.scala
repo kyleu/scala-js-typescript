@@ -1,11 +1,10 @@
 package services.parse
 
 import better.files.File
+import models.parse.ProjectDefinition
 import services.file.FileService
 
-case class ProjectService(key: String) {
-  val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
-
+case class ProjectService(project: ProjectDefinition) {
   def create() = {
     val dir = copyFiles()
     replaceStrings(dir)
@@ -15,10 +14,10 @@ case class ProjectService(key: String) {
       throw new IllegalStateException(s"Missing [$srcRoot].")
     }
 
-    val srcDir = srcRoot / keyNormalized
+    val srcDir = srcRoot / project.keyNormalized
     srcDir.createDirectories()
 
-    val srcFile = srcDir / (keyNormalized + ".scala")
+    val srcFile = srcDir / (project.keyNormalized + ".scala")
     srcFile.createIfNotExists()
     srcFile
   }
@@ -26,11 +25,13 @@ case class ProjectService(key: String) {
   private[this] def copyFiles() = {
     val root = FileService.getDir("projects")
     val src = root / "scala-js-template"
-    val dest = root / key
+    val dest = root / project.key
     if (dest.exists) {
       dest.delete()
     }
     src.copyTo(dest)
+    (dest / "readme.md").delete()
+    (dest / "template.readme.md").renameTo("readme.md")
     dest
   }
 
@@ -41,14 +42,7 @@ case class ProjectService(key: String) {
       dir / "project" / "Projects.scala",
       dir / "project" / "Shared.scala"
     )
-    val replacements = Map(
-      "key" -> key,
-      "keyNormalized" -> keyNormalized,
-      "name" -> key,
-      "url" -> ("http://" + key),
-      "version" -> "1.0",
-      "dependencies" -> ""
-    )
+    val replacements = project.asMap
     def replace(f: File) = {
       val oldContent = f.contentAsString
       val newContent = replacements.foldLeft(oldContent)((content, r) => content.replaceAllLiterally("${" + r._1 + "}", r._2))

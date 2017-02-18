@@ -1,7 +1,8 @@
 package controllers
 
-import models.parse.Importer
-import models.parse.sc.printer.{Printer, PrinterFilesMulti, PrinterFilesSingle}
+import models.parse.parser.tree.{DeclTree, LineCommentDecl}
+import models.parse.sc.printer.{Printer, PrinterFilesSingle}
+import models.parse.{Importer, ProjectDefinition}
 import services.file.FileService
 import services.parse.{ProjectService, TypeScriptImport}
 import utils.Application
@@ -20,6 +21,31 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     Future.successful(Ok(views.html.parse.allScripts(scripts, app.config.debug)))
   }
 
+  private[this] def extractFrom(key: String, t: List[DeclTree]) = {
+    val comments = t.flatMap {
+      case c: LineCommentDecl => Some(c.text.trim)
+      case _ => None
+    }
+    val (name, version) = comments.find(_.startsWith("Type definitions for")) match {
+      case Some(l) =>
+        val str = l.substring("Type definitions for".length + 1).trim.split(' ')
+        str.dropRight(1).mkString(" ") -> str.last
+      case None => key -> "0.1"
+    }
+    val url = comments.find(_.startsWith("Project:")) match {
+      case Some(l) => l.substring("Project:".length + 1).trim
+      case None => key
+    }
+    val authors = comments.find(_.startsWith("Definitions by:")) match {
+      case Some(l) => l.substring("Definitions by:".length + 1).trim
+      case None => key
+    }
+
+    val p = ProjectDefinition(key, name, url, version, authors)
+    println(p)
+    p -> t
+  }
+
   def script(key: String) = act(s"detail.$key") { implicit request =>
     val dir = FileService.getDir("DefinitelyTyped") / key
     val ts = dir / "index.d.ts"
@@ -27,12 +53,13 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) =>
-        val proj = ProjectService(key)
+        val (project, decls) = extractFrom(key, t)
+        val proj = ProjectService(project)
         val srcFile = proj.create()
 
-        val pkg = new Importer(key).apply(t)
+        val pkg = new Importer(key).apply(decls)
 
-        val single = PrinterFilesSingle(key, srcFile)
+        val single = PrinterFilesSingle(project, srcFile)
         new Printer(single, key).printSymbol(pkg)
         single.onComplete()
 
