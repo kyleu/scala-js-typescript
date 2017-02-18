@@ -9,4 +9,6 @@ trait PrinterFiles {
   def clearActiveObject(n: Name): Unit = ()
 
   def print(s: String): Unit
+
+  def onComplete(): Unit
 }

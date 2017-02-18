@@ -75,4 +75,8 @@ class PrinterFilesMulti(path: String) extends PrinterFiles {
     case Some(file) => file.append(s)
     case None => rootObj.append(s)
   }
+
+  override def onComplete() = {
+
+  }
 }

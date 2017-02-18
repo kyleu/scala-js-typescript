@@ -39,7 +39,9 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     if (sym.members.nonEmpty) {
       val (topLevels, packageObjectMembers) = sym.members.partition(canBeTopLevel)
 
-      files.pushPackage(thisPackage)
+      if (!isRootPackage) {
+        files.pushPackage(thisPackage)
+      }
 
       for (sym <- topLevels) {
         files.setActiveObject(sym.name)
@@ -70,7 +72,9 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
         files.clearActiveObject(packageObjectName)
       }
 
-      files.popPackage(thisPackage)
+      if (!isRootPackage) {
+        files.popPackage(thisPackage)
+      }
     }
 
     currentJSNamespace = oldJSNamespace
@@ -166,7 +170,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
 
   def printSymbol(sym: tree.Symbol) {
     sym match {
-      case s: CommentSymbol => printComment(s.text, s.multiline)
+      case s: CommentSymbol => printComment(s.cleanedText, s.multiline)
       case s: PackageSymbol => printPackage(s, outputPackage)
       case s: ClassSymbol => printClass(s)
       case s: ModuleSymbol => printModule(s)

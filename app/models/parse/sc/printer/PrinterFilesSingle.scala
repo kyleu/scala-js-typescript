@@ -15,15 +15,23 @@ class PrinterFilesSingle(key: String) extends PrinterFiles {
     file.delete()
   }
 
-  file.append(s"package org.scalajs\n")
+  file.append(s"package org.scalajs.$key\n")
 
   file.append("\n")
-  file.append("import org.scalajs.dom.raw._\n")
   file.append("import scala.scalajs.js\n")
   file.append("import scala.scalajs.js.|\n")
+  file.append("import org.scalajs.dom.raw._\n")
+  file.append("\n")
 
-  override def pushPackage(pkg: Name) = file.append(s"package ${pkg.name.replaceAllLiterally("-", "")} {\n")
+  override def pushPackage(pkg: Name) = {
+    val p = pkg.name.replaceAllLiterally("-", "")
+    file.append(s"package $p {\n")
+  }
   override def popPackage(pkg: Name) = file.append(s"}\n")
 
   override def print(s: String) = file.append(s)
+
+  override def onComplete() = {
+
+  }
 }
