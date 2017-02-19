@@ -1,7 +1,7 @@
 @(
     key: String,
-    ts: better.files.File,
-    definitions: Either[String, Seq[models.parse.parser.tree.DeclTree]],
+    src: better.files.File,
+    definitions: Option[Seq[models.parse.parser.tree.DeclTree]],
     output: String,
     debug: Boolean
 )(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
@@ -21,7 +21,7 @@
         </li>
         <li>
           <div class="collapsible-header">TypeScript Input</div>
-          <div class="collapsible-body"><pre style="margin: 10px;">@ts.contentAsString</pre></div>
+          <div class="collapsible-body"><pre style="margin: 10px;">@src.contentAsString</pre></div>
         </li>
       </ul>
     </div>

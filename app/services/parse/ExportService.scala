@@ -8,8 +8,8 @@ import services.file.FileService
 case class ExportService(key: String, t: List[DeclTree]) {
   def export() = {
     val (project, decls) = extractFrom(key, t)
-    exportSingle(project, decls)
-    //exportMulti(project, decls)
+    //exportSingle(project, decls)
+    exportMulti(project, decls)
   }
 
   private[this] def exportSingle(project: ProjectDefinition, decls: List[DeclTree]) = {

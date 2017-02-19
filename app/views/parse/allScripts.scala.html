@@ -1,15 +1,25 @@
-@(scripts: Seq[better.files.File], debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@(results: Seq[controllers.TestController.Result], debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
 @layout.simple(utils.Config.projectName) {
   <div class="row">
     <div class="col s12">
       <div class="panel-content">
-        <div class="collection with-header">
-          <div class="collection-header">
-            <h5>@utils.NumberUtils.withCommas(scripts.size) Available Libraries</h5>
-          </div>
-          @scripts.map { script =>
-            <a href="@controllers.routes.TestController.script(script.name)" class="collection-item">@script.name</a>
-          }
+        <div class="collection-header">
+          <h5>Processed @utils.NumberUtils.withCommas(results.size) Libraries</h5>
+          <ul class="collapsible" data-collapsible="expandable">
+            @results.map { result =>
+              <li>
+                <div class="collapsible-header">
+                  <div class="right">@if(result.tree.isDefined) {
+                    <i class="fa fa-check"></i>
+                  } else {
+                    <i class="fa fa-close"></i>
+                  }</div>
+                  @result.key
+                </div>
+                <div class="collapsible-body"><pre style="margin: 10px;">@result.text</pre></div>
+              </li>
+            }
+          </ul>
         </div>
       </div>
     </div>

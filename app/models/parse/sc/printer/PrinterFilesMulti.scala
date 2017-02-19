@@ -5,15 +5,14 @@ import models.parse.sc.tree.Name
 
 case class PrinterFilesMulti(root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
-  private[this] var activeDir: Option[File] = None
+  private[this] var activeDir: Option[File] = Some(root)
   private[this] var activeObject: Option[Name] = None
   private[this] var activeFile: Option[File] = None
 
   val textContent = new StringBuilder
 
   private[this] def log(s: String) = {
-    val key = stack.map(_._1.name).mkString(".") + "." + activeObject.map(_.name).getOrElse("???")
-    textContent.append(key + ": " + s + "\n")
+    textContent.append(s)
   }
 
   if (root.exists) {
@@ -33,7 +32,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
     activeDir = Some(dir)
     stack.push(pkg -> dir)
 
-    println(s"Pushed [${pkg.name}] to package history.")
+    log("PUSH  ::: " + stack.map(_._1.name).mkString(".") + "\n")
   }
 
   override def popPackage(pkg: Name) = {
@@ -42,7 +41,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
       throw new IllegalStateException(s"Observed [$popped], not expected [$pkg].")
     }
     activeDir = activeDir.map(_.parent)
-    println(s"Popped [${pkg.name}] from package history.")
+    log("POP   ::: " + stack.map(_._1.name).mkString(".") + "\n")
   }
 
   override def setActiveObject(n: Name) = activeObject match {
@@ -63,14 +62,14 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
         file.append("import scala.scalajs.js.|\n")
       }
       activeFile = Some(file)
-      println(s"Set active object to [${n.name}].")
+      log(s"SET   ::: ${n.name}\n")
   }
 
   override def clearActiveObject(n: Name) = activeObject match {
     case Some(active) => if (n == active) {
       activeFile = None
       activeObject = None
-      println(s"Clearing active object [${active.name}].")
+      log(s"CLEAR ::: ${active.name}\n")
     } else {
       // Noop for now
     }
@@ -86,6 +85,10 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
   }
 
   override def onComplete() = {
-
+    root.children.toList.map { f =>
+      if ((!f.isDirectory) && f.size <= 1024 && f.contentAsString.trim.isEmpty) {
+        f.delete()
+      }
+    }
   }
 }
