@@ -3,7 +3,7 @@ package services.parse
 import models.parse.{Importer, ProjectDefinition}
 import models.parse.parser.tree.{DeclTree, LineCommentDecl}
 import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
-import services.file.FileService
+import better.files._
 
 case class ExportService(key: String, t: List[DeclTree]) {
   def export() = {
@@ -13,7 +13,7 @@ case class ExportService(key: String, t: List[DeclTree]) {
   }
 
   private[this] def exportSingle(project: ProjectDefinition, decls: List[DeclTree]) = {
-    val dir = FileService.getDir("projects") / "_megasingle" / "src" / "main" / "scala" / "org" / "scalajs"
+    val dir = "util" / "megasingle" / "src" / "main" / "scala" / "org" / "scalajs"
     if (!dir.exists) {
       throw new IllegalStateException(s"Missing output directory [${dir.path}].")
     }

@@ -1,6 +1,6 @@
 package services.parse
 
-import better.files.File
+import better.files._
 import models.parse.ProjectDefinition
 import services.file.FileService
 
@@ -21,9 +21,8 @@ case class ProjectService(project: ProjectDefinition) {
   }
 
   private[this] def copyFiles() = {
-    val root = FileService.getDir("projects")
-    val src = root / "scala-js-template"
-    val dest = root / ("scala-js-" + project.keyNormalized)
+    val src = "util" / "scala-js-template"
+    val dest = FileService.getDir("projects") / ("scala-js-" + project.keyNormalized)
     if (dest.exists) {
       dest.delete()
     }

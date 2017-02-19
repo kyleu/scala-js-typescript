@@ -8,13 +8,10 @@ dist
 /.idea
 /*.iml
 /out
-/data
 /.idea_modules
 /.classpath
 /.project
 /RUNNING_PID
 /.settings
-
-/util/megasingle/src
 
 buildinfo.properties

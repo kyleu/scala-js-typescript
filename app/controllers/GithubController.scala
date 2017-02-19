@@ -19,7 +19,7 @@ class GithubController @javax.inject.Inject() (override val app: Application, ws
   }
 
   def list = act(s"projects") { implicit request =>
-    val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filterNot(_.name.startsWith("_")).toSeq.map(_.name)
+    val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).toSeq.map(_.name)
     githubService.listRepos().map { repos =>
       Ok(views.html.github.list(repos, projectDirs))
     }

@@ -1,6 +1,8 @@
 package services.parse
 
-object ClassReferenceService {
+import utils.Logging
+
+object ClassReferenceService extends Logging {
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(" HTMLElement", " Promise", " Event"),
     "scala.scalajs.js.|" -> Seq(" | "),
@@ -22,9 +24,11 @@ object ClassReferenceService {
   def insertImports(content: Seq[String]) = {
     val importIdx = content.indexOf("import scala.scalajs.js")
     if (importIdx < 0) {
-      throw new IllegalStateException("Missing import statement.")
+      log.warn(s"Missing import statement for content: [$content]")
+      content
+    } else {
+      val imports = importsFor(content).map("import " + _)
+      content.take(importIdx + 1) ++ imports ++ content.drop(importIdx + 1)
     }
-    val imports = importsFor(content).map("import " + _)
-    content.take(importIdx + 1) ++ imports ++ content.drop(importIdx + 1)
   }
 }
