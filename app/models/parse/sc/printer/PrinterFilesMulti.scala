@@ -3,6 +3,7 @@ package models.parse.sc.printer
 import better.files._
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
+import services.parse.ClassReferenceService
 
 case class PrinterFilesMulti(root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
@@ -91,19 +92,22 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
     val replacements = ReplacementManager.getReplacements(root.name)
 
     root.listRecursively().toList.map { file =>
-      if ((!file.isDirectory) && file.size <= 1024 && file.contentAsString.trim.isEmpty) {
-        file.delete()
-      } else {
-        val originalContent = file.lines.toList
-        val newContent = replacements.replace(originalContent)
-        if (originalContent != newContent) {
+      if (!file.isDirectory)
+        if (file.size <= 1024 && file.contentAsString.trim.isEmpty) {
           file.delete()
-          file.write(newContent.mkString("\n"))
-          newContent
         } else {
-          originalContent
+          val originalContent = file.lines.toList
+          val newContent = replacements.replace(originalContent)
+          val (rewrite, finalContent) = if (originalContent != newContent) {
+            true -> newContent
+          } else {
+            false -> originalContent
+          }
+
+          val ret = ClassReferenceService.insertImports(finalContent)
+          file.delete()
+          file.write(ret.mkString("\n"))
         }
-      }
     }
     textContent.toString.split('\n')
   }

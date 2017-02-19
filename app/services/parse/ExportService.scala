@@ -9,11 +9,11 @@ case class ExportService(key: String, t: List[DeclTree]) {
   def export() = {
     val (project, decls) = extractFrom(key, t)
     exportSingle(project, decls)
-    //exportMulti(project, decls)
+    exportMulti(project, decls)
   }
 
   private[this] def exportSingle(project: ProjectDefinition, decls: List[DeclTree]) = {
-    val dir = FileService.getDir("projects") / "_megaproject" / "src" / "main" / "scala" / "org" / "scalajs"
+    val dir = FileService.getDir("projects") / "_megasingle" / "src" / "main" / "scala" / "org" / "scalajs"
     if (!dir.exists) {
       throw new IllegalStateException(s"Missing output directory [${dir.path}].")
     }
