@@ -62,9 +62,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
         }
 
         file.append("\n")
-        file.append("import org.scalajs.dom.raw._\n")
         file.append("import scala.scalajs.js\n")
-        file.append("import scala.scalajs.js.|\n")
       }
       activeFile = Some(file)
       log(s"SET   ::: ${n.name}\n")

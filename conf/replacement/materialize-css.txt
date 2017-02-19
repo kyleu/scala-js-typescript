@@ -1,5 +1,3 @@
--
-import org.scalajs.dom.raw._
 =
 object `Materialize-css` extends js.Object {
 object Materializecss extends js.Object {

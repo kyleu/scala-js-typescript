@@ -1,6 +1,3 @@
-+
-import org.scalajs.dom.raw._
-import scala.scalajs.js.Date
 =
   var Data: Buffer | String | Blob = js.native
   var Data: Array[_] | String | Blob = js.native

@@ -1,6 +1,3 @@
-+
-import org.scalajs.dom.raw._
-import scala.scalajs.js.Date
 =
   var beforeShow: js.Function2[Element, js.Any, JQueryUI.DatepickerOptions] = js.native
   var beforeShow: js.Function2[Element, js.Any, DatepickerOptions] = js.native

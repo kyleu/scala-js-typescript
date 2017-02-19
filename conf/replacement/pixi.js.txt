@@ -11,14 +11,15 @@ package pixi
 -
   var TEXT_STYLE_CHANGED: CONST.TEXT_STYLE_CHANGED.type = js.native
 -
+var gl: glCore.type = js.native
+-
   var gl: glCore.type = js.native
 -
+    var gl: glCore.type = js.native
+-
   def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
 -
   def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
-+
-import org.scalajs.dom.raw._
-import scala.scalajs.js.typedarray._
 -
   def this(points: Point*) = this()
 =

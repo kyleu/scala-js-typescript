@@ -1,6 +1,4 @@
 -
-import org.scalajs.dom.raw._
--
      * @param event a chart event
 =
      * @param the name of the color set

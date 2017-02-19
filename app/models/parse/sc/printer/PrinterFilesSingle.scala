@@ -4,6 +4,7 @@ import better.files._
 import models.parse.ProjectDefinition
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
+import services.parse.ClassReferenceService
 
 case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends PrinterFiles {
   if (file.exists) {
@@ -14,8 +15,6 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
 
   file.append("\n")
   file.append("import scala.scalajs.js\n")
-  file.append("import scala.scalajs.js.|\n")
-  file.append("import org.scalajs.dom.raw._\n")
 
   override def pushPackage(pkg: Name) = {
     val p = pkg.name.replaceAllLiterally("-", "")
@@ -29,12 +28,15 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
     val replacements = ReplacementManager.getReplacements(project.key)
     val originalContent = file.lines.toList
     val newContent = replacements.replace(originalContent)
-    if (originalContent != newContent) {
-      file.delete()
-      file.write(newContent.mkString("\n"))
-      newContent
+    val (rewrite, finalContent) = if (originalContent != newContent) {
+      true -> newContent
     } else {
-      originalContent
+      false -> originalContent
     }
+
+    val ret = ClassReferenceService.insertImports(finalContent)
+    file.delete()
+    file.write(ret.mkString("\n"))
+    ret
   }
 }

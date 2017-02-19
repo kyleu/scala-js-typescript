@@ -1,7 +1,3 @@
--
-import scala.scalajs.js.|
--
-import org.scalajs.dom.raw._
 =
 object `In-range` extends js.Object {
 object Inrange extends js.Object {

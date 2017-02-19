@@ -1,5 +1,3 @@
--
-import org.scalajs.dom.raw._
 =
 trait RedisClient extends EventEmitter {
 trait RedisClient extends js.Object {
