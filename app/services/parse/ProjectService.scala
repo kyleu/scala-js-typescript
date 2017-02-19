@@ -23,7 +23,7 @@ case class ProjectService(project: ProjectDefinition) {
   private[this] def copyFiles() = {
     val root = FileService.getDir("projects")
     val src = root / "scala-js-template"
-    val dest = root / project.key
+    val dest = root / ("scala-js-" + project.keyNormalized)
     if (dest.exists) {
       dest.delete()
     }

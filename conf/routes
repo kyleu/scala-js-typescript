@@ -10,6 +10,11 @@ GET         /sandbox/:key                            controllers.SandboxControll
 GET         /script                                  controllers.TestController.allScripts
 GET         /script/:key                             controllers.TestController.script(key)
 
+GET         /repo                                    controllers.GithubController.list
+GET         /repo/test                               controllers.GithubController.test
+GET         /repo/:key                               controllers.GithubController.detail(key)
+GET         /repo/:key/create                        controllers.GithubController.create(key)
+
 # Assets
 GET         /browserconfig.xml                       controllers.Assets.at(path = "/public", file = "browserconfig.xml")
 GET         /manifest.json                           controllers.Assets.at(path = "/public", file = "manifest.json")
