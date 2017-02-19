@@ -9,7 +9,7 @@ import utils.Application
 import scala.concurrent.Future
 
 object TestController {
-  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: String)
+  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: Seq[String])
 }
 
 @javax.inject.Singleton
@@ -37,7 +37,7 @@ class TestController @javax.inject.Inject() (override val app: Application) exte
     val tree = TypeScriptImport.parse(content)
     val res = tree match {
       case Right(t) => Some(t) -> ExportService(key, t).export()
-      case Left(err) => None -> ("Error: " + err)
+      case Left(err) => None -> Seq("Error: " + err)
     }
     TestController.Result(key, ts, res._1, res._2)
   }

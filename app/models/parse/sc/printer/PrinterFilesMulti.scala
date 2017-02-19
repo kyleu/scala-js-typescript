@@ -1,6 +1,7 @@
 package models.parse.sc.printer
 
 import better.files._
+import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 
 case class PrinterFilesMulti(root: File) extends PrinterFiles {
@@ -54,7 +55,11 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
       }
       if (!file.exists) {
         val pkg = stack.map(_._1.name).mkString(".")
-        file.append(s"package org.scalajs.$pkg\n")
+        if (pkg.isEmpty) {
+          file.append(s"package org.scalajs.${root.name}\n")
+        } else {
+          file.append(s"package org.scalajs.${root.name}.$pkg\n")
+        }
 
         file.append("\n")
         file.append("import org.scalajs.dom.raw._\n")
@@ -85,10 +90,23 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
   }
 
   override def onComplete() = {
-    root.children.toList.map { f =>
-      if ((!f.isDirectory) && f.size <= 1024 && f.contentAsString.trim.isEmpty) {
-        f.delete()
+    val replacements = ReplacementManager.getReplacements(root.name)
+
+    root.listRecursively().toList.map { file =>
+      if ((!file.isDirectory) && file.size <= 1024 && file.contentAsString.trim.isEmpty) {
+        file.delete()
+      } else {
+        val originalContent = file.lines.toList
+        val newContent = replacements.replace(originalContent)
+        if (originalContent != newContent) {
+          file.delete()
+          file.write(newContent.mkString("\n"))
+          newContent
+        } else {
+          originalContent
+        }
       }
     }
+    textContent.toString.split('\n')
   }
 }

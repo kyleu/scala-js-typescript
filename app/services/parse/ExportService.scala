@@ -21,7 +21,6 @@ case class ExportService(key: String, t: List[DeclTree]) {
     srcFile.createIfNotExists(createParents = true)
     val single = PrinterFilesSingle(project, srcFile)
     printer(single, decls)
-    single.file.contentAsString
   }
 
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {
@@ -29,7 +28,6 @@ case class ExportService(key: String, t: List[DeclTree]) {
     val srcDir = proj.create()
     val multi = PrinterFilesMulti(srcDir)
     printer(multi, decls)
-    multi.textContent.toString
   }
 
   private[this] def extractFrom(key: String, t: List[DeclTree]) = {

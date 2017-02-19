@@ -27,8 +27,14 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
 
   override def onComplete() = {
     val replacements = ReplacementManager.getReplacements(project.key)
-    val newContent = replacements.replace(file.lines.toArray[String]).mkString("\n")
-    file.delete()
-    file.write(newContent)
+    val originalContent = file.lines.toList
+    val newContent = replacements.replace(originalContent)
+    if (originalContent != newContent) {
+      file.delete()
+      file.write(newContent.mkString("\n"))
+      newContent
+    } else {
+      originalContent
+    }
   }
 }

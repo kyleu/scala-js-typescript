@@ -10,5 +10,5 @@ trait PrinterFiles {
 
   def print(s: String): Unit
 
-  def onComplete(): Unit
+  def onComplete(): Seq[String]
 }
