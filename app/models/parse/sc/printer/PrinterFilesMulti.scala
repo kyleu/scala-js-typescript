@@ -5,17 +5,11 @@ import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
 
-case class PrinterFilesMulti(root: File) extends PrinterFiles {
+case class PrinterFilesMulti(key: String, root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = Some(root)
   private[this] var activeObject: Option[Name] = None
   private[this] var activeFile: Option[File] = None
-
-  val textContent = new StringBuilder
-
-  private[this] def log(s: String) = {
-    textContent.append(s)
-  }
 
   if (root.exists) {
     root.delete()
@@ -34,7 +28,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
     activeDir = Some(dir)
     stack.push(pkg -> dir)
 
-    log("PUSH  ::: " + stack.map(_._1.name).mkString(".") + "\n")
+    //log("PUSH  ::: " + stack.reverse.map(_._1.name).mkString(".") + "\n")
   }
 
   override def popPackage(pkg: Name) = {
@@ -43,7 +37,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
       throw new IllegalStateException(s"Observed [$popped], not expected [$pkg].")
     }
     activeDir = activeDir.map(_.parent)
-    log("POP   ::: " + stack.map(_._1.name).mkString(".") + "\n")
+    //log("POP   ::: " + stack.reverse.map(_._1.name).mkString(".") + "\n")
   }
 
   override def setActiveObject(n: Name) = activeObject match {
@@ -51,7 +45,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
     case None =>
       activeObject = Some(n)
       val file = activeDir match {
-        case Some(active) => active / s"${n.name}.scala"
+        case Some(active) => active / s"${n.name.replaceAllLiterally(".", "").replaceAllLiterally("-", "")}.scala"
         case None => throw new IllegalStateException("No active directory.")
       }
       if (!file.exists) {
@@ -66,14 +60,14 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
         file.append("import scala.scalajs.js\n")
       }
       activeFile = Some(file)
-      log(s"SET   ::: ${n.name}\n")
+    //log(s"SET   ::: ${n.name} (${stack.reverse.map(_._1.name).mkString(".")})\n")
   }
 
   override def clearActiveObject(n: Name) = activeObject match {
     case Some(active) => if (n == active) {
       activeFile = None
       activeObject = None
-      log(s"CLEAR ::: ${active.name}\n")
+      //log(s"CLEAR ::: ${active.name} (${stack.reverse.map(_._1.name).mkString(".")})\n")
     } else {
       // Noop for now
     }
@@ -81,7 +75,7 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
   }
 
   def print(s: String) = {
-    log(s)
+    //log(s)
     activeFile match {
       case Some(file) => file.append(s)
       case None => rootObj.append(s)
@@ -89,7 +83,8 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
   }
 
   override def onComplete() = {
-    val replacements = ReplacementManager.getReplacements(root.name)
+    val textContent = new StringBuilder
+    val replacements = ReplacementManager.getReplacements(key)
 
     root.listRecursively().toList.map { file =>
       if (!file.isDirectory)
@@ -97,16 +92,14 @@ case class PrinterFilesMulti(root: File) extends PrinterFiles {
           file.delete()
         } else {
           val originalContent = file.lines.toList
+          println(originalContent)
           val newContent = replacements.replace(originalContent)
-          val (rewrite, finalContent) = if (originalContent != newContent) {
-            true -> newContent
-          } else {
-            false -> originalContent
-          }
-
-          val ret = ClassReferenceService.insertImports(finalContent)
+          val ret = ClassReferenceService.insertImports(file.pathAsString, newContent)
+          val body = ret.mkString("\n")
           file.delete()
-          file.write(ret.mkString("\n"))
+          file.write(body)
+          textContent.append(" ::: " + file.pathAsString + "\n")
+          textContent.append(body + "\n")
         }
     }
     textContent.toString.split('\n')

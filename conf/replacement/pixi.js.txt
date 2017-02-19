@@ -11,17 +11,13 @@ package pixi
 -
   var TEXT_STYLE_CHANGED: CONST.TEXT_STYLE_CHANGED.type = js.native
 -
-var gl: glCore.type = js.native
--
-  var gl: glCore.type = js.native
--
-    var gl: glCore.type = js.native
--
   def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
 -
   def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
 -
   def this(points: Point*) = this()
+-
+  var gl: PIXI.glCore.type = js.native
 =
   def this(points: Double*) = this()
   def this(points: (Point | Double)*) = this()
@@ -30,10 +26,10 @@ var gl: glCore.type = js.native
   object PIXIObj extends js.Object {
 =
   var extract: extract.CanvasExtract = js.native
-  var extract: org.scalajs.pixijs.PIXI.extract.CanvasExtract = js.native
+  var extract: org.scalajs.pixijs.extract.PIXI.CanvasExtract = js.native
 =
   var extract: extract.WebGLExtract = js.native
-  var extract: org.scalajs.pixijs.PIXI.extract.WebGLExtract  = js.native
+  var extract: org.scalajs.pixijs.extract.PIXI.WebGLExtract  = js.native
 =
   var URL_FILE_EXTENSION: `js.RegExp` | String = js.native
   var URL_FILE_EXTENSION: js.RegExp | String = js.native
@@ -52,6 +48,81 @@ var gl: glCore.type = js.native
 =
   var uploadFunction: js.Function6[js.Array[PIXI.DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
   var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
+=
+  def apply(index: String): loaders.Resource = js.native
+  def apply(index: String): Resource = js.native
+=
+  def update(index: String, v: loaders.Resource): Unit = js.native
+  def update(index: String, v: Resource): Unit = js.native
+=
+  def load(cb: js.Function2[loaders.Loader, js.Any, Unit] = js.native): Loader = js.native
+  def load(cb: js.Function2[Loader, js.Any, Unit] = js.native): Loader = js.native
+=
+  type Strip = mesh.Mesh
+  type Strip = org.scalajs.pixijs.mesh.PIXI.Mesh
+=
+  type Rope = mesh.Rope
+  type Rope = org.scalajs.pixijs.mesh.PIXI.Rope
+=
+  type ParticleContainer = particles.ParticleContainer
+  type ParticleContainer = org.scalajs.pixijs.particles.PIXI.ParticleContainer
+=
+  var vaos: js.Array[glCore.VertexArrayObject] = js.native
+  var vaos: js.Array[org.scalajs.pixijs.glCore.PIXI.VertexArrayObject] = js.native
+=
+class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarget {
+class DisplayObject extends org.scalajs.pixijs.utils.PIXI.EventEmitter with org.scalajs.pixijs.interaction.PIXI.InteractiveTarget {
+=
+object Pixi extends js.Object {
+object PixiObj extends js.Object {
+=
+  var RENDERER_TYPE: CONST.RENDERER_TYPE.type = js.native
+  var RENDERER_TYPE: js.Object = js.native
+=
+  var BLEND_MODES: CONST.BLEND_MODES.type = js.native
+  var BLEND_MODES: js.Object = js.native
+=
+  var DRAW_MODES: CONST.DRAW_MODES.type = js.native
+  var DRAW_MODES: js.Object = js.native
+=
+  var SCALE_MODES: CONST.SCALE_MODES.type = js.native
+  var SCALE_MODES: js.Object = js.native
+=
+  var WRAP_MODES: CONST.WRAP_MODES.type = js.native
+  var WRAP_MODES: js.Object = js.native
+=
+  var TRANSFORM_MODE: CONST.TRANSFORM_MODE.type = js.native
+  var TRANSFORM_MODE: js.Object = js.native
+=
+  var PRECISION: CONST.PRECISION.type = js.native
+  var PRECISION: js.Object = js.native
+=
+  var GC_MODES: CONST.GC_MODES.type = js.native
+  var GC_MODES: js.Object = js.native
+=
+  var SHAPES: CONST.SHAPES.type = js.native
+  var SHAPES: js.Object = js.native
+=
+  var TEXT_GRADIENT: CONST.TEXT_GRADIENT.type = js.native
+  var TEXT_GRADIENT: js.Object = js.native
 *
 " PIXI."
 " "
+*
+" interaction.InteractionEvent"
+" org.scalajs.pixijs.interaction.PIXI.InteractionEvent"
+*
+" loaders.Loader"
+" org.scalajs.pixijs.loaders.PIXI.Loader"
+*
+"= extras."
+"= org.scalajs.pixijs.extras.PIXI."
+*
+" glCore."
+" org.scalajs.pixijs.glCore.PIXI."
+*
+" utils.EventEmitter"
+" org.scalajs.pixijs.utils.PIXI.EventEmitter"
+*
+" loaders.Resource"
+" Resource"

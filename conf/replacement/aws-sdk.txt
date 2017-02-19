@@ -11,6 +11,15 @@
     var SSECustomerKey: Buffer | String = js.native
     var SSECustomerKey: Array[_] | String = js.native
 =
+  var Parameters: js.Array[CloudFormation.Parameter] = js.native
+  var Parameters: js.Array[Parameter] = js.native
+=
+  var Tags: js.Array[CloudFormation.Tag] = js.native
+  var Tags: js.Array[Tag] = js.native
+=
+  var config: ClientConfig = js.native
+  var config: org.scalajs.awssdk.ClientConfig = js.native
+=
 class DynamoDB protected () extends js.Object {
 class DynamoDBObj protected () extends js.Object {
 =

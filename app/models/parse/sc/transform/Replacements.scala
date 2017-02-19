@@ -9,16 +9,27 @@ object Replacements {
 
   object Rule {
     case class AddLine(src: String, tgt: String) extends Rule {
-      override def replace(lines: Seq[String]) = lines.flatMap(l => if (l == src) { Seq(l, tgt) } else { Seq(l) })
+      override def replace(lines: Seq[String]) = lines.flatMap { l =>
+        if (l == src) { Seq(l, tgt) } else { Seq(l) }
+      }
     }
     case class RemoveLine(tgt: String) extends Rule {
-      override def replace(lines: Seq[String]) = lines.filterNot(_ == tgt)
+      override def replace(lines: Seq[String]) = lines.filterNot { line =>
+        if (line.contains("debug.IDebug")) {
+          throw new IllegalStateException(line)
+        }
+        line == tgt
+      }
     }
     case class ReplaceLine(src: String, tgt: String) extends Rule {
-      override def replace(lines: Seq[String]) = lines.map(l => if (l == src) { tgt } else { l })
+      override def replace(lines: Seq[String]) = lines.map { l =>
+        if (l == src) { tgt } else { l }
+      }
     }
     case class ReplaceText(src: String, tgt: String) extends Rule {
-      override def replace(lines: Seq[String]) = lines.map(_.replaceAllLiterally(unquote(src), unquote(tgt)))
+      override def replace(lines: Seq[String]) = lines.map { line =>
+        line.replaceAllLiterally(unquote(src), unquote(tgt))
+      }
     }
   }
 

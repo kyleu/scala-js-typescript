@@ -44,9 +44,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
       }
 
       for (sym <- topLevels) {
-        files.setActiveObject(sym.name)
         printSymbol(sym)
-        files.clearActiveObject(sym.name)
       }
 
       if (packageObjectMembers.nonEmpty) {
@@ -172,7 +170,10 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     sym match {
       case s: CommentSymbol => printComment(s.cleanedText, s.multiline)
       case s: PackageSymbol => printPackage(s, outputPackage)
-      case s: ClassSymbol => printClass(s)
+      case s: ClassSymbol =>
+        files.setActiveObject(s.name)
+        printClass(s)
+        files.clearActiveObject(s.name)
       case s: ModuleSymbol => printModule(s)
       case s: TypeAliasSymbol => printTypeAlias(s)
       case s: FieldSymbol => printField(s)

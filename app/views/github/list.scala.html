@@ -28,7 +28,11 @@
                     <td>@if(dirExists) {
                       <a class="teal-text" href="@controllers.routes.TestController.script(key)">OK</a>
                     } else {
-                      Missing
+                      @if(key == "scala-js-template") {
+                        <em>n/a</em>
+                      } else {
+                        Missing
+                      }
                     }</td>
                   </tr>
                 }

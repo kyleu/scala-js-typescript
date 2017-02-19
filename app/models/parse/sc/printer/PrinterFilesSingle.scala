@@ -34,7 +34,7 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
       false -> originalContent
     }
 
-    val ret = ClassReferenceService.insertImports(finalContent)
+    val ret = ClassReferenceService.insertImports(file.pathAsString, finalContent)
     file.delete()
     file.write(ret.mkString("\n"))
     ret
