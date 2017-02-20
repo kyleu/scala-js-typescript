@@ -15,36 +15,18 @@ package pixi
 -
   def off(event: String, fn: js.Function, context: js.Any = js.native): utils.EventEmitter = js.native
 -
-  def this(points: Point*) = this()
--
   var gl: PIXI.glCore.type = js.native
+-
+  def this(points: Point*) = this()
 =
   def this(points: Double*) = this()
   def this(points: (Point | Double)*) = this()
-=
-  object PIXI extends js.Object {
-  object PIXIObj extends js.Object {
 =
   var extract: extract.CanvasExtract = js.native
   var extract: org.scalajs.pixijs.extract.PIXI.CanvasExtract = js.native
 =
   var extract: extract.WebGLExtract = js.native
   var extract: org.scalajs.pixijs.extract.PIXI.WebGLExtract  = js.native
-=
-  var URL_FILE_EXTENSION: `js.RegExp` | String = js.native
-  var URL_FILE_EXTENSION: js.RegExp | String = js.native
-=
-  var RETINA_PREFIX: `js.RegExp` = js.native
-  var RETINA_PREFIX: js.RegExp = js.native
-=
-  var DATA_URI: `js.RegExp` | String = js.native
-  var DATA_URI: js.RegExp | String = js.native
-=
-  var SVG_SIZE: `js.RegExp` | String = js.native
-  var SVG_SIZE: js.RegExp | String = js.native
-=
-  type RETINA_PREFIX = `js.RegExp` | String
-  type RETINA_PREFIX = js.RegExp | String
 =
   var uploadFunction: js.Function6[js.Array[PIXI.DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
   var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
@@ -71,7 +53,7 @@ package pixi
   var vaos: js.Array[org.scalajs.pixijs.glCore.PIXI.VertexArrayObject] = js.native
 =
 class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarget {
-class DisplayObject extends org.scalajs.pixijs.utils.PIXI.EventEmitter with org.scalajs.pixijs.interaction.PIXI.InteractiveTarget {
+class DisplayObject extends org.scalajs.pixijs.utils.PIXI.EventEmitter with org.scalajs.pixijs.interaction.InteractiveTarget {
 =
 object Pixi extends js.Object {
 object PixiObj extends js.Object {
@@ -109,20 +91,26 @@ object PixiObj extends js.Object {
 " PIXI."
 " "
 *
+".PIXI."
+"."
+*
 " interaction.InteractionEvent"
-" org.scalajs.pixijs.interaction.PIXI.InteractionEvent"
+" org.scalajs.pixijs.interaction.InteractionEvent"
 *
 " loaders.Loader"
-" org.scalajs.pixijs.loaders.PIXI.Loader"
+" org.scalajs.pixijs.loaders.Loader"
 *
 "= extras."
-"= org.scalajs.pixijs.extras.PIXI."
+"= org.scalajs.pixijs.extras."
 *
 " glCore."
-" org.scalajs.pixijs.glCore.PIXI."
+" org.scalajs.pixijs.glCore."
 *
 " utils.EventEmitter"
-" org.scalajs.pixijs.utils.PIXI.EventEmitter"
+" org.scalajs.pixijs.utils.EventEmitter"
 *
 " loaders.Resource"
 " Resource"
+*
+"`js.RegExp`"
+"js.RegExp"

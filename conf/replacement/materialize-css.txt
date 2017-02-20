@@ -1,7 +1,4 @@
 =
-object `Materialize-css` extends js.Object {
-object Materializecss extends js.Object {
-=
   var data: js.Array[Materialize.ChipDataObject] = js.native
   var data: js.Array[ChipDataObject] = js.native
 =
@@ -13,3 +10,12 @@ object Materializecss extends js.Object {
 *
 "@name "
 "@param "
+*
+" Materialize."
+" "
+*
+".Materialize."
+"."
+*
+"[Materialize."
+"["

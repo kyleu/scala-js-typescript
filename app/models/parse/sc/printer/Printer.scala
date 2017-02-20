@@ -55,8 +55,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
         printSymbol(sym)
       }
 
-      if (packageObjectMembers.nonEmpty) {
-        val packageObjectName = Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
+      if (!packageObjectMembers.forall(_.isInstanceOf[CommentSymbol])) {
+        val packageObjectName = Name((thisPackage.name.head.toUpper + thisPackage.name.tail).replaceAllLiterally("-", ""))
 
         pln""
         files.setActiveObject(packageObjectName)
@@ -118,7 +118,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     pln"}"
   }
 
-  private[this] def printModule(sym: ModuleSymbol) = {
+  private[this] def printModule(sym: ModuleSymbol) = if (sym.members.nonEmpty) {
     files.setActiveObject(sym.name)
     printPending()
     pln""

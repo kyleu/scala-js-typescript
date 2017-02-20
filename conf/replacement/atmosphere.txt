@@ -1,3 +1,3 @@
 =
-object Atmosphere extends js.Object {
-object AtmosphereObj extends js.Object {
+  var atmosphere: Atmosphere.Atmosphere = js.native
+  var atmosphere: Atmosphere = js.native

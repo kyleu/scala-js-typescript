@@ -12,7 +12,7 @@ object ClassReferenceService extends Logging {
       "awssdk/AutoScaling", "awssdk/SQS", "awssdk/SES", "/sts/"
     ), Seq("ClientConfig", "Credentials", "Tags", "BlockDeviceMapping", "StepAdjustment")),
 
-    ("org.scalajs.pixijs.PIXI._", Seq(
+    ("org.scalajs.pixijs._", Seq(
       "/accessibility", "/CanvasTinter", "/core", "/extras", "/extract", "/filters", "/glCore", "/GroupD8", "/interaction", "/loaders",
       "/mesh", "/particles", "/prepare", "/utils", "pixijs/package.scala"
     ), Seq(
@@ -20,13 +20,9 @@ object ClassReferenceService extends Logging {
         " Matrix", "ObjectRenderer", "Point", " Texture", "[Texture", "WebGLRenderer", "WebGLState"
       )),
 
-    ("org.scalajs.pixijs.extras.PIXI._", Seq("pixijs/package.scala"), Seq("@js.native")),
+    ("org.scalajs.pixijs.extras._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
-    ("org.scalajs.pixijs.glCore.PIXI._", Seq("pixijs/package.scala"), Seq("@js.native")),
-
-    ("org.scalajs.matterjs.Matter._", Seq("matterjs/package.scala"), Seq("@js.native")),
-
-    ("org.scalajs.ace.AceAjax.Position", Seq("ace/package.scala"), Seq(": Position")),
+    ("org.scalajs.pixijs.glCore._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
     ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native")),
 
@@ -36,7 +32,7 @@ object ClassReferenceService extends Logging {
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(
       " HTMLElement", " Promise", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
-      "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest"
+      "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement"
     ),
     "scala.scalajs.js.|" -> Seq(" | "),
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),

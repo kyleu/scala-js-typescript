@@ -19,3 +19,6 @@ trait TabsEvent[T] extends js.Object {
 *
 ": JQueryEasingFunction"
 ": js.Dynamic"
+*
+" JQueryUI."
+" "

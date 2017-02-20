@@ -1,3 +1,0 @@
-=
-object `Amazon-product-api` extends js.Object {
-object Amazonproductapi extends js.Object {
