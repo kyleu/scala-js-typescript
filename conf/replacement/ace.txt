@@ -1,0 +1,5 @@
+-
+  def this(text: String = js.native) = this()
+=
+  def this(text: js.Array[String] = js.native) = this()
+  def this(text: (String | js.Array[String]) = js.native) = this()

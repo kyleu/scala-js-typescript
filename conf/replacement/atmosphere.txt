@@ -1,0 +1,3 @@
+=
+object Atmosphere extends js.Object {
+object AtmosphereObj extends js.Object {

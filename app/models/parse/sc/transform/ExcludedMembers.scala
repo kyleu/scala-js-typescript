@@ -8,6 +8,10 @@ object ExcludedMembers {
   }
 
   object Exclusions extends Enum[Exclusions] {
+    case object Ace extends Exclusions("ace", files = Map("Range" -> Set("toString", "clone")))
+    case object AmCharts extends Exclusions("amcharts", files = Map(
+      "AmCoordinateChart" -> Set("addListener"), "AmPieChart" -> Set("addListener"), "ValueAxis" -> Set("position", "addGuide", "removeGuide")
+    ))
     case object AWSSDK extends Exclusions("aws-sdk", files = Map(
       "ClientConfig" -> Set("credentials", "region")
     ))

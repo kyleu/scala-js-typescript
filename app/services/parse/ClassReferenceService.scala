@@ -26,7 +26,11 @@ object ClassReferenceService extends Logging {
 
     ("org.scalajs.matterjs.Matter._", Seq("matterjs/package.scala"), Seq("@js.native")),
 
-    ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native"))
+    ("org.scalajs.ace.AceAjax.Position", Seq("ace/package.scala"), Seq(": Position")),
+
+    ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native")),
+
+    ("org.scalajs.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback"))
   )
 
   private[this] val refs = Seq(
