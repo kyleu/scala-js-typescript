@@ -1,0 +1,17 @@
+@(debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="row">
+          <div class="col s12 m6">
+            <a href="@controllers.routes.TestController.list()" class="theme-text">Tests</a>
+          </div>
+          <div class="col s12 m6">
+            <a href="@controllers.routes.GithubController.list()" class="theme-text">Repos</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

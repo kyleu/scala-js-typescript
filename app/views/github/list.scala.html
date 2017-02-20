@@ -26,7 +26,7 @@
                       <a class="teal-text" href="@controllers.routes.GithubController.create(key)">Create</a>
                     }</td>
                     <td>@if(dirExists) {
-                      <a class="teal-text" href="@controllers.routes.TestController.script(key)">OK</a>
+                      <a class="teal-text" href="@controllers.routes.TestController.process(key)">OK</a>
                     } else {
                       @if(key == "scala-js-template") {
                         <em>n/a</em>

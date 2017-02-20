@@ -14,23 +14,23 @@ object TestController {
 
 @javax.inject.Singleton
 class TestController @javax.inject.Inject() (override val app: Application) extends BaseController {
-  def index() = act("index") { implicit request =>
-    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).toSeq
-    Future.successful(Ok(views.html.parse.index(scripts, app.config.debug)))
+  def list(q: Option[String]) = act("index") { implicit request =>
+    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq
+    Future.successful(Ok(views.html.parse.list(q, scripts, app.config.debug)))
   }
 
-  def script(key: String) = act(s"detail.$key") { implicit request =>
-    val result = process(key)
-    Future.successful(Ok(views.html.parse.script(key, result.src, result.tree, result.text, app.config.debug)))
+  def process(key: String) = act(s"detail.$key") { implicit request =>
+    val result = processProject(key)
+    Future.successful(Ok(views.html.parse.detail(key, result.src, result.tree, result.text, app.config.debug)))
   }
 
-  def allScripts() = act("script.all") { implicit request =>
-    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).toSeq
-    val results = scripts.map(script => process(script.name))
-    Future.successful(Ok(views.html.parse.allScripts(results, app.config.debug)))
+  def processAll(q: Option[String]) = act("script.all") { implicit request =>
+    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq
+    val results = scripts.map(script => processProject(script.name))
+    Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
   }
 
-  private[this] def process(key: String) = {
+  private[this] def processProject(key: String) = {
     val dir = FileService.getDir("DefinitelyTyped") / key
     val ts = dir / "index.d.ts"
     val content = ts.contentAsString

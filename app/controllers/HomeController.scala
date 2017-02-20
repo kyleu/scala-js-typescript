@@ -7,7 +7,9 @@ import scala.concurrent.Future
 
 @javax.inject.Singleton
 class HomeController @javax.inject.Inject() (override val app: Application, testController: TestController) extends BaseController {
-  def home() = testController.index()
+  def home() = act("home") { implicit request =>
+    Future.successful(Ok(views.html.index(app.config.debug)))
+  }
 
   def untrail(path: String) = Action.async {
     Future.successful(MovedPermanently(s"/$path"))

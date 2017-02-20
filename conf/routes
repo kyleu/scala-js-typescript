@@ -7,8 +7,9 @@ GET         /metrics                                 controllers.MetricsControll
 GET         /sandbox                                 controllers.SandboxController.list
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
 
-GET         /script                                  controllers.TestController.allScripts
-GET         /script/:key                             controllers.TestController.script(key)
+GET         /test                                    controllers.TestController.list(q: Option[String] ?= None)
+GET         /test/process/all                        controllers.TestController.processAll(q: Option[String] ?= None)
+GET         /test/process/:key                       controllers.TestController.process(key)
 
 GET         /repo                                    controllers.GithubController.list
 GET         /repo/test                               controllers.GithubController.test
