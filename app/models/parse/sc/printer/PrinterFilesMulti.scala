@@ -38,26 +38,29 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
     activeDir = activeDir.map(_.parent)
   }
 
-  override def setActiveObject(n: Name) = activeObject match {
-    case Some(active) => // throw new IllegalStateException(s"Attempt to set active object to [${n.name}] before clearing [$active].")
-    case None =>
-      activeObject = Some(n)
-      val file = activeDir match {
-        case Some(active) => active / s"${n.name.replaceAllLiterally(".", "").replaceAllLiterally("-", "")}.scala"
-        case None => throw new IllegalStateException("No active directory.")
-      }
-      if (!file.exists) {
-        val pkg = stack.map(_._1.name).reverse.mkString(".")
-        if (pkg.isEmpty) {
-          file.append(s"package org.scalajs.${root.name}\n")
-        } else {
-          file.append(s"package org.scalajs.${root.name}.$pkg\n")
-        }
+  override def getActiveObject = activeObject
 
-        file.append("\n")
-        file.append("import scala.scalajs.js\n")
+  override def setActiveObject(n: Name) = {
+    activeObject.foreach(current => if (current.name != n.name) {
+      throw new IllegalStateException(s"Attempt to set active object [$n] when [$current] is already set.")
+    })
+    activeObject = Some(n)
+    val file = activeDir match {
+      case Some(active) => active / s"${n.name.replaceAllLiterally(".", "").replaceAllLiterally("-", "")}.scala"
+      case None => throw new IllegalStateException("No active directory.")
+    }
+    if (!file.exists) {
+      val pkg = stack.map(_._1.name).reverse.mkString(".")
+      if (pkg.isEmpty) {
+        file.append(s"package org.scalajs.${root.name}\n")
+      } else {
+        file.append(s"package org.scalajs.${root.name}.$pkg\n")
       }
-      activeFile = Some(file)
+
+      file.append("\n")
+      file.append("import scala.scalajs.js\n")
+    }
+    activeFile = Some(file)
   }
 
   override def clearActiveObject(n: Name) = activeObject match {
@@ -70,11 +73,15 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
     case None => //throw new IllegalStateException(s"Attempt to clear active object with none active.")
   }
 
+  def packageObject() = {
+    activeDir.map(_ / "package.scala").getOrElse(rootObj)
+  }
+
   def print(s: String) = {
     //log(s)
     activeFile match {
       case Some(file) => file.append(s)
-      case None => rootObj.append(s)
+      case None => packageObject().append(s)
     }
   }
 

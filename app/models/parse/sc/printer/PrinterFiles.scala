@@ -5,6 +5,7 @@ import models.parse.sc.tree.Name
 trait PrinterFiles {
   def pushPackage(pkg: Name): Unit
   def popPackage(pkg: Name): Unit
+  def getActiveObject: Option[Name]
   def setActiveObject(n: Name): Unit = ()
   def clearActiveObject(n: Name): Unit = ()
 

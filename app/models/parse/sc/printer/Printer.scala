@@ -8,6 +8,12 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
 
   private implicit val self = this
 
+  private[this] val pendingComments = collection.mutable.ArrayBuffer.empty[CommentSymbol]
+  private[this] def printPending() = {
+    pendingComments.foreach(s => printComment(s.cleanedText, s.multiline))
+    pendingComments.clear()
+  }
+
   protected var currentJSNamespace = ""
 
   private[this] def printComment(text: String, multiline: Boolean) = if (multiline) {
@@ -43,6 +49,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
         files.pushPackage(thisPackage)
       }
 
+      printPending()
+
       for (sym <- topLevels) {
         printSymbol(sym)
       }
@@ -51,16 +59,14 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
         val packageObjectName = Name(thisPackage.name.head.toUpper + thisPackage.name.tail)
 
         pln""
+        files.setActiveObject(packageObjectName)
         if (currentJSNamespace == "") {
-          files.setActiveObject(packageObjectName)
           pln"@js.native"
           pln"@js.annotation.JSGlobalScope"
           pln"object $packageObjectName extends js.Object {"
         } else {
-          val jsName = currentJSNamespace.init
-          files.setActiveObject(packageObjectName)
           pln"@js.native"
-          pln"""@js.annotation.JSName("$jsName")"""
+          pln"""@js.annotation.JSName("${currentJSNamespace.init}")"""
           pln"object $packageObjectName extends js.Object {"
         }
         for (sym <- packageObjectMembers) {
@@ -96,6 +102,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     }
 
     pln""
+    printPending()
     pln"@js.native"
     if (currentJSNamespace != "" && !sym.isTrait) {
       pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
@@ -112,6 +119,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printModule(sym: ModuleSymbol) = {
+    files.setActiveObject(sym.name)
+    printPending()
     pln""
     pln"@js.native"
     if (currentJSNamespace != "") {
@@ -120,9 +129,11 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     pln"object ${sym.name} extends js.Object {"
     printMemberDecls(sym)
     pln"}"
+    files.clearActiveObject(sym.name)
   }
 
   private[this] def printTypeAlias(sym: TypeAliasSymbol) = {
+    printPending()
     p"  type ${sym.name}"
     if (sym.tparams.nonEmpty) {
       p"[${sym.tparams}]"
@@ -131,6 +142,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printField(sym: FieldSymbol) = {
+    printPending()
     sym.jsName.foreach { jsName =>
       pln"""  @js.annotation.JSName("$jsName")"""
     }
@@ -138,6 +150,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printMethod(sym: MethodSymbol) = {
+    printPending()
     val params = sym.params
 
     if (sym.name == Name.CONSTRUCTOR) {
@@ -168,7 +181,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
 
   def printSymbol(sym: tree.Symbol) {
     sym match {
-      case s: CommentSymbol => printComment(s.cleanedText, s.multiline)
+      case s: CommentSymbol => pendingComments += s
+      //case s: CommentSymbol => printComment(s.text, s.multiline)
       case s: PackageSymbol => printPackage(s, outputPackage)
       case s: ClassSymbol =>
         files.setActiveObject(s.name)

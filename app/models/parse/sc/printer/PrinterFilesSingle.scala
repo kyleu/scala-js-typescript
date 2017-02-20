@@ -22,6 +22,8 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
   }
   override def popPackage(pkg: Name) = file.append(s"}\n")
 
+  override def getActiveObject = None
+
   override def print(s: String) = file.append(s)
 
   override def onComplete() = {

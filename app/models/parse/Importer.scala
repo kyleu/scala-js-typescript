@@ -131,7 +131,7 @@ case class Importer(key: String) {
       case LineCommentDecl(text) => owner.members += new CommentSymbol(text, multiline = false)
       case MultilineCommentDecl(text) => owner.members += new CommentSymbol(text, multiline = true)
 
-      case _ => owner.members += new CommentSymbol("??? " + declaration, false)
+      case _ => //owner.members += new CommentSymbol("??? " + declaration, false)
     }
   }
 
@@ -205,7 +205,7 @@ case class Importer(key: String) {
       case LineCommentMember(text) => owner.members += new CommentSymbol(text, multiline = false)
       case MultilineCommentMember(text) => owner.members += new CommentSymbol(text, multiline = true)
 
-      case _ => owner.members += new CommentSymbol("??? " + member, multiline = false)
+      case _ => //owner.members += new CommentSymbol("??? " + member, multiline = false)
     }
   }
 
