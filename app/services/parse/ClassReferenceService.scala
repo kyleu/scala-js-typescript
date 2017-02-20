@@ -14,15 +14,17 @@ object ClassReferenceService extends Logging {
 
     ("org.scalajs.pixijs.PIXI._", Seq(
       "/accessibility", "/CanvasTinter", "/core", "/extras", "/extract", "/filters", "/glCore", "/GroupD8", "/interaction", "/loaders",
-      "/mesh", "/particles", "/prepare", "/utils", "package.scala"
+      "/mesh", "/particles", "/prepare", "/utils", "pixijs/package.scala"
     ), Seq(
         "CanvasRenderer", "Container", "DisplayObject", " Filter", "IDecomposedDataUri", "IHitArea",
         " Matrix", "ObjectRenderer", "Point", " Texture", "[Texture", "WebGLRenderer", "WebGLState"
       )),
 
-    ("org.scalajs.pixijs.extras.PIXI._", Seq("package.scala"), Seq("@js.native")),
+    ("org.scalajs.pixijs.extras.PIXI._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
-    ("org.scalajs.pixijs.glCore.PIXI._", Seq("package.scala"), Seq("@js.native")),
+    ("org.scalajs.pixijs.glCore.PIXI._", Seq("pixijs/package.scala"), Seq("@js.native")),
+
+    ("org.scalajs.matterjs.Matter._", Seq("matterjs/package.scala"), Seq("@js.native")),
 
     ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native"))
   )

@@ -27,6 +27,7 @@ case class ProjectService(project: ProjectDefinition) {
       dest.delete()
     }
     src.copyTo(dest)
+    (dest / ".git").delete()
     (dest / "readme.md").delete()
     (dest / "template.readme.md").renameTo("readme.md")
     dest

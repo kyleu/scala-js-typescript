@@ -26,7 +26,7 @@ case class ExportService(key: String, t: List[DeclTree]) {
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {
     val proj = ProjectService(project)
     val srcDir = proj.create()
-    val multi = PrinterFilesMulti(project.key, srcDir)
+    val multi = PrinterFilesMulti(project, srcDir)
     printer(multi, decls)
   }
 

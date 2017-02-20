@@ -1,11 +1,12 @@
 package models.parse.sc.printer
 
 import better.files._
+import models.parse.ProjectDefinition
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
 
-case class PrinterFilesMulti(key: String, root: File) extends PrinterFiles {
+case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = Some(root)
   private[this] var activeObject: Option[Name] = None
@@ -84,15 +85,18 @@ case class PrinterFilesMulti(key: String, root: File) extends PrinterFiles {
 
   override def onComplete() = {
     val textContent = new StringBuilder
-    val replacements = ReplacementManager.getReplacements(key)
+    val replacements = ReplacementManager.getReplacements(project.key)
 
     root.listRecursively().toList.map { file =>
       if (!file.isDirectory)
         if (file.size <= 1024 && file.contentAsString.trim.isEmpty) {
           file.delete()
         } else {
-          val originalContent = file.lines.toList
-          println(originalContent)
+          val originalContent = if (file.name == "package.scala") {
+            Seq(s"package org.scalajs.${project.keyNormalized}\n") ++ file.lines.toList
+          } else {
+            file.lines.toList
+          }
           val newContent = replacements.replace(originalContent)
           val ret = ClassReferenceService.insertImports(file.pathAsString, newContent)
           val body = ret.mkString("\n")
