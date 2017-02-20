@@ -1,0 +1,3 @@
+=
+object BigNum extends js.Object {
+object BigNumObj extends js.Object {

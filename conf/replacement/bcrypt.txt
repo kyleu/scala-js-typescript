@@ -1,0 +1,3 @@
+=
+  def genSalt(callback: js.Function2[Error, String, Unit] = js.native): Promise[String] = js.native
+  def genSalt(callback: js.Function2[Error, String, Unit]): Promise[String] = js.native

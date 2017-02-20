@@ -1,0 +1,3 @@
+=
+  var Promise: Promise.type = js.native
+  var Promise: js.Object = js.native
