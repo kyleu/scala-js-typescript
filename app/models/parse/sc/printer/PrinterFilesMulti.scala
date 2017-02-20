@@ -28,8 +28,6 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
 
     activeDir = Some(dir)
     stack.push(pkg -> dir)
-
-    //log("PUSH  ::: " + stack.reverse.map(_._1.name).mkString(".") + "\n")
   }
 
   override def popPackage(pkg: Name) = {
@@ -38,7 +36,6 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
       throw new IllegalStateException(s"Observed [$popped], not expected [$pkg].")
     }
     activeDir = activeDir.map(_.parent)
-    //log("POP   ::: " + stack.reverse.map(_._1.name).mkString(".") + "\n")
   }
 
   override def setActiveObject(n: Name) = activeObject match {
@@ -50,7 +47,7 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
         case None => throw new IllegalStateException("No active directory.")
       }
       if (!file.exists) {
-        val pkg = stack.map(_._1.name).mkString(".")
+        val pkg = stack.map(_._1.name).reverse.mkString(".")
         if (pkg.isEmpty) {
           file.append(s"package org.scalajs.${root.name}\n")
         } else {
@@ -61,14 +58,12 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
         file.append("import scala.scalajs.js\n")
       }
       activeFile = Some(file)
-    //log(s"SET   ::: ${n.name} (${stack.reverse.map(_._1.name).mkString(".")})\n")
   }
 
   override def clearActiveObject(n: Name) = activeObject match {
     case Some(active) => if (n == active) {
       activeFile = None
       activeObject = None
-      //log(s"CLEAR ::: ${active.name} (${stack.reverse.map(_._1.name).mkString(".")})\n")
     } else {
       // Noop for now
     }

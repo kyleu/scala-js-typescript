@@ -4,3 +4,9 @@ object GamepadObj extends js.Object {
 *
 "@readonly"
 "(readonly)"
+*
+" Gamepad."
+" "
+*
+"[Gamepad."
+"["

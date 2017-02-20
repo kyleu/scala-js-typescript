@@ -3,7 +3,7 @@ package models.parse.sc.printer
 import models.parse.sc.tree
 import models.parse.sc.tree._
 
-class Printer(val files: PrinterFiles, outputPackage: String) {
+class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: Set[String]) {
   import PrinterHelper._
 
   private implicit val self = this
@@ -39,7 +39,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
     if (sym.members.nonEmpty) {
       val (topLevels, packageObjectMembers) = sym.members.partition(canBeTopLevel)
 
-      if (!isRootPackage) {
+      if (!isRootPackage && !ignoredPackages.contains(thisPackage.name)) {
         files.pushPackage(thisPackage)
       }
 
@@ -70,7 +70,7 @@ class Printer(val files: PrinterFiles, outputPackage: String) {
         files.clearActiveObject(packageObjectName)
       }
 
-      if (!isRootPackage) {
+      if (!isRootPackage && !ignoredPackages.contains(thisPackage.name)) {
         files.popPackage(thisPackage)
       }
     }

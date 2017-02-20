@@ -2,6 +2,7 @@
     key: String,
     src: better.files.File,
     definitions: Option[Seq[models.parse.parser.tree.DeclTree]],
+    definitionsJson: Option[String],
     output: Seq[String],
     debug: Boolean
 )(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple(key) {
@@ -18,6 +19,10 @@
         <li>
           <div class="collapsible-header">Parsed Tree</div>
           <div class="collapsible-body"><pre style="margin: 10px;">@definitions</pre></div>
+        </li>
+        <li>
+          <div class="collapsible-header">Parsed Json</div>
+          <div class="collapsible-body"><pre style="margin: 10px;">@definitionsJson</pre></div>
         </li>
         <li>
           <div class="collapsible-header">TypeScript Input</div>

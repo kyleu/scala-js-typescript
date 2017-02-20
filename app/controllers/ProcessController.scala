@@ -9,14 +9,17 @@ import utils.Application
 import scala.concurrent.Future
 
 object ProcessController {
-  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: Seq[String])
+  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: Seq[String]) {
+    import upickle.default._
+    lazy val json = tree.map(t => write(t, 2))
+  }
 }
 
 @javax.inject.Singleton
 class ProcessController @javax.inject.Inject() (override val app: Application) extends BaseController {
   def process(key: String) = act(s"detail.$key") { implicit request =>
     val result = processProject(key)
-    Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, result.text, app.config.debug)))
+    Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, result.json, result.text, app.config.debug)))
   }
 
   def processAll(q: Option[String]) = act("script.all") { implicit request =>

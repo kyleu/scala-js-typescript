@@ -1,11 +1,14 @@
 package services.parse
 
-import models.parse.{Importer, ProjectDefinition}
+import better.files._
 import models.parse.parser.tree.{DeclTree, LineCommentDecl}
 import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
-import better.files._
+import models.parse.sc.transform.IgnoredPackages
+import models.parse.{Importer, ProjectDefinition}
 
 case class ExportService(key: String, t: List[DeclTree]) {
+  private[this] val ignoredPackages = IgnoredPackages.forKey(key)
+
   def export() = {
     val (project, decls) = extractFrom(key, t)
     exportSingle(project, decls)
@@ -67,7 +70,7 @@ case class ExportService(key: String, t: List[DeclTree]) {
 
   private[this] def printer(files: PrinterFiles, decls: List[DeclTree]) = {
     val pkg = new Importer(key).apply(decls)
-    new Printer(files, key).printSymbol(pkg)
+    new Printer(files, key, ignoredPackages).printSymbol(pkg)
     files.onComplete()
   }
 }

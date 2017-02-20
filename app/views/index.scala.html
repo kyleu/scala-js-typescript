@@ -1,4 +1,4 @@
-@(q: Option[String], keys: Seq[String], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
+@(q: Option[String], keys: Seq[(String, String)], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
     implicit request: Request[AnyContent], session: Session, flash: Flash
 )@layout.simple(utils.Config.projectName) {
   <div class="row">
@@ -23,23 +23,19 @@
               </thead>
               <tbody>
               @keys.map { key =>
-                @defining(repos.find(_.name == ("scala-js-" + key))) { repo =>
-                  @defining(projectDirs.contains("scala-js-" + key)) { dirExists =>
+                @defining(repos.find(_.name == ("scala-js-" + key._2))) { repo =>
+                  @defining(projectDirs.contains("scala-js-" + key._2)) { dirExists =>
                     <tr>
-                      <td>@key</td>
+                      <td>@key._1</td>
                       <td>@if(dirExists) {
-                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key)"><i class="fa fa-check"></i></a>
+                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key._1)"><i class="fa fa-check"></i></a>
                       } else {
-                        @if(key == "template") {
-                          <em>n/a</em>
-                        } else {
-                          <a class="teal-text" href="@controllers.routes.ProcessController.process(key)"><i class="fa fa-close"></i></a>
-                        }
+                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key._1)"><i class="fa fa-close"></i></a>
                       }</td>
                       <td>@if(repo.isDefined) {
-                        <a class="teal-text" href="@controllers.routes.GithubController.detail(key)"><i class="fa fa-check"></i></a>
+                        <a class="teal-text" href="@controllers.routes.GithubController.detail(key._2)"><i class="fa fa-check"></i></a>
                       } else {
-                        <a class="teal-text" href="@controllers.routes.GithubController.create(key)"><i class="fa fa-close"></i></a>
+                        <a class="teal-text" href="@controllers.routes.GithubController.create(key._2)"><i class="fa fa-close"></i></a>
                       }</td>
                     </tr>
                   }

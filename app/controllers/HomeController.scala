@@ -15,7 +15,7 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
     val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse("scala-js-" + ""))).toSeq.map(_.name)
     githubService.listRepos().map { repos =>
       val filteredRepos = repos.filter(_.name.startsWith("scala-js-" + q.getOrElse("")))
-      val keys = (repos.map(_.name) ++ projectDirs ++ srcDirs).map(_.stripPrefix("scala-js-")).distinct.sorted
+      val keys = srcDirs.sorted.map(x => x -> x.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
       Ok(views.html.index(q, keys, projectDirs, repos, app.config.debug))
     }
   }

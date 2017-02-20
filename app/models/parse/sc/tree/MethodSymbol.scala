@@ -27,4 +27,6 @@ class MethodSymbol(prot: Boolean, nme: Name) extends Symbol(nme) with JSNameable
       this.name == that.name && this.tparams == that.tparams && this.paramTypes == that.paramTypes && this.resultType == that.resultType
     case _ => false
   }
+
+  override def hashCode() = prot.hashCode * nme.hashCode
 }
