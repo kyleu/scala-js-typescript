@@ -23,7 +23,8 @@ object GithubService {
   }
 }
 
-case class GithubService(ws: WSClient) {
+@javax.inject.Singleton
+case class GithubService @javax.inject.Inject() (ws: WSClient) {
   def test() = detail("_scala-js-template").map { result =>
     result.toString
   }

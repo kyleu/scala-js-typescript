@@ -1,0 +1,5 @@
+-
+  def str2bigInt(s: String, b: Double, n: Double = js.native, m: Double = js.native): BigInt = js.native
+=
+  def str2bigInt(s: String, b: String, n: Double = js.native, m: Double = js.native): BigInt = js.native
+  def str2bigInt(s: String, b: (String | Double), n: Double = js.native, m: Double = js.native): BigInt = js.native

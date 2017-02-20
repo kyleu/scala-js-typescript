@@ -1,0 +1,3 @@
+=
+object Boom extends js.Object {
+object BoomObj extends js.Object {

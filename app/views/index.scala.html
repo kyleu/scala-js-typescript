@@ -1,14 +1,52 @@
-@(debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
-@layout.simple(utils.Config.projectName) {
+@(q: Option[String], keys: Seq[String], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(utils.Config.projectName) {
   <div class="row">
     <div class="col s12">
       <div class="panel-content">
-        <div class="row">
-          <div class="col s12 m6">
-            <a href="@controllers.routes.TestController.list()" class="theme-text">Tests</a>
+        <div class="collection with-header">
+          <div class="collection-header">
+            <a href="@controllers.routes.HomeController.home(q)" class="right teal-text">Process All</a>
+            <h5>@utils.NumberUtils.withCommas(keys.size) Available Projects</h5>
+            <form action="@controllers.routes.HomeController.home()" method="get">
+              <input name="q" type="text" placeholder="Filter" value="@q" />
+            </form>
           </div>
-          <div class="col s12 m6">
-            <a href="@controllers.routes.GithubController.list()" class="theme-text">Repos</a>
+          <div class="collection-item">
+            <table class="bordered highlight">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Project</th>
+                  <th>Github</th>
+                </tr>
+              </thead>
+              <tbody>
+              @keys.map { key =>
+                @defining(repos.find(_.name == ("scala-js-" + key))) { repo =>
+                  @defining(projectDirs.contains("scala-js-" + key)) { dirExists =>
+                    <tr>
+                      <td>@key</td>
+                      <td>@if(dirExists) {
+                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key)"><i class="fa fa-check"></i></a>
+                      } else {
+                        @if(key == "template") {
+                          <em>n/a</em>
+                        } else {
+                          <a class="teal-text" href="@controllers.routes.ProcessController.process(key)"><i class="fa fa-close"></i></a>
+                        }
+                      }</td>
+                      <td>@if(repo.isDefined) {
+                        <a class="teal-text" href="@controllers.routes.GithubController.detail(key)"><i class="fa fa-check"></i></a>
+                      } else {
+                        <a class="teal-text" href="@controllers.routes.GithubController.create(key)"><i class="fa fa-close"></i></a>
+                      }</td>
+                    </tr>
+                  }
+                }
+              }
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

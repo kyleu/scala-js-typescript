@@ -37,8 +37,7 @@ case class ProjectService(project: ProjectDefinition) {
     val files = Seq(
       dir / "build.sbt",
       dir / "README.md",
-      dir / "project" / "Projects.scala",
-      dir / "project" / "Shared.scala"
+      dir / "project" / "Projects.scala"
     )
     val replacements = project.asMap
     def replace(f: File) = {

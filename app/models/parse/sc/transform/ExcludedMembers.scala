@@ -15,6 +15,8 @@ object ExcludedMembers {
     case object AWSSDK extends Exclusions("aws-sdk", files = Map(
       "ClientConfig" -> Set("credentials", "region")
     ))
+    case object BigInteger extends Exclusions("big-integer", files = Map("BigInteger" -> Set("toString", "valueOf")))
+    case object Blocks extends Exclusions("blocks", files = Map("BlocksArray" -> Set("update", "extend")))
     case object CanvasJS extends Exclusions("canvasjs", files = Map("ChartDataPoint" -> Set("legendMarkerColor")))
     case object JQuery extends Exclusions("jquery", files = Map(
       "BaseJQueryEventObject" -> Set("currentTarget", "preventDefault", "stopImmediatePropagation", "stopPropagation", "target"),
