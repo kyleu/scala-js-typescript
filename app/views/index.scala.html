@@ -1,4 +1,4 @@
-@(q: Option[String], keys: Seq[(String, String)], outDirs: Seq[String], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
+@(q: Option[String], keys: Seq[(String, String)], outDirs: Seq[String], projectDirs: Seq[better.files.File], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
     implicit request: Request[AnyContent], session: Session, flash: Flash
 )@layout.simple(utils.Config.projectName) {
   <div class="row">
@@ -22,6 +22,7 @@
                   <th>Key</th>
                   <th>Out</th>
                   <th>Project</th>
+                  <th>Repo</th>
                   <th>Github</th>
                 </tr>
               </thead>
@@ -29,9 +30,11 @@
               @keys.map { key =>
                 @defining(repos.find(_.name == ("scala-js-" + key._2))) { repo =>
                   @defining(outDirs.contains(key._1)) { outExists =>
-                    @defining(projectDirs.contains("scala-js-" + key._2)) { projectExists =>
+                    @defining(projectDirs.find(_.name == "scala-js-" + key._2)) { projectFile =>
                       <tr>
-                        <td>@key._1</td>
+                        <td>
+                          <a class="teal-text" href="@controllers.routes.HomeController.detail(key._1)">@key._1</a>
+                        </td>
                         <td>
                           <a class="teal-text" href="@controllers.routes.ParseController.parse(key._1)">
                             @if(outExists) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
@@ -39,8 +42,11 @@
                         </td>
                         <td>
                           <a class="teal-text" href="@controllers.routes.ProjectController.update(key._1)">
-                            @if(projectExists) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                          @if(projectFile.isDefined) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
                           </a>
+                        </td>
+                        <td>
+                          @if(projectFile.exists(_./(".git").exists)) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
                         </td>
                         <td>@if(repo.isDefined) {
                           <a class="teal-text" href="@controllers.routes.GithubController.detail(key._2)"><i class="fa fa-check"></i></a>

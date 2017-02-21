@@ -1,0 +1,31 @@
+@(key: String, out: better.files.File, project: better.files.File, hasRepo: Boolean, github: Option[services.github.GithubService.Repo], debug: Boolean)(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection with-header">
+          <div class="collection-header">
+            <h5>@key</h5>
+          </div>
+          <div class="collection-item">
+            <h6>Local Git Repo</h6>
+            @if(hasRepo) {
+              Local repo ready.
+            } else {
+              No local repo.
+            }
+          </div>
+          <div class="collection-item">
+            <h6>Github Repo</h6>
+            @if(github.isDefined) {
+              <a href="@github.get.url">@github.get.url</a>
+            } else {
+              No repository available.
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

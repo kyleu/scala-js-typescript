@@ -16,10 +16,20 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
 
       val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq.map(_.name)
       val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq.map(_.name)
-      val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse("scala-js-" + ""))).toSeq.map(_.name)
+      val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse("scala-js-" + ""))).toSeq
 
       val keys = srcDirs.sorted.map(x => x -> x.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
       Ok(views.html.index(q, keys, outDirs, projectDirs, repos, app.config.debug))
+    }
+  }
+
+  def detail(key: String) = act(s"home.$key") { implicit request =>
+    githubService.detail(key).map { github =>
+      val outDir = FileService.getDir("out") / key
+      val projectDir = FileService.getDir("projects") / ("scala-js-" + key)
+      val hasRepo = (projectDir / ".git").exists
+
+      Ok(views.html.detail(key, outDir, projectDir, hasRepo, github, app.config.debug))
     }
   }
 

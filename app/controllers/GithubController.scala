@@ -1,6 +1,7 @@
 package controllers
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.twirl.api.Html
 import services.file.FileService
 import services.github.GithubService
 import utils.Application
@@ -14,8 +15,9 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
   }
 
   def detail(key: String) = act(s"project.$key") { implicit request =>
-    githubService.detail("scala-js-" + key).map { repo =>
-      Ok(views.html.github.detail(repo))
+    githubService.detail(key).map {
+      case Some(repo) => Ok(views.html.github.detail(repo))
+      case None => Ok(Html(s"Github repo for [$key] not found."))
     }
   }
 

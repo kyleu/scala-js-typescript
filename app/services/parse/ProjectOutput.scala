@@ -39,7 +39,7 @@ case class ProjectOutput(project: ProjectDefinition) {
   private[this] def replaceStrings(dir: File) = {
     val files = Seq(
       dir / "build.sbt",
-      dir / "README.md",
+      dir / "readme.md",
       dir / "project" / "Projects.scala"
     )
     val replacements = project.asMap

@@ -40,8 +40,11 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
   }
 
   def detail(key: String) = {
-    val r = req(s"repos/DefinitelyScala/$key")
-    trap(r, r.get)(x => GithubService.repoFromObj(getObject(x)))
+    val withPrefix = if (key.startsWith("scala-js-")) { key } else { "scala-js-" + key }
+    val r = req(s"repos/DefinitelyScala/$withPrefix")
+    trap(r, r.get)(x => GithubService.repoFromObj(getObject(x))).map(Some(_)).recoverWith {
+      case NonFatal(x) => Future.successful(None)
+    }
   }
 
   def create(key: String) = {
