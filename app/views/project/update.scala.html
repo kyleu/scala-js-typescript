@@ -1,0 +1,10 @@
+@(key: String, created: Boolean, debug: Boolean)(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(key) {
+  <div class="row">
+    <div class="col s12">
+      <h5>@key</h5>
+      <div>Created: @created</div>
+    </div>
+  </div>
+}

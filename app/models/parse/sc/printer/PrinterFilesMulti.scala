@@ -51,9 +51,9 @@ case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) ext
     if (!file.exists) {
       val pkg = stack.map(_._1.name).reverse.mkString(".")
       if (pkg.isEmpty) {
-        file.append(s"package org.scalajs.${root.name}\n")
+        file.append(s"package org.scalajs.$keyNormalized\n")
       } else {
-        file.append(s"package org.scalajs.${root.name}.$pkg\n")
+        file.append(s"package org.scalajs.$keyNormalized.$pkg\n")
       }
 
       file.append("\n")

@@ -1,0 +1,28 @@
+@(results: Seq[(String, Boolean)], debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection-header">
+          <h5>Processed @utils.NumberUtils.withCommas(results.size) Libraries</h5>
+          <ul class="collapsible" data-collapsible="expandable">
+            @results.map { result =>
+              <li>
+                <div class="collapsible-header">
+                  <div class="right">
+                    @if(result._2) {
+                      <i class="fa fa-check"></i>
+                    } else {
+                      <i class="fa fa-close"></i>
+                    }
+                  </div>
+                  @result._1
+                </div>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+}

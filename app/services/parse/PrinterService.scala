@@ -35,7 +35,6 @@ case class PrinterService(key: String, t: List[DeclTree]) {
     val outJson = outDir / "project.json"
     outJson.createIfNotExists()
     outJson.append(upickle.default.write(project, 2))
-
     ret
   }
 

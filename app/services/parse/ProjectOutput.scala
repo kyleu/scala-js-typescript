@@ -7,7 +7,7 @@ import services.file.FileService
 case class ProjectOutput(project: ProjectDefinition) {
   private[this] val projectDir = FileService.getDir("projects") / ("scala-js-" + project.keyNormalized)
 
-  def scalaRoot = projectDir / "src" / "main" / "scala" / "org" / "scalajs"
+  def scalaRoot = projectDir / "src" / "main" / "scala" / "org" / "scalajs" / project.keyNormalized
 
   def exists() = projectDir.exists()
 
@@ -19,9 +19,8 @@ case class ProjectOutput(project: ProjectDefinition) {
       throw new IllegalStateException(s"Invalid [$srcRoot].")
     }
 
-    val srcDir = srcRoot / project.keyNormalized
-    srcDir.createDirectories()
-    srcDir
+    scalaRoot.createDirectories()
+    scalaRoot
   }
 
   private[this] def copyFiles() = {

@@ -12,15 +12,18 @@ case class ProjectService(key: String) {
 
   private[this] def updateProject(project: ProjectDefinition) = {
     val proj = ProjectOutput(project)
-    val projectSrcDir = if (proj.exists()) {
-      proj.scalaRoot
+    val (created, projectSrcDir) = if (proj.exists()) {
+      false -> proj.scalaRoot
     } else {
-      proj.create()
+      true -> proj.create()
     }
     projectSrcDir.delete()
     projectSrcDir.createDirectory()
 
     outDir.copyTo(projectSrcDir)
+
+    (projectSrcDir / "project.json").delete()
+    created
   }
 
   def update() = {

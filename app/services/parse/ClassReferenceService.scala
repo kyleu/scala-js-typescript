@@ -9,7 +9,7 @@ object ClassReferenceService extends Logging {
     ("org.scalajs.less.LessStatic", Seq("less/Less/"), Seq("LessStatic")),
 
     ("org.scalajs.awssdk._", Seq(
-      "awssdk/AutoScaling", "awssdk/SQS", "awssdk/SES", "/sts/"
+      "/AutoScaling/", "/SQS/", "/SES/", "/sts/", "/sts/"
     ), Seq("ClientConfig", "Credentials", "Tags", "BlockDeviceMapping", "StepAdjustment")),
 
     ("org.scalajs.pixijs._", Seq(
