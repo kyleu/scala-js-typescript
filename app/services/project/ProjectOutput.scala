@@ -1,12 +1,9 @@
-package services.parse
+package services.project
 
 import better.files._
 import models.parse.ProjectDefinition
-import services.file.FileService
 
-case class ProjectOutput(project: ProjectDefinition) {
-  private[this] val projectDir = FileService.getDir("projects") / ("scala-js-" + project.keyNormalized)
-
+case class ProjectOutput(project: ProjectDefinition, projectDir: File) {
   def scalaRoot = projectDir / "src" / "main" / "scala" / "org" / "scalajs" / project.keyNormalized
 
   def exists() = projectDir.exists()

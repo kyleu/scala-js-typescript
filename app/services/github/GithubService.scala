@@ -47,8 +47,8 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
     }
   }
 
-  def create(key: String) = {
-    val json = Js.Obj("name" -> Js.Str(s"$key"), "has_wiki" -> Js.False)
+  def create(key: String, description: String) = {
+    val json = Js.Obj("name" -> Js.Str(s"$key"), "description" -> Js.Str(description), "has_wiki" -> Js.False)
     val r = req("orgs/DefinitelyScala/repos")
     trap(r, r.post(write(json))) { x =>
       GithubService.repoFromObj(getObject(x))

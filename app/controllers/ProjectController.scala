@@ -1,7 +1,7 @@
 package controllers
 
 import services.file.FileService
-import services.parse.ProjectService
+import services.project.ProjectService
 import utils.Application
 
 import scala.concurrent.Future

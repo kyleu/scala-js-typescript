@@ -28,7 +28,7 @@ object Server {
     Seq(
       Akka.actor, Akka.logging, Play.playFilters, Play.playWs, Serialization.uPickle, Utils.enumeratum,
       WebJars.jquery, WebJars.fontAwesome, WebJars.materialize,
-      Utils.crypto, Utils.scalaGuice, Utils.commonsIo, Utils.betterFiles, Utils.fastparse,
+      Utils.crypto, Utils.scalaGuice, Utils.commonsIo, Utils.betterFiles, Utils.git,
       Akka.testkit, Play.playTest, Testing.scalaTest
     )
   }

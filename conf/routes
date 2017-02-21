@@ -14,9 +14,13 @@ GET         /:key/parse                              controllers.ParseController
 GET         /all/project                             controllers.ProjectController.updateAll(q: Option[String] ?= None)
 GET         /:key/project                            controllers.ProjectController.update(key)
 
-GET         /test/repo                               controllers.GithubController.test
-GET         /:key/repo                               controllers.GithubController.detail(key)
-GET         /:key/repo/create                        controllers.GithubController.create(key)
+GET         /test/git                                controllers.GitController.test
+GET         /:key/git                                controllers.GitController.detail(key)
+GET         /:key/git/create                         controllers.GitController.create(key)
+
+GET         /test/github                             controllers.GithubController.test
+GET         /:key/github                             controllers.GithubController.detail(key)
+GET         /:key/github/create                      controllers.GithubController.create(key)
 
 # Assets
 GET         /browserconfig.xml                       controllers.Assets.at(path = "/public", file = "browserconfig.xml")

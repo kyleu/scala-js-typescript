@@ -1,9 +1,11 @@
 package controllers
 
+import models.parse.ProjectDefinition
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Action
 import services.file.FileService
 import services.github.GithubService
+import services.project.ProjectService
 import utils.Application
 
 import scala.concurrent.Future
@@ -26,10 +28,15 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
   def detail(key: String) = act(s"home.$key") { implicit request =>
     githubService.detail(key).map { github =>
       val outDir = FileService.getDir("out") / key
-      val projectDir = FileService.getDir("projects") / ("scala-js-" + key)
+      val projectDir = ProjectService.projectDir(key)
       val hasRepo = (projectDir / ".git").exists
+      val details = if (outDir.exists) {
+        upickle.default.read[ProjectDefinition]((outDir / "project.json").contentAsString)
+      } else {
+        ProjectDefinition(key, "?", "?", "?", "?")
+      }
 
-      Ok(views.html.detail(key, outDir, projectDir, hasRepo, github, app.config.debug))
+      Ok(views.html.detail(key, details, outDir, projectDir, hasRepo, github, app.config.debug))
     }
   }
 

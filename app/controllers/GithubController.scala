@@ -1,5 +1,6 @@
 package controllers
 
+import models.parse.ProjectDefinition
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.twirl.api.Html
 import services.file.FileService
@@ -22,7 +23,10 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
   }
 
   def create(key: String) = act(s"project.create.$key") { implicit request =>
-    githubService.create("scala-js-" + key).map { result =>
+    val file = FileService.getDir("out") / key / "project.json"
+    val content = file.contentAsString
+    val proj = upickle.default.read[ProjectDefinition](content)
+    githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
       Redirect(controllers.routes.GithubController.detail(key))
     }
   }

@@ -3,6 +3,8 @@ package models.parse
 case class ProjectDefinition(key: String, name: String, url: String, version: String, authors: String) {
   val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
 
+  val description = s"Scala.js facades for $name $version."
+
   val asMap = Map(
     "key" -> key,
     "keyNormalized" -> keyNormalized,

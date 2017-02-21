@@ -1,7 +1,14 @@
-package services.parse
+package services.project
 
 import models.parse.ProjectDefinition
 import services.file.FileService
+
+object ProjectService {
+  def projectDir(key: String) = {
+    val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
+    FileService.getDir("projects") / ("scala-js-" + keyNormalized)
+  }
+}
 
 case class ProjectService(key: String) {
   val outDir = FileService.getDir("out") / key
@@ -11,7 +18,7 @@ case class ProjectService(key: String) {
   }
 
   private[this] def updateProject(project: ProjectDefinition) = {
-    val proj = ProjectOutput(project)
+    val proj = ProjectOutput(project, ProjectService.projectDir(project.key))
     val (created, projectSrcDir) = if (proj.exists()) {
       false -> proj.scalaRoot
     } else {
