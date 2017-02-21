@@ -7,8 +7,11 @@ GET         /metrics                                 controllers.MetricsControll
 GET         /sandbox                                 controllers.SandboxController.list
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
 
-GET         /all/process                             controllers.ProcessController.processAll(q: Option[String] ?= None)
-GET         /:key/process                            controllers.ProcessController.process(key)
+GET         /all/parse                               controllers.ParseController.parseAll(q: Option[String] ?= None)
+GET         /:key/parse                              controllers.ParseController.parse(key)
+
+GET         /all/project                             controllers.ProjectController.updateAll(q: Option[String] ?= None)
+GET         /:key/project                            controllers.ProjectController.update(key)
 
 GET         /test/repo                               controllers.GithubController.test
 GET         /:key/repo                               controllers.GithubController.detail(key)

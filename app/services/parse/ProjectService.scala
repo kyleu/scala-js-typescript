@@ -1,54 +1,34 @@
 package services.parse
 
-import better.files._
 import models.parse.ProjectDefinition
 import services.file.FileService
 
-case class ProjectService(project: ProjectDefinition) {
-  def create() = {
-    val dir = copyFiles()
-    replaceStrings(dir)
+case class ProjectService(key: String) {
+  val outDir = FileService.getDir("out") / key
 
-    val srcRoot = dir / "src" / "main" / "scala" / "org" / "scalajs"
-    if (!srcRoot.isDirectory) {
-      throw new IllegalStateException(s"Missing [$srcRoot].")
-    }
-
-    val srcDir = srcRoot / project.keyNormalized
-    srcDir.createDirectories()
-
-    srcDir
+  if (!outDir.exists) {
+    throw new IllegalStateException(s"Missing out dir [$outDir].")
   }
 
-  private[this] def copyFiles() = {
-    val src = "util" / "scala-js-template"
-    val dest = FileService.getDir("projects") / ("scala-js-" + project.keyNormalized)
-    if (dest.exists) {
-      dest.delete()
+  private[this] def updateProject(project: ProjectDefinition) = {
+    val proj = ProjectOutput(project)
+    val projectSrcDir = if (proj.exists()) {
+      proj.scalaRoot
+    } else {
+      proj.create()
     }
-    src.copyTo(dest)
-    (dest / ".git").delete()
-    (dest / "readme.md").delete()
-    (dest / "template.readme.md").renameTo("readme.md")
-    dest
+    projectSrcDir.delete()
+    projectSrcDir.createDirectory()
+
+    outDir.copyTo(projectSrcDir)
   }
 
-  private[this] def replaceStrings(dir: File) = {
-    val files = Seq(
-      dir / "build.sbt",
-      dir / "README.md",
-      dir / "project" / "Projects.scala"
-    )
-    val replacements = project.asMap
-    def replace(f: File) = {
-      val oldContent = f.contentAsString
-      val newContent = replacements.foldLeft(oldContent)((content, r) => content.replaceAllLiterally("${" + r._1 + "}", r._2))
-      if (oldContent != newContent) {
-        f.delete()
-        f.write(newContent)
-      }
+  def update() = {
+    val f = outDir / "project.json"
+    if (!f.exists) {
+      throw new IllegalStateException(s"Missing project definition at [$f].")
     }
-
-    files.foreach(replace)
+    val project = upickle.default.read[ProjectDefinition](f.contentAsString)
+    updateProject(project)
   }
 }

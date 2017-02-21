@@ -1,12 +1,11 @@
 package models.parse.sc.printer
 
 import better.files._
-import models.parse.ProjectDefinition
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
 
-case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends PrinterFiles {
+case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) extends PrinterFiles {
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = Some(root)
   private[this] var activeObject: Option[Name] = None
@@ -87,7 +86,7 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
 
   override def onComplete() = {
     val textContent = new StringBuilder
-    val replacements = ReplacementManager.getReplacements(project.key)
+    val replacements = ReplacementManager.getReplacements(key)
 
     root.listRecursively().toList.map { file =>
       if (!file.isDirectory)
@@ -95,7 +94,7 @@ case class PrinterFilesMulti(project: ProjectDefinition, root: File) extends Pri
           file.delete()
         } else {
           val originalContent = if (file.name == "package.scala") {
-            Seq(s"package org.scalajs.${project.keyNormalized}\n") ++ file.lines.toList
+            Seq(s"package org.scalajs.$keyNormalized\n") ++ file.lines.toList
           } else {
             file.lines.toList
           }

@@ -1,4 +1,4 @@
-@(q: Option[String], keys: Seq[(String, String)], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
+@(q: Option[String], keys: Seq[(String, String)], outDirs: Seq[String], projectDirs: Seq[String], repos: Seq[services.github.GithubService.Repo], debug: Boolean)(
     implicit request: Request[AnyContent], session: Session, flash: Flash
 )@layout.simple(utils.Config.projectName) {
   <div class="row">
@@ -6,7 +6,10 @@
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
-            <a href="@controllers.routes.HomeController.home(q)" class="right teal-text">Process All</a>
+            <div class="right" style="text-align: right;">
+              <a href="@controllers.routes.ParseController.parseAll(q)" class="teal-text">Parse All</a><br />
+              <a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update All</a>
+            </div>
             <h5>@utils.NumberUtils.withCommas(keys.size) Available Projects</h5>
             <form action="@controllers.routes.HomeController.home()" method="get">
               <input name="q" type="text" placeholder="Filter" value="@q" />
@@ -17,6 +20,7 @@
               <thead>
                 <tr>
                   <th>Key</th>
+                  <th>Out</th>
                   <th>Project</th>
                   <th>Github</th>
                 </tr>
@@ -24,20 +28,27 @@
               <tbody>
               @keys.map { key =>
                 @defining(repos.find(_.name == ("scala-js-" + key._2))) { repo =>
-                  @defining(projectDirs.contains("scala-js-" + key._2)) { dirExists =>
-                    <tr>
-                      <td>@key._1</td>
-                      <td>@if(dirExists) {
-                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key._1)"><i class="fa fa-check"></i></a>
-                      } else {
-                        <a class="teal-text" href="@controllers.routes.ProcessController.process(key._1)"><i class="fa fa-close"></i></a>
-                      }</td>
-                      <td>@if(repo.isDefined) {
-                        <a class="teal-text" href="@controllers.routes.GithubController.detail(key._2)"><i class="fa fa-check"></i></a>
-                      } else {
-                        <a class="teal-text" href="@controllers.routes.GithubController.create(key._2)"><i class="fa fa-close"></i></a>
-                      }</td>
-                    </tr>
+                  @defining(outDirs.contains(key._1)) { outExists =>
+                    @defining(projectDirs.contains("scala-js-" + key._2)) { projectExists =>
+                      <tr>
+                        <td>@key._1</td>
+                        <td>
+                          <a class="teal-text" href="@controllers.routes.ParseController.parse(key._1)">
+                            @if(outExists) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                          </a>
+                        </td>
+                        <td>
+                          <a class="teal-text" href="@controllers.routes.ProjectController.update(key._1)">
+                            @if(projectExists) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                          </a>
+                        </td>
+                        <td>@if(repo.isDefined) {
+                          <a class="teal-text" href="@controllers.routes.GithubController.detail(key._2)"><i class="fa fa-check"></i></a>
+                        } else {
+                          <a class="teal-text" href="@controllers.routes.GithubController.create(key._2)"><i class="fa fa-close"></i></a>
+                        }</td>
+                      </tr>
+                    }
                   }
                 }
               }

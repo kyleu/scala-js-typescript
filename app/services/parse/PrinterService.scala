@@ -1,36 +1,42 @@
 package services.parse
 
 import better.files._
+import models.parse.{Importer, ProjectDefinition}
 import models.parse.parser.tree.{DeclTree, LineCommentDecl}
 import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
 import models.parse.sc.transform.IgnoredPackages
-import models.parse.{Importer, ProjectDefinition}
+import services.file.FileService
 
-case class ExportService(key: String, t: List[DeclTree]) {
+case class PrinterService(key: String, t: List[DeclTree]) {
   private[this] val ignoredPackages = IgnoredPackages.forKey(key)
 
   def export() = {
-    val (project, decls) = extractFrom(key, t)
-    exportSingle(project, decls)
-    exportMulti(project, decls)
+    val (proj, decls) = extractFrom(key, t)
+    exportSingle(key, proj.keyNormalized, decls)
+    exportMulti(proj, decls)
   }
 
-  private[this] def exportSingle(project: ProjectDefinition, decls: List[DeclTree]) = {
+  private[this] def exportSingle(key: String, keyNormalized: String, decls: List[DeclTree]) = {
     val dir = "util" / "megasingle" / "src" / "main" / "scala" / "org" / "scalajs"
     if (!dir.exists) {
       throw new IllegalStateException(s"Missing output directory [${dir.path}].")
     }
-    val srcFile = dir / project.keyNormalized / (project.keyNormalized + ".scala")
+    val srcFile = dir / keyNormalized / (keyNormalized + ".scala")
     srcFile.createIfNotExists(createParents = true)
-    val single = PrinterFilesSingle(project, srcFile)
+    val single = PrinterFilesSingle(key, keyNormalized, srcFile)
     printer(single, decls)
   }
 
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {
-    val proj = ProjectService(project)
-    val srcDir = proj.create()
-    val multi = PrinterFilesMulti(project, srcDir)
-    printer(multi, decls)
+    val outDir = FileService.getDir("out") / key
+    val multi = PrinterFilesMulti(key, project.keyNormalized, outDir)
+    val ret = printer(multi, decls)
+
+    val outJson = outDir / "project.json"
+    outJson.createIfNotExists()
+    outJson.append(upickle.default.write(project, 2))
+
+    ret
   }
 
   private[this] def extractFrom(key: String, t: List[DeclTree]) = {
@@ -69,7 +75,7 @@ case class ExportService(key: String, t: List[DeclTree]) {
   }
 
   private[this] def printer(files: PrinterFiles, decls: List[DeclTree]) = {
-    val pkg = new Importer(key).apply(decls)
+    val pkg = Importer(key)(decls)
     new Printer(files, key, ignoredPackages).printSymbol(pkg)
     files.onComplete()
   }

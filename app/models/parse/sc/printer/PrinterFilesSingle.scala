@@ -1,17 +1,16 @@
 package models.parse.sc.printer
 
 import better.files._
-import models.parse.ProjectDefinition
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
 
-case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends PrinterFiles {
+case class PrinterFilesSingle(key: String, keyNormalized: String, file: File) extends PrinterFiles {
   if (file.exists) {
     file.delete()
   }
 
-  file.append(s"package org.scalajs.${project.keyNormalized}\n")
+  file.append(s"package org.scalajs.$keyNormalized\n")
 
   file.append("\n")
   file.append("import scala.scalajs.js\n")
@@ -27,7 +26,7 @@ case class PrinterFilesSingle(project: ProjectDefinition, file: File) extends Pr
   override def print(s: String) = file.append(s)
 
   override def onComplete() = {
-    val replacements = ReplacementManager.getReplacements(project.key)
+    val replacements = ReplacementManager.getReplacements(key)
     val originalContent = file.lines.toList
     val newContent = replacements.replace(originalContent)
     val (rewrite, finalContent) = if (originalContent != newContent) {
