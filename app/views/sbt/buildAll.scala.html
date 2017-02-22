@@ -1,0 +1,23 @@
+@(results: Seq[(String, Int, String)])(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <ul class="collapsible" data-collapsible="expandable">
+          <li>
+            <div class="collapsible-header"><h5>SBT Build Results</h5></div>
+          </li>
+          @results.map { result =>
+            <li>
+              <div class="collapsible-header">
+                <div class="right">@result._2</div>
+                @result._1
+              </div>
+              <div class="collapsible-body"><pre style="margin: 10px;">@result._3</pre></div>
+            </li>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

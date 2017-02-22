@@ -1,21 +1,27 @@
 package services.git
 
 import better.files._
-import org.eclipse.jgit.api.InitCommand
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import services.file.FileService
 
 object GitService {
-  private[this] def gitFor(dir: File) = new FileRepositoryBuilder().setGitDir(dir.toJava).readEnvironment().build()
-
-  def addRemote(dir: File) = {
-    val git = gitFor(dir)
-    val cfg = git.getConfig
-    cfg.setString("remote", "origin", "url", s"git@github.com:DefinitelyScala/${dir.name}.git")
-    cfg.save()
-    git
+  def addRemote(dir: File) = if ((dir / ".git").exists) {
+    call(dir, Seq("git", "remote", "add", "origin", s"git@github.com:DefinitelyScala/${dir.name}.git"))
+  } else {
+    throw new IllegalStateException(s"No git repo available for [${dir.name}].")
   }
 
-  def init(dir: File) = {
-    new InitCommand().setDirectory(dir.toJava).call()
+  def init(dir: File) = if ((dir / ".git").exists) {
+    throw new IllegalStateException("Already initialized.")
+  } else {
+    call(dir, Seq("git", "init"))
+  }
+
+  private[this] def call(dir: File, cmd: Seq[String]) = {
+    val f = FileService.getDir("logs") / "git" / (dir.name + ".log")
+    if (f.exists) {
+      f.delete()
+    }
+    val result = new ProcessBuilder().directory(dir.toJava).command(cmd: _*).redirectError(f.toJava).redirectOutput(f.toJava).start().waitFor()
+    result -> f.contentAsString
   }
 }

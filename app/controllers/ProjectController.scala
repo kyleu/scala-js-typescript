@@ -14,7 +14,7 @@ class ProjectController @javax.inject.Inject() (override val app: Application) e
   }
 
   def updateAll(q: Option[String]) = act("script.all") { implicit request =>
-    val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq
+    val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
     val results = outDirs.map(outDir => outDir.name -> ProjectService(outDir.name).update())
     Future.successful(Ok(views.html.project.updateAll(results, app.config.debug)))
   }

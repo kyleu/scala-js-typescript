@@ -16,8 +16,9 @@
           </div>
           <div class="collection-item">
             <div>@details.name (@details.version)</div>
-            <div><a href="@details.url">@details.url</a></div>
+            <div><a class="teal-text" href="@details.url">@details.url</a></div>
             <div>@details.authors</div>
+            <div><a class="teal-text" href="@controllers.routes.SbtController.build(key)">Build</a></div>
           </div>
           <div class="collection-item">
             <h6>Local Git Repo</h6>

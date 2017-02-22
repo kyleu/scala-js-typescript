@@ -56,7 +56,6 @@ object Dependencies {
     val enumeratum = "com.beachape" %% "enumeratum-upickle" % enumeratumVersion
     val scalaGuice = "net.codingwell" %% "scala-guice" % "4.1.0"
     val betterFiles = "com.github.pathikrit" %% "better-files" % "2.17.1"
-    val git = "org.eclipse.jgit" % "org.eclipse.jgit" % "4.5.0.201609210915-r"
   }
 
   object Testing {

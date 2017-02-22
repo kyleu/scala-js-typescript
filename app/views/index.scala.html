@@ -8,7 +8,8 @@
           <div class="collection-header">
             <div class="right" style="text-align: right;">
               <a href="@controllers.routes.ParseController.parseAll(q)" class="teal-text">Parse All</a><br />
-              <a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update All</a>
+              <a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update All</a><br />
+              <a href="@controllers.routes.SbtController.buildAll(q)" class="teal-text">Build All</a>
             </div>
             <h5>@utils.NumberUtils.withCommas(keys.size) Available Projects</h5>
             <form action="@controllers.routes.HomeController.home()" method="get">

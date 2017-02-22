@@ -14,11 +14,11 @@ import scala.concurrent.Future
 class HomeController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def home(q: Option[String]) = act("home") { implicit request =>
     githubService.listRepos().map { repos =>
-      val filteredRepos = repos.filter(_.name.startsWith("scala-js-" + q.getOrElse("")))
+      val filteredRepos = repos.filter(_.name.contains(q.getOrElse("")))
 
-      val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq.map(_.name)
-      val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq.map(_.name)
-      val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse("scala-js-" + ""))).toSeq
+      val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+      val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+      val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse("scala-js-" + ""))).toSeq
 
       val keys = srcDirs.sorted.map(x => x -> x.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
       Ok(views.html.index(q, keys, outDirs, projectDirs, repos, app.config.debug))

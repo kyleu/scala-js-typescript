@@ -4,9 +4,13 @@ import models.parse.ProjectDefinition
 import services.file.FileService
 
 object ProjectService {
+  private[this] val dir = FileService.getDir("projects")
+
+  def list(q: Option[String]) = dir.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
+
   def projectDir(key: String) = {
     val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
-    FileService.getDir("projects") / ("scala-js-" + keyNormalized)
+    dir / ("scala-js-" + keyNormalized)
   }
 }
 

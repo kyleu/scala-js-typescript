@@ -4,8 +4,11 @@ import better.files._
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
+import utils.Logging
 
-case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) extends PrinterFiles {
+case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) extends PrinterFiles with Logging {
+  log.info(s"Parsing multiple files for [$key]...")
+
   private[this] val stack = collection.mutable.Stack[(Name, File)]()
   private[this] var activeDir: Option[File] = Some(root)
   private[this] var activeObject: Option[Name] = None
@@ -50,6 +53,7 @@ case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) ext
     }
     if (!file.exists) {
       val pkg = stack.map(_._1.name).reverse.mkString(".")
+      file.createIfNotExists(createParents = true)
       if (pkg.isEmpty) {
         file.append(s"package org.scalajs.$keyNormalized\n")
       } else {

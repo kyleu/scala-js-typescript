@@ -23,8 +23,11 @@ class ParseController @javax.inject.Inject() (override val app: Application) ext
   }
 
   def parseAll(q: Option[String]) = act("script.all") { implicit request =>
-    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.startsWith(q.getOrElse(""))).toSeq
-    val results = scripts.map(script => parseLibrary(script.name))
+    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
+    val results = scripts.map { script =>
+      log.info(s"Parsing [${script.name}]...")
+      parseLibrary(script.name)
+    }
     Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
   }
 

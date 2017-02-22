@@ -10,11 +10,6 @@ import scala.concurrent.Future
 
 @javax.inject.Singleton
 class GitController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
-  def test() = act(s"project.test") { implicit request =>
-    val result = "..."
-    Future.successful(Ok(views.html.git.test(result)))
-  }
-
   def detail(key: String) = act(s"project.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     val dir = projectDir / ".git"
@@ -31,14 +26,14 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
     if (dir.exists) {
       throw new IllegalStateException(s"Git repo already exists for [$key].")
     } else {
-      GitService.init(projectDir)
-      Future.successful(Redirect(controllers.routes.GitController.detail(key)))
+      val result = GitService.init(projectDir)
+      Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
     }
   }
 
   def addRemote(key: String) = act(s"project.add.remote.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
-    GitService.addRemote(projectDir)
-    Future.successful(Redirect(controllers.routes.GitController.detail(key)))
+    val result = GitService.addRemote(projectDir)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
   }
 }
