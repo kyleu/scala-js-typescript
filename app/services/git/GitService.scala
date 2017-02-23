@@ -4,16 +4,39 @@ import better.files._
 import services.file.FileService
 
 object GitService {
+  def init(dir: File) = if ((dir / ".git").exists) {
+    throw new IllegalStateException("Already initialized.")
+  } else {
+    call(dir, Seq("git", "init"))
+  }
+
   def addRemote(dir: File) = if ((dir / ".git").exists) {
     call(dir, Seq("git", "remote", "add", "origin", s"git@github.com:DefinitelyScala/${dir.name}.git"))
   } else {
     throw new IllegalStateException(s"No git repo available for [${dir.name}].")
   }
 
-  def init(dir: File) = if ((dir / ".git").exists) {
-    throw new IllegalStateException("Already initialized.")
-  } else {
-    call(dir, Seq("git", "init"))
+  private[this] val firstCommitFiles = Seq(
+    ".gitignore", "build.sbt", "readme.md", "scalastyle-config.xml",
+    "project/Projects.scala", "project/build.properties", "project/plugins.sbt"
+  )
+  def firstCommit(dir: File) = {
+    call(dir, Seq("git", "add") ++ firstCommitFiles)
+    call(dir, Seq("git", "commit", "-m", "Initial project structure."))
+    call(dir, Seq("git", "push", "origin", "master"))
+  }
+
+  def secondCommit(dir: File) = {
+    call(dir, Seq("git", "add", "src/*"))
+    call(dir, Seq("git", "commit", "-m", "Scala.js facade."))
+    call(dir, Seq("git", "push", "origin", "master"))
+  }
+
+  private[this] val thirdCommitFiles = Seq(".travis.yml")
+  def thirdCommit(dir: File) = {
+    call(dir, Seq("git", "add") ++ thirdCommitFiles)
+    call(dir, Seq("git", "commit", "-m", "TravisCI integration."))
+    call(dir, Seq("git", "push", "origin", "master"))
   }
 
   private[this] def call(dir: File, cmd: Seq[String]) = {

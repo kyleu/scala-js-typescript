@@ -15,9 +15,11 @@ GET         /all/project                             controllers.ProjectControll
 GET         /:key/project                            controllers.ProjectController.update(key)
 
 GET         /:key/git                                controllers.GitController.detail(key)
-GET         /:key/git/addremote                      controllers.GitController.addRemote(key)
 GET         /:key/git/create                         controllers.GitController.create(key)
-GET         /:key/git/addRemote                      controllers.GitController.addRemote(key)
+GET         /:key/git/addremote                      controllers.GitController.addRemote(key)
+GET         /:key/git/first                          controllers.GitController.firstCommit(key)
+GET         /:key/git/second                         controllers.GitController.secondCommit(key)
+GET         /:key/git/third                          controllers.GitController.thirdCommit(key)
 
 GET         /:key/github                             controllers.GithubController.detail(key)
 GET         /:key/github/create                      controllers.GithubController.create(key)

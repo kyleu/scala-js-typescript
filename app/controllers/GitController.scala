@@ -36,4 +36,22 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
     val result = GitService.addRemote(projectDir)
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
   }
+
+  def firstCommit(key: String) = act(s"project.first.commit.$key") { implicit request =>
+    val projectDir = ProjectService.projectDir(key)
+    val result = GitService.firstCommit(projectDir)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+
+  def secondCommit(key: String) = act(s"project.second.commit.$key") { implicit request =>
+    val projectDir = ProjectService.projectDir(key)
+    val result = GitService.secondCommit(projectDir)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+
+  def thirdCommit(key: String) = act(s"project.third.commit.$key") { implicit request =>
+    val projectDir = ProjectService.projectDir(key)
+    val result = GitService.thirdCommit(projectDir)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
 }

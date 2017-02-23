@@ -14,7 +14,7 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
     val projects = (FileService.getDir("logs") / "sbt").list.filter(_.isRegularFile).filter(_.name.contains(q.getOrElse(""))).toSeq
     val statuses = projects.map { p =>
       val content = p.contentAsString
-      (p.name, content, content.contains("[success]"))
+      (p.name, content.contains("[success]"))
     }
     Future.successful(Ok(views.html.sbt.list(q, statuses)))
   }
