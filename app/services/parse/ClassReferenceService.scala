@@ -26,13 +26,16 @@ object ClassReferenceService extends Logging {
 
     ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native")),
 
-    ("org.scalajs.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback"))
+    ("org.scalajs.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback")),
+
+    ("org.scalajs.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword"))
   )
 
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(
       " HTMLElement", " Promise", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
-      "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement"
+      "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement", "StyleMedia",
+      "SVGElement", "DataTransfer"
     ),
     "scala.scalajs.js.|" -> Seq(" | "),
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),

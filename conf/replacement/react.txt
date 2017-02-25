@@ -1,0 +1,6 @@
+=
+  var defaultProps: Partial[P] = js.native
+  var defaultProps: P = js.native
+*
+" React."
+" "

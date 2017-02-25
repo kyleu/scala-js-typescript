@@ -14,6 +14,7 @@ object IgnoredPackages {
     "materialize-css" -> Set("Materialize"),
     "matter-js" -> Set("Matter"),
     "pixi.js" -> Set("PIXI"),
+    "react" -> Set("React"),
     "test" -> Set("excluded"),
     "" -> Set("")
   )
