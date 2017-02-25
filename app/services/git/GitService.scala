@@ -39,6 +39,12 @@ object GitService {
     call(dir, Seq("git", "push", "origin", "master"))
   }
 
+  def pushUpdate(dir: File, message: String) = {
+    call(dir, Seq("git", "add", "."))
+    call(dir, Seq("git", "commit", "-m", message))
+    call(dir, Seq("git", "push", "origin", "master"))
+  }
+
   private[this] def call(dir: File, cmd: Seq[String]) = {
     val f = FileService.getDir("logs") / "git" / (dir.name + ".log")
     if (f.exists) {

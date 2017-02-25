@@ -21,6 +21,7 @@ GET         /:key/git/first                          controllers.GitController.f
 GET         /:key/git/second                         controllers.GitController.secondCommit(key)
 GET         /:key/git/third                          controllers.GitController.thirdCommit(key)
 GET         /:key/git/fullinit                       controllers.GitController.fullInit(key)
+POST        /:key/git/update                         controllers.GitController.pushUpdate(key)
 
 GET         /:key/github                             controllers.GithubController.detail(key)
 GET         /:key/github/create                      controllers.GithubController.create(key)

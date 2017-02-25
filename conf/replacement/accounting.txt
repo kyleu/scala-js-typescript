@@ -1,0 +1,15 @@
+=
+  var accounting: accounting.Static = js.native
+  var accounting: Static = js.native
+-
+  def formatMoney(numbers: js.Array[Double], symbol: String, precision: Double, thousand: String, decimal: String, format: String): js.Array[String] = js.native
+-
+  def formatMoney(numbers: js.Array[Double], options: CurrencySettings[String] | CurrencySettings[CurrencyFormat]): js.Array[String] = js.native
+-
+  def formatColumn(numbers: js.Array[js.Array[Double]], symbol: String, precision: Double, thousand: String, decimal: String, format: String): js.Array[js.Array[String]] = js.native
+-
+  def formatColumn(numbers: js.Array[js.Array[Double]], options: CurrencySettings[String] | CurrencySettings[CurrencyFormat]): js.Array[js.Array[String]] = js.native
+-
+  def formatNumber(number: js.Array[Double], precision: Double, thousand: String, decimal: String): js.Array[String] = js.native
+-
+  def formatNumber(number: js.Array[Double], options: NumberSettings): js.Array[String] = js.native

@@ -1,0 +1,6 @@
+*
+"js.Tuple1[js.Any]"
+"js.Any"
+=
+  def algoliasearch(applicationId: String, apiKey: String, options: algoliasearch.ClientOptions = js.native): algoliasearch.AlgoliaClient = js.native
+  def algoliasearch(applicationId: String, apiKey: String, options: ClientOptions = js.native): AlgoliaClient = js.native

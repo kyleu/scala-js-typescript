@@ -79,4 +79,11 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
       Ok(views.html.git.result(key, result4._1, result4._2))
     }
   }
+
+  def pushUpdate(key: String) = act(s"project.update.$key") { implicit request =>
+    val msg = request.body.asFormUrlEncoded.get("msg").mkString
+    val projectDir = ProjectService.projectDir(key)
+    val result = GitService.pushUpdate(projectDir, msg)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
 }

@@ -1,0 +1,3 @@
+=
+  var alertify: alertify.IAlertifyStatic = js.native
+  var alertify: IAlertifyStatic = js.native
