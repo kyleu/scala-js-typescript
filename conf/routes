@@ -20,6 +20,7 @@ GET         /:key/git/addremote                      controllers.GitController.a
 GET         /:key/git/first                          controllers.GitController.firstCommit(key)
 GET         /:key/git/second                         controllers.GitController.secondCommit(key)
 GET         /:key/git/third                          controllers.GitController.thirdCommit(key)
+GET         /:key/git/fullinit                       controllers.GitController.fullInit(key)
 
 GET         /:key/github                             controllers.GithubController.detail(key)
 GET         /:key/github/create                      controllers.GithubController.create(key)
