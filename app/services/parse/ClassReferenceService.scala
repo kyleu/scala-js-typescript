@@ -28,14 +28,20 @@ object ClassReferenceService extends Logging {
 
     ("org.scalajs.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback")),
 
-    ("org.scalajs.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword"))
+    ("org.scalajs.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword")),
+
+    ("org.scalajs.phaser._", Seq("/Physics", "/Particles", "/Plugin", "/Utils", "/Filter"), Seq(
+      "Physics.", "Particles.", " Plugin", " Game", " Filter"
+    )),
+
+    ("org.scalajs.phaserp2._", Seq("/Physics/P2"), Seq("p2."))
   )
 
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(
       " HTMLElement", " Promise", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
       "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement", "StyleMedia",
-      "SVGElement", "DataTransfer"
+      "SVGElement", "DataTransfer", " Node", "WebGLFramebuffer", "MouseEvent", "KeyboardEvent"
     ),
     "scala.scalajs.js.|" -> Seq(" | "),
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),

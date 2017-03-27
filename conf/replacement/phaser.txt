@@ -1,0 +1,45 @@
+*
+" Phaser."
+" "
+*
+"[Phaser."
+"["
+*
+" PIXI."
+" org.scalajs.phaserpixi."
+*
+"[PIXI."
+"[org.scalajs.phaserpixi."
+*
+": Physics.P2,"
+": Physics.P2Obj,"
+=
+object Utils extends js.Object {
+object UtilsObj extends js.Object {
+=
+class Physics protected () extends js.Object {
+class PhysicsObj protected () extends js.Object {
+=
+object Physics extends js.Object {
+object PhysicsObj extends js.Object {
+=
+object AStar extends js.Object {
+object AStarObj extends js.Object {
+=
+object Arcade extends js.Object {
+object ArcadeObj extends js.Object {
+=
+class P2 protected () extends js.Object {
+class P2Obj protected () extends js.Object {
+=
+  var physics: Physics = js.native
+  var physics: PhysicsObj = js.native
+=
+  var p2: Physics.P2 = js.native
+  var p2: Physics.P2Obj = js.native
+=
+  var world: Physics.P2 = js.native
+  var world: Physics.P2Obj = js.native
+*
+"MSPointerEvent"
+"js.Object"

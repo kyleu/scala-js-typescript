@@ -10,6 +10,7 @@ GET         /sandbox/:key                            controllers.SandboxControll
 
 GET         /all/parse                               controllers.ParseController.parseAll(q: Option[String] ?= None)
 GET         /:key/parse                              controllers.ParseController.parse(key)
+GET         /:key/refresh                            controllers.ParseController.refresh(key)
 
 GET         /all/project                             controllers.ProjectController.updateAll(q: Option[String] ?= None)
 GET         /:key/project                            controllers.ProjectController.update(key)

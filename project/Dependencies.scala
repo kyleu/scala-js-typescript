@@ -6,7 +6,7 @@ object Dependencies {
   }
 
   object Play {
-    private[this] val version = "2.5.12"
+    private[this] val version = "2.5.13"
     val playLib = "com.typesafe.play" %% "play" % version
     val playFilters = play.sbt.PlayImport.filters
     val playWs = play.sbt.PlayImport.ws
@@ -15,7 +15,7 @@ object Dependencies {
   }
 
   object Akka {
-    private[this] val version = "2.4.16"
+    private[this] val version = "2.4.17"
     val actor = "com.typesafe.akka" %% "akka-actor" % version
     val remote = "com.typesafe.akka" %% "akka-remote" % version
     val logging = "com.typesafe.akka" %% "akka-slf4j" % version
@@ -33,23 +33,24 @@ object Dependencies {
   object WebJars {
     val fontAwesome = "org.webjars" % "font-awesome" % "4.7.0"
     val jquery = "org.webjars" % "jquery" % "2.2.4"
-    val materialize = "org.webjars" % "materializecss" % "0.97.7"
+    val materialize = "org.webjars" % "materializecss" % "0.98.0"
   }
 
   object Metrics {
-    val metrics = "nl.grons" %% "metrics-scala" % "3.5.5"
-    val jvm = "io.dropwizard.metrics" % "metrics-jvm" % "3.1.2"
-    val ehcache = "io.dropwizard.metrics" % "metrics-ehcache" % "3.1.2" intransitive()
-    val healthChecks = "io.dropwizard.metrics" % "metrics-healthchecks" % "3.1.2" intransitive()
-    val json = "io.dropwizard.metrics" % "metrics-json" % "3.1.2"
-    val jettyServlet = "org.eclipse.jetty" % "jetty-servlet" % "9.3.11.v20160721"
-    val servlets = "io.dropwizard.metrics" % "metrics-servlets" % "3.1.2" intransitive()
-    val graphite = "io.dropwizard.metrics" % "metrics-graphite" % "3.1.2" intransitive()
+    val version = "3.2.2"
+    val metrics = "nl.grons" %% "metrics-scala" % "3.5.6"
+    val jvm = "io.dropwizard.metrics" % "metrics-jvm" % version
+    val ehcache = "io.dropwizard.metrics" % "metrics-ehcache" % version intransitive()
+    val healthChecks = "io.dropwizard.metrics" % "metrics-healthchecks" % version intransitive()
+    val json = "io.dropwizard.metrics" % "metrics-json" % version
+    val jettyServlet = "org.eclipse.jetty" % "jetty-servlet" % "9.3.16.v20170120"
+    val servlets = "io.dropwizard.metrics" % "metrics-servlets" % version intransitive()
+    val graphite = "io.dropwizard.metrics" % "metrics-graphite" % version intransitive()
   }
 
   object Utils {
     val scapegoatVersion = "1.3.0"
-    val enumeratumVersion = "1.5.6"
+    val enumeratumVersion = "1.5.10"
 
     val commonsIo = "commons-io" % "commons-io" % "2.5"
     val crypto = "xyz.wiedenhoeft" %% "scalacrypt" % "0.4.0"

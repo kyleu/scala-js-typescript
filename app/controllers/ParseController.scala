@@ -17,12 +17,21 @@ object ParseController {
 
 @javax.inject.Singleton
 class ParseController @javax.inject.Inject() (override val app: Application) extends BaseController {
-  def parse(key: String) = act(s"detail.$key") { implicit request =>
+  def parse(key: String) = act(s"parse.$key") { implicit request =>
     val result = parseLibrary(key)
     Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, result.json, result.text, app.config.debug)))
   }
 
-  def parseAll(q: Option[String]) = act("script.all") { implicit request =>
+  def refresh(key: String) = act(s"refresh.$key") { implicit request =>
+    val result = parseLibrary(key)
+    if (result.tree.isDefined) {
+      Future.successful(Redirect(controllers.routes.ProjectController.update(key)))
+    } else {
+      throw new IllegalStateException("Cannot parse.")
+    }
+  }
+
+  def parseAll(q: Option[String]) = act("parse.all") { implicit request =>
     val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
     val results = scripts.map { script =>
       log.info(s"Parsing [${script.name}]...")
@@ -31,7 +40,7 @@ class ParseController @javax.inject.Inject() (override val app: Application) ext
     Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
   }
 
-  private[this] def parseLibrary(key: String) = {
+  def parseLibrary(key: String) = {
     val dir = FileService.getDir("DefinitelyTyped") / key
     val ts = dir / "index.d.ts"
     val content = ts.contentAsString

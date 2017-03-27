@@ -9,7 +9,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   private implicit val self = this
 
   private[this] val pendingComments = collection.mutable.ArrayBuffer.empty[CommentSymbol]
-  private[this] def printPending() = {
+  private[this] def printPending(id: Int) = {
+    //printComment(s" Print Pending [$id]", multiline = false)
     pendingComments.foreach(s => printComment(s.cleanedText, s.multiline))
     pendingComments.clear()
   }
@@ -49,7 +50,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
         files.pushPackage(thisPackage)
       }
 
-      printPending()
+      printPending(1)
 
       for (sym <- topLevels) {
         printSymbol(sym)
@@ -102,7 +103,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     }
 
     pln""
-    printPending()
+    printPending(2)
     pln"@js.native"
     if (currentJSNamespace != "" && !sym.isTrait) {
       pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
@@ -120,7 +121,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
 
   private[this] def printModule(sym: ModuleSymbol) = if (sym.members.nonEmpty) {
     files.setActiveObject(sym.name)
-    printPending()
+    printPending(3)
     pln""
     pln"@js.native"
     if (currentJSNamespace != "") {
@@ -133,7 +134,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printTypeAlias(sym: TypeAliasSymbol) = {
-    printPending()
+    printPending(4)
     p"  type ${sym.name}"
     if (sym.tparams.nonEmpty) {
       p"[${sym.tparams}]"
@@ -142,7 +143,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printField(sym: FieldSymbol) = {
-    printPending()
+    printPending(5)
     sym.jsName.foreach { jsName =>
       pln"""  @js.annotation.JSName("$jsName")"""
     }
@@ -150,7 +151,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   private[this] def printMethod(sym: MethodSymbol) = {
-    printPending()
+    printPending(6)
     val params = sym.params
 
     if (sym.name == Name.CONSTRUCTOR) {
