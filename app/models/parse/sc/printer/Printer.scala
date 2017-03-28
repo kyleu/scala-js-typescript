@@ -67,7 +67,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
           pln"object $packageObjectName extends js.Object {"
         } else {
           pln"@js.native"
-          pln"""@js.annotation.JSName("${currentJSNamespace.init}")"""
+          pln"""@js.annotation.JSGlobal("${currentJSNamespace.init}")"""
           pln"object $packageObjectName extends js.Object {"
         }
         for (sym <- packageObjectMembers) {
@@ -106,7 +106,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     printPending(2)
     pln"@js.native"
     if (currentJSNamespace != "" && !sym.isTrait) {
-      pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
+      pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
     }
     p"$abstractKw$sealedKw$kw ${sym.name}"
     if (sym.tparams.nonEmpty) {
@@ -125,7 +125,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     pln""
     pln"@js.native"
     if (currentJSNamespace != "") {
-      pln"""@js.annotation.JSName("$currentJSNamespace${sym.name}")"""
+      pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
     }
     pln"object ${sym.name} extends js.Object {"
     printMemberDecls(sym)

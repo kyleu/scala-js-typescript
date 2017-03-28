@@ -9,17 +9,14 @@ import utils.Application
 import scala.concurrent.Future
 
 object ParseController {
-  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: Seq[String]) {
-    import upickle.default._
-    lazy val json = tree.map(t => write(t, 2))
-  }
+  case class Result(key: String, src: File, tree: Option[List[DeclTree]], text: Seq[String])
 }
 
 @javax.inject.Singleton
 class ParseController @javax.inject.Inject() (override val app: Application) extends BaseController {
   def parse(key: String) = act(s"parse.$key") { implicit request =>
     val result = parseLibrary(key)
-    Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, result.json, result.text, app.config.debug)))
+    Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, None, result.text, app.config.debug)))
   }
 
   def refresh(key: String) = act(s"refresh.$key") { implicit request =>

@@ -30,7 +30,7 @@ object ClassReferenceService extends Logging {
 
     ("org.scalajs.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword")),
 
-    ("org.scalajs.phaser._", Seq("/Physics", "/Particles", "/Plugin", "/Utils", "/Filter"), Seq(
+    ("org.scalajs.phaser._", Seq("/Physics/", "/Particles/", "/Plugin/", "/Utils/", "/Filter/"), Seq(
       "Physics.", "Particles.", " Plugin", " Game", " Filter"
     )),
 
