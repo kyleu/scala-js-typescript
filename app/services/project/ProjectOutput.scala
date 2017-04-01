@@ -36,7 +36,7 @@ case class ProjectOutput(project: ProjectDefinition, projectDir: File) extends L
       }
     }.toList
 
-    (dest / ".DS_Store").delete()
+    (dest / ".DS_Store").delete(swallowIOExceptions = true)
     (dest / "readme.md").delete()
     (dest / "template.readme.md").renameTo("readme.md")
     dest

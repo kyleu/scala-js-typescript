@@ -6,7 +6,14 @@ import utils.{DateUtils, Logging}
 
 object SbtService extends Logging {
   def build(dir: File) = if (dir.exists) {
-    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", "/Users/kyle/Projects/Libraries/sbt-0.13/sbt-launch.jar", "publishLocal"))
+    val jarpathTest = "/Users/kyle/Projects/Libraries/sbt-0.13/sbt-launch.jar".toFile
+    val jarpath = if (jarpathTest.exists) {
+      jarpathTest
+    } else {
+      "C:\\Users\\kyleu\\Projects\\Libraries\\sbt\\sbt-launch.jar".toFile
+    }
+
+    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", jarpath.pathAsString, "publishLocal"))
   } else {
     throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
   }

@@ -12,7 +12,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
 
   def export() = {
     val (proj, decls) = extractFrom(key, t)
-    exportSingle(key, proj.keyNormalized, decls)
+    //exportSingle(key, proj.keyNormalized, decls)
     exportMulti(proj, decls)
   }
 
