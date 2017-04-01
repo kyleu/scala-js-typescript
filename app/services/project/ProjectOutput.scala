@@ -10,7 +10,11 @@ case class ProjectOutput(project: ProjectDefinition, projectDir: File) extends L
   def exists() = projectDir.exists()
 
   def create(rebuild: Boolean) = {
-    log.info(s"Creating project [${project.key}]. Rebuild: $rebuild.")
+    if (rebuild) {
+      log.info(s"Creating project [${project.key}].")
+    } else {
+      log.info(s"Updating project [${project.key}].")
+    }
     val dir = copyFiles(rebuild)
     replaceStrings(dir)
     val srcRoot = scalaRoot

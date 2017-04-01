@@ -13,7 +13,7 @@ object SbtService extends Logging {
       "C:\\Users\\kyleu\\Projects\\Libraries\\sbt\\sbt-launch.jar".toFile
     }
 
-    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", jarpath.pathAsString, "publishLocal"))
+    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", jarpath.pathAsString, "compile", "doc", "publishLocal"))
   } else {
     throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
   }
