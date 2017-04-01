@@ -61,8 +61,17 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       case Some(l) => l
       case None => ""
     }
+    val dependencies = comments.filter(_.contains("<reference types")).map { dep =>
+      dep.split('\"').toList match {
+        case _ :: x :: _ :: Nil => x
+        case _ => dep.split('\'').toList match {
+          case _ :: x :: _ :: Nil => x
+          case _ => throw new IllegalStateException(s"Invalid reference [$dep].")
+        }
+      }
+    }
 
-    val p = ProjectDefinition(key, name, url, version, authors)
+    val p = ProjectDefinition(key, name, url, version, authors, dependencies)
     val trimmedLines = Seq(nameLine, urlLine, authorsLine, defsLine)
 
     val remaining = t.filter {

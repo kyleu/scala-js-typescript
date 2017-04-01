@@ -1,4 +1,4 @@
-GET         /                                        controllers.HomeController.home(q: Option[String] ?= None)
+GET         /                                        controllers.HomeController.home(q: Option[String] ?= None, filter: Option[String] ?= None)
 GET         /:key/detail                             controllers.HomeController.detail(key)
 GET         /ping                                    controllers.HomeController.ping(timestamp: Long)
 GET         /robots.txt                              controllers.HomeController.robots
@@ -17,6 +17,7 @@ GET         /:key/project                            controllers.ProjectControll
 
 GET         /:key/git                                controllers.GitController.detail(key)
 GET         /:key/git/create                         controllers.GitController.create(key)
+GET         /:key/git/status                         controllers.GitController.status(key)
 GET         /:key/git/addremote                      controllers.GitController.addRemote(key)
 GET         /:key/git/first                          controllers.GitController.firstCommit(key)
 GET         /:key/git/second                         controllers.GitController.secondCommit(key)
@@ -24,6 +25,8 @@ GET         /:key/git/third                          controllers.GitController.t
 GET         /:key/git/fullinit                       controllers.GitController.fullInit(key)
 POST        /:key/git/update                         controllers.GitController.pushUpdate(key)
 
+GET         /all/github                              controllers.GithubController.list()
+GET         /merge/github                            controllers.GithubController.mergeAll()
 GET         /:key/github                             controllers.GithubController.detail(key)
 GET         /:key/github/create                      controllers.GithubController.create(key)
 

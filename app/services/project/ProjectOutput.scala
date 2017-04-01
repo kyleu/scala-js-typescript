@@ -2,14 +2,16 @@ package services.project
 
 import better.files._
 import models.parse.ProjectDefinition
+import utils.Logging
 
-case class ProjectOutput(project: ProjectDefinition, projectDir: File) {
+case class ProjectOutput(project: ProjectDefinition, projectDir: File) extends Logging {
   def scalaRoot = projectDir / "src" / "main" / "scala" / "org" / "scalajs" / project.keyNormalized
 
   def exists() = projectDir.exists()
 
-  def create() = {
-    val dir = copyFiles()
+  def create(rebuild: Boolean) = {
+    log.info(s"Creating project [${project.key}]. Rebuild: $rebuild.")
+    val dir = copyFiles(rebuild)
     replaceStrings(dir)
     val srcRoot = scalaRoot
     if (srcRoot.exists && !srcRoot.isDirectory) {
@@ -20,14 +22,21 @@ case class ProjectOutput(project: ProjectDefinition, projectDir: File) {
     scalaRoot
   }
 
-  private[this] def copyFiles() = {
+  private[this] def copyFiles(rebuild: Boolean) = {
     val src = "util" / "scala-js-template"
     val dest = projectDir
-    if (dest.exists) {
+    if (rebuild && dest.exists) {
       dest.delete()
     }
-    src.copyTo(dest)
-    (dest / ".git").delete()
+    dest.createIfNotExists(asDirectory = true)
+
+    src.children.map { child =>
+      if (child.name != ".git") {
+        child.copyTo(dest / child.name, overwrite = true)
+      }
+    }.toList
+
+    (dest / ".DS_Store").delete()
     (dest / "readme.md").delete()
     (dest / "template.readme.md").renameTo("readme.md")
     dest

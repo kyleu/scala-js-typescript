@@ -23,11 +23,9 @@ case class ProjectService(key: String) {
 
   private[this] def updateProject(project: ProjectDefinition) = {
     val proj = ProjectOutput(project, ProjectService.projectDir(project.key))
-    val (created, projectSrcDir) = if (proj.exists()) {
-      false -> proj.scalaRoot
-    } else {
-      true -> proj.create()
-    }
+    val created = !proj.exists()
+    val projectSrcDir = proj.create(rebuild = created)
+
     projectSrcDir.delete()
     projectSrcDir.createDirectory()
 
@@ -37,12 +35,5 @@ case class ProjectService(key: String) {
     created
   }
 
-  def update() = {
-    val f = outDir / "project.json"
-    if (!f.exists) {
-      throw new IllegalStateException(s"Missing project definition at [$f].")
-    }
-    val project = upickle.default.read[ProjectDefinition](f.contentAsString)
-    updateProject(project)
-  }
+  def update() = updateProject(ProjectDefinition.fromJson(outDir))
 }

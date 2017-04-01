@@ -14,6 +14,15 @@ object ParseController {
 
 @javax.inject.Singleton
 class ParseController @javax.inject.Inject() (override val app: Application) extends BaseController {
+  def parseAll(q: Option[String]) = act("parse.all") { implicit request =>
+    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
+    val results = scripts.map { script =>
+      log.info(s"Parsing [${script.name}]...")
+      parseLibrary(script.name)
+    }
+    Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
+  }
+
   def parse(key: String) = act(s"parse.$key") { implicit request =>
     val result = parseLibrary(key)
     Future.successful(Ok(views.html.parse.process(key, result.src, result.tree, None, result.text, app.config.debug)))
@@ -26,15 +35,6 @@ class ParseController @javax.inject.Inject() (override val app: Application) ext
     } else {
       throw new IllegalStateException("Cannot parse.")
     }
-  }
-
-  def parseAll(q: Option[String]) = act("parse.all") { implicit request =>
-    val scripts = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
-    val results = scripts.map { script =>
-      log.info(s"Parsing [${script.name}]...")
-      parseLibrary(script.name)
-    }
-    Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
   }
 
   def parseLibrary(key: String) = {

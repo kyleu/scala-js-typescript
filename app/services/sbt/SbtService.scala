@@ -2,11 +2,11 @@ package services.sbt
 
 import better.files._
 import services.file.FileService
-import utils.Logging
+import utils.{DateUtils, Logging}
 
 object SbtService extends Logging {
   def build(dir: File) = if (dir.exists) {
-    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", "/Users/kyle/Projects/Libraries/sbt-0.13/sbt-launch.jar", "compile"))
+    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", "/Users/kyle/Projects/Libraries/sbt-0.13/sbt-launch.jar", "publishLocal"))
   } else {
     throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
   }
@@ -18,6 +18,7 @@ object SbtService extends Logging {
     if (f.exists) {
       f.delete()
     }
+    f.appendText(s"Scala.js Build Started [${DateUtils.niceDateTime(DateUtils.now)}]\n")
     val result = new ProcessBuilder().directory(dir.toJava).command(cmd: _*).redirectError(f.toJava).redirectOutput(f.toJava).start().waitFor()
     log.info(s"Build completed in [${System.currentTimeMillis - startMs}ms] with result [$result] for [${dir.name}].")
     result -> f.contentAsString

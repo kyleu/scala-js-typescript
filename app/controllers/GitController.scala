@@ -67,9 +67,7 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
       GitService.init(projectDir)
     }
 
-    val file = FileService.getDir("out") / key / "project.json"
-    val content = file.contentAsString
-    val proj = upickle.default.read[ProjectDefinition](content)
+    val proj = ProjectDefinition.fromJson(FileService.getDir("out") / key)
 
     githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
       val result2 = GitService.addRemote(projectDir)
@@ -80,10 +78,18 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
     }
   }
 
+  def status(key: String) = act(s"project.status.$key") { implicit request =>
+    val projectDir = ProjectService.projectDir(key)
+    val result = GitService.status(projectDir)
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+
   def pushUpdate(key: String) = act(s"project.update.$key") { implicit request =>
     val msg = request.body.asFormUrlEncoded.get("msg").mkString
+    val fileString = request.body.asFormUrlEncoded.get("files").mkString
+    val files = fileString.split(",").map(_.trim).filterNot(_.isEmpty).toList
     val projectDir = ProjectService.projectDir(key)
-    val result = GitService.pushUpdate(projectDir, msg)
+    val result = GitService.pushUpdate(projectDir, files, msg)
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
   }
 }

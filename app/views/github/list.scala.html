@@ -1,0 +1,26 @@
+@(repos: Seq[services.github.GithubService.Repo])(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="collection with-header">
+        <div class="collection-header">
+          <div class="right">
+            <a href="@routes.GithubController.mergeAll()" class="teal-text">Merge All</a>
+          </div>
+          <h5>@utils.NumberUtils.withCommas(repos.size) Github Repos</h5>
+        </div>
+        @repos.map { repo =>
+          <div class="collection-item">
+            <div class="right">
+              <a class="teal-text" href="@routes.GithubController.detail(repo.name)">
+                <i class="fa fa-check"></i>
+              </a>
+            </div>
+            @repo.name
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

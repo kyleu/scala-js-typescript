@@ -12,8 +12,8 @@ import scala.concurrent.Future
 
 @javax.inject.Singleton
 class HomeController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
-  def home(q: Option[String]) = act("home") { implicit request =>
-    githubService.listRepos().map { repos =>
+  def home(q: Option[String], filter: Option[String]) = act("home") { implicit request =>
+    githubService.listRepos(includeTemplate = false).map { repos =>
       val filteredRepos = repos.filter(_.name.contains(q.getOrElse("")))
 
       val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
@@ -21,7 +21,17 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
       val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse("scala-js-" + ""))).toSeq
 
       val keys = srcDirs.sorted.map(x => x -> x.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
-      Ok(views.html.index(q, keys, outDirs, projectDirs, repos, app.config.debug))
+
+      val filteredKeys = filter match {
+        case None => keys
+        case Some("all") => keys
+        case Some("parsed") => keys.filter(k => outDirs.contains(k._1))
+        case Some("built") => keys.filter(k => projectDirs.exists(d => d.name == ("scala-js-" + k._2)))
+        case Some("published") => keys.filter(k => repos.exists(_.name == ("scala-js-" + k._2)))
+        case Some(x) => throw new IllegalStateException(s"Invalid filter [$x].")
+      }
+
+      Ok(views.html.index(q, filter, filteredKeys, outDirs, projectDirs, repos, app.config.debug))
     }
   }
 
@@ -31,9 +41,9 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
       val projectDir = ProjectService.projectDir(key)
       val hasRepo = (projectDir / ".git").exists
       val details = if (outDir.exists) {
-        upickle.default.read[ProjectDefinition]((outDir / "project.json").contentAsString)
+        ProjectDefinition.fromJson(outDir)
       } else {
-        ProjectDefinition(key, "?", "?", "?", "?")
+        ProjectDefinition(key, "?", "?", "?", "?", Nil)
       }
 
       Ok(views.html.detail(key, details, outDir, projectDir, hasRepo, github, app.config.debug))

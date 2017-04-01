@@ -29,12 +29,17 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
     result.toString
   }
 
-  def listRepos() = {
+  def listRepos(includeTemplate: Boolean) = {
     val r = req("orgs/DefinitelyScala/repos")
     trap(r, r.get()) { rsp =>
-      getArray(rsp).map {
+      val result = getArray(rsp).map {
         case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)
         case _ => throw new IllegalStateException()
+      }
+      if (includeTemplate) {
+        result
+      } else {
+        result.filterNot(_.name == "scala-js-template")
       }
     }
   }
