@@ -22,13 +22,13 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
       val result = repos.map { repo =>
         val dir = ProjectService.projectDir(repo.name.stripPrefix("scala-js-"))
         if (!dir.exists) {
-          throw new IllegalStateException(s"Missing directory [$dir].")
+          dir.createDirectory()
         }
         val gitDir = dir / ".git"
         val ret = gitDir.exists
         if (!ret) {
           val parent = dir.parent
-          dir.delete()
+          dir.delete(swallowIOExceptions = true)
           val result = GitService.cloneRepo(parent, repo.name)
         }
         ret

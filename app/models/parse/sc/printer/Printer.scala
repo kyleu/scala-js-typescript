@@ -105,7 +105,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     pln""
     printPending(2)
     pln"@js.native"
-    if (currentJSNamespace != "" && !sym.isTrait) {
+    if (!sym.isTrait) {
       pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
     }
     p"$abstractKw$sealedKw$kw ${sym.name}"
@@ -124,9 +124,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     printPending(3)
     pln""
     pln"@js.native"
-    if (currentJSNamespace != "") {
-      pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
-    }
+    pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
     pln"object ${sym.name} extends js.Object {"
     printMemberDecls(sym)
     pln"}"
