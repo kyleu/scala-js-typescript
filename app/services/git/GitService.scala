@@ -43,15 +43,16 @@ object GitService {
     call(dir, Seq("push", "origin", "master"))
   }
 
-  def pushUpdate(dir: File, files: Seq[String], message: String) = {
+  def commit(dir: File, files: Seq[String], message: String) = {
     if (files.isEmpty) {
       call(dir, Seq("add", "."))
     } else {
       files.foreach(f => call(dir, Seq("add", f)))
     }
     call(dir, Seq("commit", "-m", message))
-    call(dir, Seq("push", "origin", "master"))
   }
+
+  def push(dir: File) = call(dir, Seq("push", "origin", "master"))
 
   def cloneRepo(dir: File, key: String) = {
     call(dir, Seq("clone", s"git@github.com:DefinitelyScala/$key.git"))

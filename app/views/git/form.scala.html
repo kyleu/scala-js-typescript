@@ -1,0 +1,26 @@
+@()(implicit request: Request[AnyContent], session: Session, flash: Flash)
+@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection with-header">
+          <div class="collection-header">
+            <h5>Git Update</h5>
+          </div>
+          <div class="collection-item">
+            <form action="@controllers.routes.GitController.commitAll()" method="post">
+              <div class="row">
+                <div class="col s12">
+                  <input name="msg" type="text" placeholder="Message" />
+                </div>
+                <div class="col s12">
+                  <button type="submit" class="btn teal">Commit</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

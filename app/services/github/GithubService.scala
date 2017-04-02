@@ -35,7 +35,7 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
       val result = getArray(rsp).map {
         case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)
         case _ => throw new IllegalStateException()
-      }
+      }.sortBy(_.name).reverse
       if (includeTemplate) {
         result
       } else {

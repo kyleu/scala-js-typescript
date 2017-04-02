@@ -13,22 +13,25 @@
                 <a class="teal-text" href="@controllers.routes.GitController.status(key)">Status</a>
               </li>
               <li>
-                <a class="teal-text" href="@controllers.routes.GitController.addRemote(key)">Add Remote</a>
+                <a class="teal-text" href="@controllers.routes.GitInitController.addRemote(key)">Add Remote</a>
               </li>
               <li>
-                <a class="teal-text" href="@controllers.routes.GitController.firstCommit(key)">First Commit</a>
+                <a class="teal-text" href="@controllers.routes.GitInitController.firstCommit(key)">First Commit</a>
               </li>
               <li>
-                <a class="teal-text" href="@controllers.routes.GitController.secondCommit(key)">Second Commit</a>
+                <a class="teal-text" href="@controllers.routes.GitInitController.secondCommit(key)">Second Commit</a>
               </li>
               <li>
-                <a class="teal-text" href="@controllers.routes.GitController.thirdCommit(key)">Third Commit</a>
+                <a class="teal-text" href="@controllers.routes.GitInitController.thirdCommit(key)">Third Commit</a>
               </li>
               <li>
-                <form action="@controllers.routes.GitController.update(key)" method="post">
+                <form action="@controllers.routes.GitController.commit(key)" method="post">
                   <input name="msg" placeholder="Commit Message" />
                   <button type="submit">Push Changes</button>
                 </form>
+              </li>
+              <li>
+                <a class="teal-text" href="@controllers.routes.GitController.push(key)">Push</a>
               </li>
             </ul>
           </div>

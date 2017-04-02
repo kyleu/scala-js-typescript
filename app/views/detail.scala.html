@@ -12,7 +12,7 @@
       <div class="panel-content">
         <div class="collection with-header">
           <div class="collection-header">
-            <div class="right"><a class="teal-text" href="@controllers.routes.GitController.fullInit(key)">Full Init</a></div>
+            <div class="right"><a class="teal-text" href="@controllers.routes.GitInitController.fullInit(key)">Full Init</a></div>
             <h5>@key</h5>
           </div>
           <div class="collection-item">
@@ -31,7 +31,7 @@
               <a class="teal-text" href="@controllers.routes.GitController.detail(key)">Details</a>
             } else {
               <div>No local repo.</div>
-              <a class="teal-text" href="@controllers.routes.GitController.create(key)">Create</a>
+              <a class="teal-text" href="@controllers.routes.GitInitController.create(key)">Create</a>
             }
           </div>
           <div class="collection-item">
