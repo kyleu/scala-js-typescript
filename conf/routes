@@ -23,7 +23,8 @@ GET         /:key/git/first                          controllers.GitController.f
 GET         /:key/git/second                         controllers.GitController.secondCommit(key)
 GET         /:key/git/third                          controllers.GitController.thirdCommit(key)
 GET         /:key/git/fullinit                       controllers.GitController.fullInit(key)
-POST        /:key/git/update                         controllers.GitController.pushUpdate(key)
+POST        /all/git/update                         controllers.GitController.updateAll()
+POST        /:key/git/update                         controllers.GitController.update(key)
 
 GET         /all/github                              controllers.GithubController.list()
 GET         /merge/github                            controllers.GithubController.mergeAll()

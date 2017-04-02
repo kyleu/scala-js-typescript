@@ -84,12 +84,24 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
   }
 
-  def pushUpdate(key: String) = act(s"project.update.$key") { implicit request =>
+  def update(key: String) = act(s"project.update.$key") { implicit request =>
     val msg = request.body.asFormUrlEncoded.get("msg").mkString
-    val fileString = request.body.asFormUrlEncoded.get("files").mkString
-    val files = fileString.split(",").map(_.trim).filterNot(_.isEmpty).toList
-    val projectDir = ProjectService.projectDir(key)
-    val result = GitService.pushUpdate(projectDir, files, msg)
+    val result = push(key, Nil, msg)
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+  def updateAll() = act("project.update.all") { implicit request =>
+    val msg = request.body.asFormUrlEncoded.get("msg").mkString
+    val results = githubService.listRepos(includeTemplate = false).map { repos =>
+      repos.map { repo =>
+        val result = push(repo.name, Nil, msg)
+        (repo.name, result._1, result._2)
+      }
+    }
+    results.map(r => Ok(views.html.git.results(r)))
+  }
+
+  private[this] def push(key: String, files: Seq[String], msg: String) = {
+    val projectDir = ProjectService.projectDir(key)
+    GitService.pushUpdate(projectDir, files, msg)
   }
 }

@@ -25,7 +25,7 @@
                 <a class="teal-text" href="@controllers.routes.GitController.thirdCommit(key)">Third Commit</a>
               </li>
               <li>
-                <form action="@controllers.routes.GitController.pushUpdate(key)" method="post">
+                <form action="@controllers.routes.GitController.update(key)" method="post">
                   <input name="msg" placeholder="Commit Message" />
                   <button type="submit">Push Changes</button>
                 </form>
