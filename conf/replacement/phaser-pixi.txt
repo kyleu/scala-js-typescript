@@ -23,10 +23,10 @@ package pixi
   def this(points: (Point | Double)*) = this()
 =
   var extract: extract.CanvasExtract = js.native
-  var extract: org.scalajs.pixijs.extract.PIXI.CanvasExtract = js.native
+  var extract: com.definitelyscala.pixijs.extract.PIXI.CanvasExtract = js.native
 =
   var extract: extract.WebGLExtract = js.native
-  var extract: org.scalajs.pixijs.extract.PIXI.WebGLExtract  = js.native
+  var extract: com.definitelyscala.pixijs.extract.PIXI.WebGLExtract  = js.native
 =
   var uploadFunction: js.Function6[js.Array[PIXI.DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
   var uploadFunction: js.Function6[js.Array[DisplayObject], Double, Double, js.Array[Double], Double, Double, Unit] = js.native
@@ -41,19 +41,19 @@ package pixi
   def load(cb: js.Function2[Loader, js.Any, Unit] = js.native): Loader = js.native
 =
   type Strip = mesh.Mesh
-  type Strip = org.scalajs.pixijs.mesh.PIXI.Mesh
+  type Strip = com.definitelyscala.pixijs.mesh.PIXI.Mesh
 =
   type Rope = mesh.Rope
-  type Rope = org.scalajs.pixijs.mesh.PIXI.Rope
+  type Rope = com.definitelyscala.pixijs.mesh.PIXI.Rope
 =
   type ParticleContainer = particles.ParticleContainer
-  type ParticleContainer = org.scalajs.pixijs.particles.PIXI.ParticleContainer
+  type ParticleContainer = com.definitelyscala.pixijs.particles.PIXI.ParticleContainer
 =
   var vaos: js.Array[glCore.VertexArrayObject] = js.native
-  var vaos: js.Array[org.scalajs.pixijs.glCore.PIXI.VertexArrayObject] = js.native
+  var vaos: js.Array[com.definitelyscala.pixijs.glCore.PIXI.VertexArrayObject] = js.native
 =
 class DisplayObject extends utils.EventEmitter with interaction.InteractiveTarget {
-class DisplayObject extends org.scalajs.pixijs.utils.PIXI.EventEmitter with org.scalajs.pixijs.interaction.InteractiveTarget {
+class DisplayObject extends com.definitelyscala.pixijs.utils.PIXI.EventEmitter with com.definitelyscala.pixijs.interaction.InteractiveTarget {
 =
 object Pixi extends js.Object {
 object PixiObj extends js.Object {
@@ -95,19 +95,19 @@ object PixiObj extends js.Object {
 "."
 *
 " interaction.InteractionEvent"
-" org.scalajs.pixijs.interaction.InteractionEvent"
+" com.definitelyscala.pixijs.interaction.InteractionEvent"
 *
 " loaders.Loader"
-" org.scalajs.pixijs.loaders.Loader"
+" com.definitelyscala.pixijs.loaders.Loader"
 *
 "= extras."
-"= org.scalajs.pixijs.extras."
+"= com.definitelyscala.pixijs.extras."
 *
 " glCore."
-" org.scalajs.pixijs.glCore."
+" com.definitelyscala.pixijs.glCore."
 *
 " utils.EventEmitter"
-" org.scalajs.pixijs.utils.EventEmitter"
+" com.definitelyscala.pixijs.utils.EventEmitter"
 *
 " loaders.Resource"
 " Resource"

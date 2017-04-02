@@ -3,7 +3,7 @@
   var data: js.Array[ChipDataObject] = js.native
 =
   var Materialize: Materialize.Materialize = js.native
-  var Materialize: org.scalajs.materializecss.Materialize.Materialize = js.native
+  var Materialize: com.definitelyscala.materializecss.Materialize.Materialize = js.native
 =
   def toast(message: String | JQuery, displayLength: Double, className: String = js.native, completeCallback: js.Function = js.native): Unit = js.native
   def toast(message: String | js.Dynamic, displayLength: Double, className: String = js.native, completeCallback: js.Function = js.native): Unit = js.native

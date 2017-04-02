@@ -18,7 +18,7 @@
   var Tags: js.Array[Tag] = js.native
 =
   var config: ClientConfig = js.native
-  var config: org.scalajs.awssdk.ClientConfig = js.native
+  var config: com.definitelyscala.awssdk.ClientConfig = js.native
 =
 class DynamoDB protected () extends js.Object {
 class DynamoDBObj protected () extends js.Object {

@@ -4,15 +4,15 @@ import utils.Logging
 
 object ClassReferenceService extends Logging {
   private[this] val files = Seq(
-    ("org.scalajs.jqueryui.JQuery", Seq("jqueryui/JQueryUI/"), Seq(" JQuery")),
+    ("com.definitelyscala.jqueryui.JQuery", Seq("jqueryui/JQueryUI/"), Seq(" JQuery")),
 
-    ("org.scalajs.less.LessStatic", Seq("less/Less/"), Seq("LessStatic")),
+    ("com.definitelyscala.less.LessStatic", Seq("less/Less/"), Seq("LessStatic")),
 
-    ("org.scalajs.awssdk._", Seq(
+    ("com.definitelyscala.awssdk._", Seq(
       "/AutoScaling/", "/SQS/", "/SES/", "/sts/", "/sts/"
     ), Seq("ClientConfig", "Credentials", "Tags", "BlockDeviceMapping", "StepAdjustment")),
 
-    ("org.scalajs.pixijs._", Seq(
+    ("com.definitelyscala.pixijs._", Seq(
       "/accessibility", "/CanvasTinter", "/core", "/extras", "/extract", "/filters", "/glCore", "/GroupD8", "/interaction", "/loaders",
       "/mesh", "/particles", "/prepare", "/utils", "pixijs/package.scala"
     ), Seq(
@@ -20,21 +20,21 @@ object ClassReferenceService extends Logging {
         " Matrix", "ObjectRenderer", "Point", " Texture", "[Texture", "WebGLRenderer", "WebGLState"
       )),
 
-    ("org.scalajs.pixijs.extras._", Seq("pixijs/package.scala"), Seq("@js.native")),
+    ("com.definitelyscala.pixijs.extras._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
-    ("org.scalajs.pixijs.glCore._", Seq("pixijs/package.scala"), Seq("@js.native")),
+    ("com.definitelyscala.pixijs.glCore._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
     ("scala.scalajs.js", Seq("package.scala"), Seq("@js.native")),
 
-    ("org.scalajs.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback")),
+    ("com.definitelyscala.asciify._", Seq("Asciify.scala"), Seq("AsciifyCallback")),
 
-    ("org.scalajs.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword")),
+    ("com.definitelyscala.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword")),
 
-    ("org.scalajs.phaser._", Seq("/Physics/", "/Particles/", "/Plugin/", "/Utils/", "/Filter/"), Seq(
+    ("com.definitelyscala.phaser._", Seq("/Physics/", "/Particles/", "/Plugin/", "/Utils/", "/Filter/"), Seq(
       "Physics.", "Particles.", " Plugin", " Game", " Filter"
     )),
 
-    ("org.scalajs.phaserp2._", Seq("/Physics/P2"), Seq("p2."))
+    ("com.definitelyscala.phaserp2._", Seq("/Physics/P2"), Seq("p2."))
   )
 
   private[this] val refs = Seq(

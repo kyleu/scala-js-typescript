@@ -55,9 +55,9 @@ case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) ext
       val pkg = stack.map(_._1.name).reverse.mkString(".")
       file.createIfNotExists(createParents = true)
       if (pkg.isEmpty) {
-        file.append(s"package org.scalajs.$keyNormalized\n")
+        file.append(s"package com.definitelyscala.$keyNormalized\n")
       } else {
-        file.append(s"package org.scalajs.$keyNormalized.$pkg\n")
+        file.append(s"package com.definitelyscala.$keyNormalized.$pkg\n")
       }
 
       file.append("\n")
@@ -98,7 +98,7 @@ case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) ext
           file.delete()
         } else {
           val originalContent = if (file.name == "package.scala") {
-            Seq(s"package org.scalajs.$keyNormalized\n") ++ file.lines.toList
+            Seq(s"package com.definitelyscala.$keyNormalized\n") ++ file.lines.toList
           } else {
             file.lines.toList
           }

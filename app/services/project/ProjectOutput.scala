@@ -5,7 +5,7 @@ import models.parse.ProjectDefinition
 import utils.Logging
 
 case class ProjectOutput(project: ProjectDefinition, projectDir: File) extends Logging {
-  def scalaRoot = projectDir / "src" / "main" / "scala" / "org" / "scalajs" / project.keyNormalized
+  def scalaRoot = projectDir / "src" / "main" / "scala" / "com" / "definitelyscala" / project.keyNormalized
 
   def exists() = projectDir.exists()
 

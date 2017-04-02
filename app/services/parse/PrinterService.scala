@@ -12,19 +12,18 @@ case class PrinterService(key: String, t: List[DeclTree]) {
 
   def export() = {
     val (proj, decls) = extractFrom(key, t)
-    //exportSingle(key, proj.keyNormalized, decls)
+    exportSingle(key, proj.keyNormalized, decls)
     exportMulti(proj, decls)
   }
 
   private[this] def exportSingle(key: String, keyNormalized: String, decls: List[DeclTree]) = {
-    val dir = "util" / "megasingle" / "src" / "main" / "scala" / "org" / "scalajs"
-    if (!dir.exists) {
-      throw new IllegalStateException(s"Missing output directory [${dir.path}].")
+    val dir = "util" / "megasingle" / "src" / "main" / "scala" / "com" / "definitelyscala"
+    if (dir.exists) {
+      val srcFile = dir / keyNormalized / (keyNormalized + ".scala")
+      srcFile.createIfNotExists(createParents = true)
+      val single = PrinterFilesSingle(key, keyNormalized, srcFile)
+      printer(single, decls)
     }
-    val srcFile = dir / keyNormalized / (keyNormalized + ".scala")
-    srcFile.createIfNotExists(createParents = true)
-    val single = PrinterFilesSingle(key, keyNormalized, srcFile)
-    printer(single, decls)
   }
 
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {

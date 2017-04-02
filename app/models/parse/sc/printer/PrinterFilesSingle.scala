@@ -10,7 +10,7 @@ case class PrinterFilesSingle(key: String, keyNormalized: String, file: File) ex
     file.delete()
   }
 
-  file.append(s"package org.scalajs.$keyNormalized\n")
+  file.append(s"package com.definitelyscala.$keyNormalized\n")
 
   file.append("\n")
   file.append("import scala.scalajs.js\n")

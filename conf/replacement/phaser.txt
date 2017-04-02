@@ -6,10 +6,10 @@
 "["
 *
 " PIXI."
-" org.scalajs.phaserpixi."
+" com.definitelyscala.phaserpixi."
 *
 "[PIXI."
-"[org.scalajs.phaserpixi."
+"[com.definitelyscala.phaserpixi."
 *
 ": Physics.P2,"
 ": Physics.P2Obj,"
