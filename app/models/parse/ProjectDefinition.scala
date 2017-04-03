@@ -28,7 +28,7 @@ case class ProjectDefinition(
   private[this] val dependencyString = if (dependencies.isEmpty) {
     ""
   } else {
-    ", " + dependencies.map(d => s""""DefinitelyScala" %%% "scala-js-$d" % "1.0.0"""").mkString(", ")
+    ", " + dependencies.map(d => s""""com.definitelyscala" %%% "scala-js-$d" % "1.0.0"""").mkString(", ")
   }
 
   private[this] val dependencySummary = if (dependencies.isEmpty) {

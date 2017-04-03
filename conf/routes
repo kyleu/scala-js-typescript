@@ -37,8 +37,10 @@ GET         /:key/github                             controllers.GithubControlle
 GET         /:key/github/create                      controllers.GithubController.create(key)
 
 GET         /all/sbt/status                          controllers.SbtController.list(q: Option[String] ?= None)
-GET         /all/sbt                                 controllers.SbtController.buildAll(q: Option[String] ?= None)
-GET         /:key/sbt                                controllers.SbtController.build(key)
+GET         /all/build                               controllers.SbtController.buildAll(q: Option[String] ?= None)
+GET         /:key/build                              controllers.SbtController.build(key)
+GET         /all/publish                             controllers.SbtController.publishAll(q: Option[String] ?= None)
+GET         /:key/publish                            controllers.SbtController.publish(key)
 
 # Assets
 GET         /browserconfig.xml                       controllers.Assets.at(path = "/public", file = "browserconfig.xml")
