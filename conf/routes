@@ -7,6 +7,8 @@ GET         /*path/                                  controllers.HomeController.
 GET         /metrics                                 controllers.MetricsController.showMetrics
 GET         /sandbox                                 controllers.SandboxController.list
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
+GET         /static                                  controllers.StaticSiteController.generate()
+
 
 GET         /all/parse                               controllers.ParseController.parseAll(q: Option[String] ?= None)
 GET         /:key/parse                              controllers.ParseController.parse(key)

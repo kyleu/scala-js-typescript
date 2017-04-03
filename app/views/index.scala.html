@@ -14,7 +14,6 @@
           <div class="collection-header">
             <div class="right" style="text-align: right;">
               <div>
-                All:
                 <a href="@controllers.routes.ParseController.parseAll(q)" class="teal-text">Parse</a> /
                 <a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update</a> /
                 <a href="@controllers.routes.SbtController.buildAll(q)" class="teal-text">Build</a> /
@@ -22,8 +21,8 @@
                 <a href="@controllers.routes.GitController.pushAll()" class="teal-text">Push</a>
               </div>
               <div>
-                Status:
-                <a href="@controllers.routes.SbtController.list(q)" class="teal-text">SBT</a>
+                <a href="@controllers.routes.StaticSiteController.generate()" class="teal-text">Static</a> /
+                <a href="@controllers.routes.SbtController.list(q)" class="teal-text">SBT</a> /
                 <a href="@controllers.routes.GithubController.list()" class="teal-text">Github</a>
               </div>
             </div>
@@ -43,7 +42,7 @@
               </thead>
               <tbody>
               @keys.map { key =>
-                @defining(repos.find(_.name == ("scala-js-" + key._2))) { repo =>
+                @defining(repos.find(_.name == ("scala-js-" + key._2.replaceAllLiterally("-", "")))) { repo =>
                   @defining(outDirs.contains(key._1)) { outExists =>
                     @defining(projectDirs.find(_.name == "scala-js-" + key._2)) { projectFile =>
                       <tr>

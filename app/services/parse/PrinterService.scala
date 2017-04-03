@@ -44,10 +44,16 @@ case class PrinterService(key: String, t: List[DeclTree]) {
     }
     val (nameLine, name, version) = comments.find(_.startsWith("Type definitions for")) match {
       case Some(l) =>
-        val str = l.substring("Type definitions for".length + 1).trim.split(' ')
-        (l, str.dropRight(1).mkString(" "), str.last)
-      case None => (-1, key, "0.1")
+        val str = l.substring("Type definitions for".length + 1).trim.split(' ').map(_.trim)
+        val version = str.last
+        if (version.exists(_.isDigit)) {
+          (l, str.dropRight(1).mkString(" ").trim, str.last)
+        } else {
+          (l, str.mkString(" ").trim, "")
+        }
+      case None => ("UNKNOWN", key, "0.1")
     }
+    val cleanName = if (name.isEmpty) { key } else { name }
     val (urlLine, url) = comments.find(_.startsWith("Project:")) match {
       case Some(l) => l -> l.substring("Project:".length + 1).trim
       case None => "" -> key
@@ -70,7 +76,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       }
     }
 
-    val p = ProjectDefinition(key, name, url, version, authors, dependencies)
+    val p = ProjectDefinition(key, cleanName, url, version, authors, dependencies)
     val trimmedLines = Seq(nameLine, urlLine, authorsLine, defsLine)
 
     val remaining = t.filter {
