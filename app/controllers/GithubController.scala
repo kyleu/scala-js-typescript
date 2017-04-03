@@ -12,13 +12,13 @@ import utils.Application
 @javax.inject.Singleton
 class GithubController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def list = act(s"github.list") { implicit request =>
-    githubService.listRepos(includeTemplate = false).map { repos =>
+    githubService.listRepos(includeTemplates = false).map { repos =>
       Ok(views.html.github.list(repos))
     }
   }
 
   def mergeAll = act(s"github.merge") { implicit request =>
-    githubService.listRepos(includeTemplate = false).map { repos =>
+    githubService.listRepos(includeTemplates = false).map { repos =>
       val result = repos.map { repo =>
         val dir = ProjectService.projectDir(repo.name.stripPrefix("scala-js-"))
         if (!dir.exists) {

@@ -29,17 +29,17 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
     result.toString
   }
 
-  def listRepos(includeTemplate: Boolean) = {
+  def listRepos(includeTemplates: Boolean) = {
     val r = req("orgs/DefinitelyScala/repos")
     trap(r, r.get()) { rsp =>
       val result = getArray(rsp).map {
         case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)
         case _ => throw new IllegalStateException()
       }.sortBy(_.name).reverse
-      if (includeTemplate) {
+      if (includeTemplates) {
         result
       } else {
-        result.filterNot(_.name == "scala-js-template")
+        result.filterNot(r => r.name == "scala-js-template" || r.name == "definitelyscala.com")
       }
     }
   }

@@ -13,7 +13,7 @@ import scala.concurrent.Future
 @javax.inject.Singleton
 class HomeController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def home(q: Option[String], filter: Option[String]) = act("home") { implicit request =>
-    githubService.listRepos(includeTemplate = false).map { repos =>
+    githubService.listRepos(includeTemplates = false).map { repos =>
       val filteredRepos = repos.filter(_.name.contains(q.getOrElse("")))
 
       val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)

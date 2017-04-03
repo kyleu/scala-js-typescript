@@ -39,7 +39,7 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
 
   def commitAll() = act("git.commit.all") { implicit request =>
     val msg = request.body.asFormUrlEncoded.get("msg").mkString
-    val results = githubService.listRepos(includeTemplate = false).map { repos =>
+    val results = githubService.listRepos(includeTemplates = false).map { repos =>
       repos.map { repo =>
         val key = repo.name.stripPrefix("scala").stripPrefix("-").stripPrefix("js")
         val result = GitService.commit(ProjectService.projectDir(key), Nil, msg)
@@ -55,7 +55,7 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
   }
 
   def pushAll() = act("git.push.all") { implicit request =>
-    val results = githubService.listRepos(includeTemplate = false).map { repos =>
+    val results = githubService.listRepos(includeTemplates = false).map { repos =>
       repos.map { repo =>
         val key = repo.name.stripPrefix("scala").stripPrefix("-").stripPrefix("js")
         val result = GitService.push(ProjectService.projectDir(key))
