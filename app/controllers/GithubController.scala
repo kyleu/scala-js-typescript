@@ -45,7 +45,7 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
   }
 
   def create(key: String) = act(s"github.create.$key") { implicit request =>
-    val proj = ProjectDefinition.fromJson(FileService.getDir("out") / key)
+    val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(key))
     githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
       Redirect(controllers.routes.GithubController.detail(proj.keyNormalized))
     }

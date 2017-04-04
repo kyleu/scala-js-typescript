@@ -4,6 +4,11 @@ import models.parse.ProjectDefinition
 import services.file.FileService
 
 object ProjectService {
+  def outDirFor(key: String) = {
+    val out = FileService.getDir("out")
+    out.children.find(_.name.replaceAllLiterally("-", "").replaceAllLiterally(".", "") == key).getOrElse(out / key)
+  }
+
   private[this] val dir = FileService.getDir("projects")
 
   def list(q: Option[String]) = dir.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq

@@ -25,7 +25,7 @@ class StaticSiteController @javax.inject.Inject() (override val app: Application
       val outDirs = FileService.getDir("out").list.filter(_.isDirectory).toSeq.map(_.name)
 
       val items = outDirs.filter { o =>
-        repos.exists(_.name.stripPrefix("scala-js-") == o.replaceAllLiterally("-", ""))
+        repos.exists(_.name.stripPrefix("scala-js-") == o.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
       }
 
       val itemsString = items.map { i =>
@@ -48,7 +48,7 @@ class StaticSiteController @javax.inject.Inject() (override val app: Application
       dest.delete(swallowIOExceptions = true)
       dest.write(newContent)
 
-      Ok(Html("Site exported."))
+      Ok(Html(s"Site exported (${items.size} repositories)."))
     }
   }
 }

@@ -37,13 +37,13 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
 
   def detail(key: String) = act(s"home.$key") { implicit request =>
     githubService.detail(key).map { github =>
-      val outDir = FileService.getDir("out") / key
+      val outDir = ProjectService.outDirFor(key)
       val projectDir = ProjectService.projectDir(key)
       val hasRepo = (projectDir / ".git").exists
       val details = if (outDir.exists) {
         ProjectDefinition.fromJson(outDir)
       } else {
-        ProjectDefinition(key, "?", "?", "?", "?", Nil)
+        ProjectDefinition(key, "?", "?", "?", "?")
       }
 
       Ok(views.html.detail(key, details, outDir, projectDir, hasRepo, github, app.config.debug))

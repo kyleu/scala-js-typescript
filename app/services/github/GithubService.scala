@@ -30,7 +30,7 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
   }
 
   def listRepos(includeTemplates: Boolean) = {
-    val r = req("orgs/DefinitelyScala/repos")
+    val r = req("orgs/DefinitelyScala/repos?per_page=100")
     trap(r, r.get()) { rsp =>
       val result = getArray(rsp).map {
         case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)

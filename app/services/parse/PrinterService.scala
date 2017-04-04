@@ -6,6 +6,7 @@ import models.parse.parser.tree.{DeclTree, LineCommentDecl}
 import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
 import models.parse.sc.transform.IgnoredPackages
 import services.file.FileService
+import services.project.ProjectService
 
 case class PrinterService(key: String, t: List[DeclTree]) {
   private[this] val ignoredPackages = IgnoredPackages.forKey(key)
@@ -27,7 +28,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
   }
 
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {
-    val outDir = FileService.getDir("out") / key
+    val outDir = ProjectService.outDirFor(key)
     val multi = PrinterFilesMulti(key, project.keyNormalized, outDir)
     val ret = printer(multi, decls)
 
@@ -62,6 +63,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       case Some(l) => l -> l.substring("Definitions by:".length + 1).trim
       case None => "" -> key
     }
+    val buildVersion = "1.0.0"
     val defsLine = comments.find(_.startsWith("Definitions:")) match {
       case Some(l) => l
       case None => ""
@@ -76,7 +78,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       }
     }
 
-    val p = ProjectDefinition(key, cleanName, url, version, authors, dependencies)
+    val p = ProjectDefinition(key, cleanName, url, version, authors, buildVersion, dependencies)
     val trimmedLines = Seq(nameLine, urlLine, authorsLine, defsLine)
 
     val remaining = t.filter {

@@ -56,7 +56,7 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
       GitService.init(projectDir)
     }
 
-    val proj = ProjectDefinition.fromJson(FileService.getDir("out") / key)
+    val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(key))
 
     githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
       val result2 = GitService.addRemote(projectDir)

@@ -7,7 +7,7 @@ object ProjectDefinition {
     val whatever = if (content.contains("dependencies")) {
       content
     } else {
-      content.replaceAllLiterally("}", ",  \"dependencies\": []\n}")
+      content.replaceAllLiterally("}", ",  \"dependencies\": []\n,  \"buildVersion\": \"1.0.0\"\n}")
     }
     upickle.default.read[ProjectDefinition](whatever)
   }
@@ -19,6 +19,7 @@ case class ProjectDefinition(
     url: String,
     version: String,
     authors: String,
+    buildVersion: String = "1.0.0",
     dependencies: Seq[String] = Nil
 ) {
   val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "").replaceAllLiterally("_", "")
@@ -45,6 +46,7 @@ case class ProjectDefinition(
     "version" -> version,
     "authors" -> authors,
     "dependencies" -> dependencyString,
+    "buildVersion" -> buildVersion,
     "dependencySummary" -> dependencySummary
   )
 }
