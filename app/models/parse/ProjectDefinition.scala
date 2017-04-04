@@ -5,9 +5,17 @@ object ProjectDefinition {
     val file = dir / "project.json"
     val content = file.contentAsString
     val whatever = if (content.contains("dependencies")) {
-      content
+      if (content.contains("buildVersion")) {
+        content
+      } else {
+        content.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.0\"\n}")
+      }
     } else {
-      content.replaceAllLiterally("}", ",  \"dependencies\": []\n,  \"buildVersion\": \"1.0.0\"\n}")
+      if (content.contains("buildVersion")) {
+        content.replaceAllLiterally("}", ",  \"dependencies\": []\n}")
+      } else {
+        content.replaceAllLiterally("}", ",  \"dependencies\": []\n,  \"buildVersion\": \"1.0.0\"\n}")
+      }
     }
     upickle.default.read[ProjectDefinition](whatever)
   }
