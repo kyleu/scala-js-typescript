@@ -12,35 +12,50 @@ object GithubService {
   val baseUrl = "https://api.github.com/"
   val accessKey = "c84dee2da3dbea0ca720a3b6573238319275ffb5"
 
-  case class Repo(id: Int, name: String, url: String, description: String)
+  case class Repo(id: Int, name: String, url: String, description: String, forks: Int, stars: Int, watchers: Int, size: Int)
 
   def repoFromObj(repo: Map[String, Js.Value]) = {
     val id = repo("id").asInstanceOf[Js.Num].value.toInt
     val name = repo("name").asInstanceOf[Js.Str].value
     val url = repo("html_url").asInstanceOf[Js.Str].value
     val description = repo.get("description").map(_.toString).getOrElse("")
-    GithubService.Repo(id, name, url, description)
+    val forks = repo("forks_count").asInstanceOf[Js.Num].value.toInt
+    val stars = repo("stargazers_count").asInstanceOf[Js.Num].value.toInt
+    val watchers = repo("watchers_count").asInstanceOf[Js.Num].value.toInt
+    val size = repo("size").asInstanceOf[Js.Num].value.toInt
+    GithubService.Repo(id, name, url, description, forks, stars, watchers, size)
   }
 }
 
 @javax.inject.Singleton
 case class GithubService @javax.inject.Inject() (ws: WSClient) {
+  private[this] val pageSize = 100
+
   def test() = detail("scala-js-template").map { result =>
     result.toString
   }
 
   def listRepos(includeTemplates: Boolean) = {
-    val r = req("orgs/DefinitelyScala/repos?per_page=100")
-    trap(r, r.get()) { rsp =>
-      val result = getArray(rsp).map {
+    fullList().map { repos =>
+      if (includeTemplates) {
+        repos
+      } else {
+        repos.filterNot(r => r.name == "scala-js-template" || r.name == "definitelyscala.com")
+      }
+    }
+  }
+
+  private[this] def fullList(prior: Seq[GithubService.Repo] = Nil, page: Int = 1): Future[Seq[GithubService.Repo]] = {
+    val r = req(s"orgs/DefinitelyScala/repos?page=$page&per_page=$pageSize")
+    val ret = trap(r, r.get()) { rsp =>
+      getArray(rsp).map {
         case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)
         case _ => throw new IllegalStateException()
       }.sortBy(_.name).reverse
-      if (includeTemplates) {
-        result
-      } else {
-        result.filterNot(r => r.name == "scala-js-template" || r.name == "definitelyscala.com")
-      }
+    }
+    ret.flatMap {
+      case repos if repos.size < pageSize => Future.successful(prior ++ repos)
+      case repos => fullList(prior ++ repos, page + 1)
     }
   }
 
