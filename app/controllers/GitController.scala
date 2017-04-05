@@ -8,6 +8,7 @@ import utils.Application
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
+import scala.util.control.NonFatal
 
 @javax.inject.Singleton
 class GitController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
@@ -25,6 +26,21 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
     val projectDir = ProjectService.projectDir(key)
     val result = GitService.status(projectDir)
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+
+  def statusAll() = act("git.status.all") { implicit request =>
+    val results = githubService.listRepos(includeTemplates = false).map { repos =>
+      repos.map { repo =>
+        val key = repo.name.stripPrefix("scala").stripPrefix("-").stripPrefix("js")
+        val result = try {
+          GitService.status(ProjectService.projectDir(key))
+        } catch {
+          case NonFatal(x) => (-1, x.toString)
+        }
+        (repo.name, result._1, result._2)
+      }
+    }
+    results.map(r => Ok(views.html.git.results(r)))
   }
 
   def commitForm() = act(s"project.commit.form") { implicit request =>

@@ -58,12 +58,14 @@ object GitService {
     call(dir, Seq("clone", s"git@github.com:DefinitelyScala/$key.git"))
   }
 
-  private[this] def call(dir: File, cmd: Seq[String]) = {
+  private[this] def call(dir: File, cmd: Seq[String]) = if (dir.exists) {
     val f = FileService.getDir("logs") / "git" / (dir.name + ".log")
     if (f.exists) {
       f.delete()
     }
     val result = new ProcessBuilder().directory(dir.toJava).command("git" +: cmd: _*).redirectError(f.toJava).redirectOutput(f.toJava).start().waitFor()
     result -> f.contentAsString
+  } else {
+    -1 -> s"Missing directory [$dir]."
   }
 }
