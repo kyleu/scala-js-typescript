@@ -44,7 +44,7 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
   def thirdCommit(key: String) = act(s"git.third.commit.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     val result = GitService.thirdCommit(projectDir)
-    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2, Some("Publish" -> controllers.routes.SbtController.publish(key)))))
   }
 
   def fullInit(key: String) = act(s"git.full.init.$key") { implicit request =>
@@ -63,7 +63,7 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
       val result3 = GitService.firstCommit(projectDir)
       val result4 = GitService.secondCommit(projectDir)
 
-      Ok(views.html.git.result(key, result4._1, result4._2))
+      Ok(views.html.git.result(key, result4._1, result4._2, Some("Third" -> controllers.routes.GitInitController.thirdCommit(key))))
     }
   }
 }

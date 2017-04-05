@@ -25,10 +25,19 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
     }
   }
 
-  def buildAll(q: Option[String]) = act(s"sbt.build.all") { implicit request =>
+  def buildForm(q: Option[String]) = act(s"sbt.build.all") { implicit request =>
+    Future.successful(Ok(views.html.sbt.form(q)))
+  }
+
+  def buildAll(q: Option[String], start: Option[String]) = act(s"sbt.build.all") { implicit request =>
     val result = ProjectService.list(q).map { f =>
-      val x = SbtService.build(f)
-      (f.name, x._1, x._2)
+      val name = f.name.stripPrefix("scala-js-")
+      if (start.exists(_ > name)) {
+        (f.name, 0, "Skipped")
+      } else {
+        val x = SbtService.build(f)
+        (f.name, x._1, x._2)
+      }
     }
     Future.successful(Ok(views.html.sbt.results(result)))
   }
