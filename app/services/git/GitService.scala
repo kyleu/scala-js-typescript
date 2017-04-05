@@ -2,8 +2,9 @@ package services.git
 
 import better.files._
 import services.file.FileService
+import utils.Logging
 
-object GitService {
+object GitService extends Logging {
   def init(dir: File) = if ((dir / ".git").exists) {
     throw new IllegalStateException("Already initialized.")
   } else {
@@ -59,6 +60,7 @@ object GitService {
   }
 
   private[this] def call(dir: File, cmd: Seq[String]) = if (dir.exists) {
+    log.info(s"Calling [git] with arguments [${cmd.mkString("  ")}]")
     val f = FileService.getDir("logs") / "git" / (dir.name + ".log")
     if (f.exists) {
       f.delete()
