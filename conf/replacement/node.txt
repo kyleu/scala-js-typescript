@@ -1,0 +1,130 @@
+*
+"String | symbol"
+"String"
+*
+"NodeJS.Timer"
+"Timer"
+*
+"NodeJS.Domain"
+"Domain"
+*
+"NodeJS.ErrnoException"
+"ErrnoException"
+*
+"NodeJS.Process"
+"Process"
+*
+"NodeJS.Global"
+"Global"
+*
+"NodeJS.WritableStream"
+"WritableStream"
+*
+"NodeJS.ReadWriteStream"
+"ReadWriteStream"
+*
+"NodeJS.ReadableStream"
+"ReadableStream"
+=
+class Domain extends events.EventEmitter with Domain {
+class Domain extends events.EventEmitter {
+=
+class Stream extends internal {
+class Stream {
+-
+  var ArrayBuffer: ArrayBuffer.type = js.native
+-
+  var Array: Array.type = js.native
+-
+  var Boolean: Boolean.type = js.native
+-
+  var Date: Date.type = js.native
+-
+  var Error: Error.type = js.native
+-
+  var Float32Array: Float32Array.type = js.native
+-
+  var Float64Array: Float64Array.type = js.native
+-
+  var Function: Function.type = js.native
+-
+  var Int16Array: Int16Array.type = js.native
+-
+  var Int32Array: Int32Array.type = js.native
+-
+  var Int8Array: Int8Array.type = js.native
+-
+  var Math: Math.type = js.native
+-
+  var Number: Number.type = js.native
+-
+  var Object: Object.type = js.native
+-
+  var String: String.type = js.native
+-
+  var Uint16Array: Uint16Array.type = js.native
+-
+  var Uint32Array: Uint32Array.type = js.native
+-
+  var Uint8Array: Uint8Array.type = js.native
+-
+  var Buffer: Buffer.type = js.native
+-
+  var DataView: DataView.type = js.native
+-
+  var EvalError: EvalError.type = js.native
+-
+  var Infinity: Infinity.type = js.native
+-
+  var Intl: Intl.type = js.native
+-
+  var JSON: JSON.type = js.native
+-
+  var Map: MapConstructor = js.native
+-
+  var NaN: NaN.type = js.native
+-
+  var RangeError: RangeError.type = js.native
+-
+  var ReferenceError: ReferenceError.type = js.native
+-
+  var RegExp: RegExp.type = js.native
+-
+  var Set: SetConstructor = js.native
+-
+  var SyntaxError: SyntaxError.type = js.native
+-
+  var TypeError: TypeError.type = js.native
+-
+  var URIError: URIError.type = js.native
+-
+  var WeakMap: WeakMapConstructor = js.native
+-
+  var WeakSet: WeakSetConstructor = js.native
+-
+  var console: console.type = js.native
+-
+  var decodeURI: decodeURI.type = js.native
+-
+  var decodeURIComponent: decodeURIComponent.type = js.native
+-
+  var encodeURI: encodeURI.type = js.native
+-
+  var encodeURIComponent: encodeURIComponent.type = js.native
+-
+  var eval: eval.type = js.native
+-
+  var isFinite: isFinite.type = js.native
+-
+  var isNaN: isNaN.type = js.native
+-
+  var parseFloat: parseFloat.type = js.native
+-
+  var parseInt: parseInt.type = js.native
+-
+  var undefined: undefined.type = js.native
+-
+  def readFileSync(filename: String, options: js.Any): String = js.native
+=
+  def readFileSync(filename: String, options: js.Any = js.native): Buffer = js.native
+  def readFileSync(filename: String, options: js.Any = js.native): String | Buffer = js.native

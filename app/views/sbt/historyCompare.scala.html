@@ -1,0 +1,57 @@
+@(keys: Seq[String], lName: String, l: Map[String, Boolean], rName: String, r: Map[String, Boolean])(
+    implicit request: Request[AnyContent], session: Session, flash: Flash
+)@layout.simple(utils.Config.projectName) {
+  <div class="row">
+    <div class="col s12">
+      <h5>Differences</h5>
+      <table class="bordered highlight">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Project</th>
+            <th style="width: 25%;">@lName</th>
+            <th style="width: 25%;">@rName</th>
+          </tr>
+        </thead>
+        <tbody>
+        @keys.map { key =>
+          @defining(l.get(key)) { lVal =>
+            @defining(r.get(key)) { rVal =>
+              @if(lVal != rVal) {
+                <tr>
+                  <td>@key</td>
+                  <td>@lVal.map(_.toString).getOrElse("-")</td>
+                  <td>@rVal.map(_.toString).getOrElse("-")</td>
+                </tr>
+              }
+            }
+          }
+        }
+        </tbody>
+      </table>
+    </div>
+    <div class="col s12">
+      <hr />
+    </div>
+    <div class="col s12">
+      <h5>All Projects</h5>
+      <table class="bordered highlight">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Project</th>
+            <th style="width: 25%;">@lName</th>
+            <th style="width: 25%;">@rName</th>
+          </tr>
+        </thead>
+        <tbody>
+        @keys.map { key =>
+          <tr>
+            <td>@key</td>
+            <td>@l.get(key).map(_.toString).getOrElse("-")</td>
+            <td>@r.get(key).map(_.toString).getOrElse("-")</td>
+          </tr>
+        }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

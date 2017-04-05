@@ -17,6 +17,7 @@ object IgnoredPackages {
     "less" -> Set("Less"),
     "materialize-css" -> Set("Materialize"),
     "matter-js" -> Set("Matter"),
+    "node" -> Set("NodeJS"),
     "phaser" -> Set("Phaser"),
     "phaser-pixi" -> Set("PIXI"),
     "pixi.js" -> Set("PIXI"),

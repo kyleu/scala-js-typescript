@@ -3,7 +3,7 @@ package controllers
 import services.file.FileService
 import services.github.GithubService
 import services.project.ProjectService
-import services.sbt.SbtService
+import services.sbt.{SbtHistoryService, SbtService}
 import utils.Application
 
 import scala.concurrent.Future
@@ -11,11 +11,7 @@ import scala.concurrent.Future
 @javax.inject.Singleton
 class SbtController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def list(q: Option[String]) = act(s"sbt.list") { implicit request =>
-    val projects = (FileService.getDir("logs") / "sbt").list.filter(_.isRegularFile).filter(_.name.contains(q.getOrElse(""))).toSeq
-    val statuses = projects.map { p =>
-      val content = p.contentAsString
-      (p.name, content.contains("[success]"))
-    }
+    val statuses = SbtHistoryService.statuses()
     Future.successful(Ok(views.html.sbt.list(q, statuses)))
   }
 
@@ -53,5 +49,38 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
       (f.name, x._1, x._2)
     }
     Future.successful(Ok(views.html.sbt.results(result)))
+  }
+
+  def history() = act(s"sbt.history") { implicit request =>
+    val result = SbtHistoryService.list()
+    Future.successful(Ok(views.html.sbt.history(result)))
+  }
+
+  def historyCompare() = act(s"sbt.history.compare") { implicit request =>
+    val files = request.queryString.getOrElse("q", throw new IllegalStateException("Missing [q] param.")).toList
+    files match {
+      case lName :: rName :: Nil =>
+        val lSeq = SbtHistoryService.read(lName)
+        val rSeq = SbtHistoryService.read(rName)
+        val keys = (lSeq.map(_._1) ++ rSeq.map(_._1)).distinct.sorted
+        Future.successful(Ok(views.html.sbt.historyCompare(keys, lName, lSeq.toMap, rName, rSeq.toMap)))
+      case _ => throw new IllegalStateException(s"Invalid [q] param: [${files.mkString(", ")}].")
+    }
+
+  }
+
+  def historyWrite() = act(s"sbt.history.write") { implicit request =>
+    SbtHistoryService.write()
+    Future.successful(Redirect(routes.SbtController.history()))
+  }
+
+  def historyDetail(key: String) = act(s"sbt.history.detail") { implicit request =>
+    val result = SbtHistoryService.read(key)
+    Future.successful(Ok(views.html.sbt.historyDetail(key, result)))
+  }
+
+  def historyDelete(key: String) = act(s"sbt.history.delete") { implicit request =>
+    SbtHistoryService.delete(key)
+    Future.successful(Redirect(routes.SbtController.history()))
   }
 }

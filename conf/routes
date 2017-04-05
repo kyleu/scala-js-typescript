@@ -9,7 +9,6 @@ GET         /sandbox                                 controllers.SandboxControll
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
 GET         /static                                  controllers.StaticSiteController.generate()
 
-
 GET         /all/parse                               controllers.ParseController.parseAll(q: Option[String] ?= None)
 GET         /:key/parse                              controllers.ParseController.parse(key)
 GET         /:key/refresh                            controllers.ParseController.refresh(key)
@@ -40,9 +39,16 @@ GET         /:key/github/create                      controllers.GithubControlle
 
 GET         /all/sbt/status                          controllers.SbtController.list(q: Option[String] ?= None)
 GET         /all/build                               controllers.SbtController.buildAll(q: Option[String] ?= None)
+
 GET         /:key/build                              controllers.SbtController.build(key)
 GET         /all/publish                             controllers.SbtController.publishAll(q: Option[String] ?= None)
 GET         /:key/publish                            controllers.SbtController.publish(key)
+
+GET         /history                                 controllers.SbtController.history()
+GET         /history/write                           controllers.SbtController.historyWrite()
+GET         /history/compare                         controllers.SbtController.historyCompare()
+GET         /history/:key                            controllers.SbtController.historyDetail(key)
+GET         /history/:key/delete                     controllers.SbtController.historyDelete(key)
 
 # Assets
 GET         /browserconfig.xml                       controllers.Assets.at(path = "/public", file = "browserconfig.xml")
