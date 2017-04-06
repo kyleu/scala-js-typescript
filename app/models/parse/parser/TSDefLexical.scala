@@ -26,7 +26,7 @@ class TSDefLexical extends Lexical with TSTokens with ImplicitConversions {
 
   val whitespaceParser = rep1(whitespaceChar) ^^ { c => Whitespace("?") }
 
-  val singleLineCommentParser = '/' ~> '/' ~> rep1(chrExcept(EofCh, '\n')) ^^ { text => LineComment(text.mkString) }
+  val singleLineCommentParser = '/' ~> '/' ~> rep(chrExcept(EofCh, '\n')) ^^ { text => LineComment(text.mkString) }
   val multiLineCommentParser = ('/' ~> '*' ~> rep1(not('*' ~ '/') ~> chrExcept(EofCh)) <~ '*' <~ '/') ^^ { text => MultilineComment(text.mkString) }
 
   def identifier = stringOf1(identifierStart, identifierPart) ^^ {

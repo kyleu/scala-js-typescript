@@ -1,6 +1,24 @@
-=
-  var defaultProps: Partial[P] = js.native
-  var defaultProps: P = js.native
 *
 " React."
 " "
+*
+"Readonly[S]"
+"S"
+*
+"Readonly[P]"
+"P"
+*
+"Partial[P]"
+"P"
+=
+  type ValidationMap[T] = `object`
+  type ValidationMap[T] = js.Any
+=
+  var foreignObject: SVGProps[SVGForeignObjectElement] = js.native
+  var foreignObject: SVGProps[SVGElement] = js.native
+=
+  def isValidElement[P](`object`: `object`): ReactElement[P] = js.native
+  def isValidElement[P](`object`: js.Any): ReactElement[P] = js.native
+=
+trait EventHandler[E <: SyntheticEvent[js.Any]] extends js.Object {
+trait EventHandler[E <: SyntheticEvent[_]] extends js.Object {

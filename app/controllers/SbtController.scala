@@ -35,8 +35,12 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
       if (start.exists(_ > name)) {
         (f.name, 0, "Skipped")
       } else {
-        val x = SbtService.build(f)
-        (f.name, x._1, x._2)
+        if (name == "clone" || name == "notify") {
+          (f.name, 0, "Ignored")
+        } else {
+          val x = SbtService.build(f)
+          (f.name, x._1, x._2)
+        }
       }
     }
     Future.successful(Ok(views.html.sbt.results(result)))

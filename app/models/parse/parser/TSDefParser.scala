@@ -137,7 +137,10 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
 
   lazy val typeAnnotation = ws(":") ~> typeDesc
 
-  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc, ws("|")) ^^ (_.reduceLeft(UnionType))
+  lazy val stringLiteralToType = stringLiteral.map(x => TypeRefTree(CoreType("string")))
+  lazy val numericLiteralToType = numericLit.map(x => TypeRefTree(CoreType("number")))
+
+  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc | stringLiteralToType | numericLiteralToType, ws("|")) ^^ (_.reduceLeft(UnionType))
 
   lazy val singleTypeDesc: Parser[TypeTree] = baseTypeDesc ~ rep("[" ~ "]") ^^ {
     case base ~ arrayDims => (base /: arrayDims)((elem, _) => ArrayType(elem))
@@ -217,9 +220,9 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
     case lexical.Keyword(chars) if chars.forall(Character.isLetter) => chars
   })
 
-  lazy val propertyName: Parser[PropertyName] = identifier | stringLiteral
-
   lazy val stringLiteral: Parser[StringLiteral] = stringLit ^^ StringLiteral
+
+  lazy val propertyName: Parser[PropertyName] = identifier | stringLiteral
 
   private val isCoreTypeName = Set("any", "void", "number", "bool", "boolean", "string", "null", "undefined")
 

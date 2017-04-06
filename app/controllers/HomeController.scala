@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Action
 import services.file.FileService
 import services.github.GithubService
+import services.parse.TypeScriptFiles
 import services.project.ProjectService
 import utils.Application
 
@@ -16,7 +17,7 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
     githubService.listRepos(includeTemplates = false).map { repos =>
       val filteredRepos = repos.filter(_.name.contains(q.getOrElse("")))
 
-      val srcDirs = FileService.getDir("DefinitelyTyped").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+      val srcDirs = TypeScriptFiles.list(q)
       val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
       val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse("scala-js-" + ""))).toSeq
 

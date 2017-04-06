@@ -1,0 +1,41 @@
+*ts
+" & Q"
+""
+*ts
+" & T"
+""
+=
+        props?: Q, // should be Q & Attributes, but then Q is inferred as {}
+        props?: Q,
+=
+        props?: Q, // should be Q & ClassAttributes<T>
+        props?: Q,
+=
+        props?: Q, // should be Q & Attributes
+        props?: Q,
+=
+    function isValidElement<P>(object: {}): object is ReactElement<P>;
+    function isValidElement<P>(object: object): ReactElement<P>;
+=
+        setState<K extends keyof S>(f: (prevState: S, props: P) => Pick<S, K>, callback?: () => any): void;
+        setState<K>(f: (prevState: S, props: P) => Pick<S, K>, callback?: () => any): void;
+=
+        setState<K extends keyof S>(state: Pick<S, K>, callback?: () => any): void;
+        setState<K>(state: Pick<S, K>, callback?: () => any): void;
+
+=
+        props: Readonly<{ children?: ReactNode }> & Readonly<P>;
+        props: Readonly<P>;
+=
+        (props: P & { children?: ReactNode }, context?: any): ReactElement<any>;
+        (props: P, context?: any): ReactElement<any>;
+=
+        C &
+        C;
+-
+        (new (props?: P, context?: any) => T) &
+-
+        (new (props?: P, context?: any) => { props: P });
+=
+    type ValidationMap<T> = { [K in keyof T]?: Validator<T> };
+    type ValidationMap<T> = object;

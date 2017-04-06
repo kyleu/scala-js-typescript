@@ -1,6 +1,6 @@
 @(
     key: String,
-    src: better.files.File,
+    content: String,
     definitions: Option[Seq[models.parse.parser.tree.DeclTree]],
     definitionsJson: Option[String],
     output: Seq[String],
@@ -26,7 +26,7 @@
         </li>
         <li>
           <div class="collapsible-header">TypeScript Input</div>
-          <div class="collapsible-body"><pre style="margin: 10px;">@src.contentAsString</pre></div>
+          <div class="collapsible-body"><pre style="margin: 10px;">@content</pre></div>
         </li>
       </ul>
     </div>
