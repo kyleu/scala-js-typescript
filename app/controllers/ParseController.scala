@@ -1,8 +1,6 @@
 package controllers
 
-import better.files._
 import models.parse.parser.tree.DeclTree
-import services.file.FileService
 import services.parse.{PrinterService, TypeScriptFiles, TypeScriptImport}
 import utils.Application
 
@@ -16,10 +14,10 @@ object ParseController {
 class ParseController @javax.inject.Inject() (override val app: Application) extends BaseController {
   def parseAll(q: Option[String]) = act("parse.all") { implicit request =>
     val scripts = TypeScriptFiles.list(q)
-    val results = scripts.map { script =>
+    val results = scripts.par.map { script =>
       log.info(s"Parsing [$script]...")
       parseLibrary(script)
-    }
+    }.seq
     Future.successful(Ok(views.html.parse.processAll(results, app.config.debug)))
   }
 

@@ -9,7 +9,8 @@
           </div>
           @results.map { result =>
             <div class="collection-item">
-              <pre>@result._1: @result._3</pre>
+              <div><a href="@controllers.routes.HomeController.detail(result._1.stripPrefix("scala-js-"))" class="teal-text">@result._1</a></div>
+              <pre>@result._3</pre>
             </div>
           }
         </div>

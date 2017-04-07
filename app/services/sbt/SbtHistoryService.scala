@@ -14,7 +14,7 @@ object SbtHistoryService {
     val projects = (FileService.getDir("logs") / "sbt").list.filter(_.isRegularFile).toSeq
     projects.map { p =>
       val content = p.contentAsString
-      (p.name, content.contains("[success]"))
+      (p.name.stripPrefix("scala-js-").stripSuffix(".log"), content.contains("[success]"))
     }
   }
 

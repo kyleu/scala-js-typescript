@@ -1,6 +1,7 @@
 package models.parse.sc.printer
 
 import better.files._
+import models.parse.ProjectDefinition
 import models.parse.sc.transform.ReplacementManager
 import models.parse.sc.tree.Name
 import services.parse.ClassReferenceService
@@ -48,7 +49,7 @@ case class PrinterFilesMulti(key: String, keyNormalized: String, root: File) ext
     })
     activeObject = Some(n)
     val file = activeDir match {
-      case Some(active) => active / s"${n.name.replaceAllLiterally(".", "").replaceAllLiterally("-", "")}.scala"
+      case Some(active) => active / s"${ProjectDefinition.normalize(n.name)}.scala"
       case None => throw new IllegalStateException("No active directory.")
     }
     if (!file.exists) {

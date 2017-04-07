@@ -1,40 +1,42 @@
-@(q: Option[String], filter: Option[String])
+@(q: Option[String], filter: Option[String], showOptions: Boolean = true)
 <form action="@controllers.routes.HomeController.home()" method="get">
   <div class="row">
     <div class="col s12">
       <input name="q" type="text" placeholder="Filter" value="@q" />
     </div>
-    <div class="col s3">
-      @if(filter.contains("all") || filter.isEmpty) {
-        <input name="filter" type="radio" id="filter-all" value="all" checked="checked" />
-      } else {
-        <input name="filter" type="radio" id="filter-all" value="all" />
-      }
-      <label for="filter-all">All</label>
-    </div>
-    <div class="col s3">
-      @if(filter.contains("parsed")) {
-        <input name="filter" type="radio" id="filter-parsed" value="parsed" checked="checked" />
-      } else {
-        <input name="filter" type="radio" id="filter-parsed" value="parsed" />
-      }
-      <label for="filter-parsed">Parsed</label>
-    </div>
-    <div class="col s3">
-      @if(filter.contains("built")) {
-        <input name="filter" type="radio" id="filter-built" value="built" checked="checked" />
-      } else {
-        <input name="filter" type="radio" id="filter-built" value="built" />
-      }
-      <label for="filter-built">Built</label>
-    </div>
-    <div class="col s3">
-      @if(filter.contains("published")) {
-        <input name="filter" type="radio" id="filter-published" value="published" checked="checked" />
-      } else {
-        <input name="filter" type="radio" id="filter-published" value="published" />
-      }
-      <label for="filter-published">Published</label>
-    </div>
+    @if(showOptions) {
+      <div class="col s3">
+        @if(filter.contains("all") || filter.isEmpty) {
+          <input name="filter" type="radio" id="filter-all" value="all" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-all" value="all" />
+        }
+        <label for="filter-all">All</label>
+      </div>
+      <div class="col s3">
+        @if(filter.contains("parsed")) {
+          <input name="filter" type="radio" id="filter-parsed" value="parsed" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-parsed" value="parsed" />
+        }
+        <label for="filter-parsed">Parsed</label>
+      </div>
+      <div class="col s3">
+        @if(filter.contains("built")) {
+          <input name="filter" type="radio" id="filter-built" value="built" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-built" value="built" />
+        }
+        <label for="filter-built">Built</label>
+      </div>
+      <div class="col s3">
+        @if(filter.contains("published")) {
+          <input name="filter" type="radio" id="filter-published" value="published" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-published" value="published" />
+        }
+        <label for="filter-published">Published</label>
+      </div>
+    }
   </div>
 </form>

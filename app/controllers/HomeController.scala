@@ -6,7 +6,8 @@ import play.api.mvc.Action
 import services.file.FileService
 import services.github.GithubService
 import services.parse.TypeScriptFiles
-import services.project.ProjectService
+import services.project.{ProjectDetailsService, ProjectService}
+import services.sbt.SbtHistoryService
 import utils.Application
 
 import scala.concurrent.Future
@@ -14,25 +15,16 @@ import scala.concurrent.Future
 @javax.inject.Singleton
 class HomeController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def home(q: Option[String], filter: Option[String]) = act("home") { implicit request =>
+    val srcDirs = TypeScriptFiles.list(q)
+    val keys = srcDirs.sorted.map(x => x -> ProjectDefinition.normalize(x))
+
+    Future.successful(Ok(views.html.home(q, filter, keys, app.config.debug)))
+  }
+
+  def list(q: Option[String], filter: Option[String]) = act("home") { implicit request =>
     githubService.listRepos(includeTemplates = false).map { repos =>
-      val filteredRepos = repos.filter(_.name.contains(q.getOrElse("")))
-
-      val srcDirs = TypeScriptFiles.list(q)
-      val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
-      val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse("scala-js-" + ""))).toSeq
-
-      val keys = srcDirs.sorted.map(x => x -> x.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
-
-      val filteredKeys = filter match {
-        case None => keys
-        case Some("all") => keys
-        case Some("parsed") => keys.filter(k => outDirs.contains(k._1))
-        case Some("built") => keys.filter(k => projectDirs.exists(d => d.name == ("scala-js-" + k._2)))
-        case Some("published") => keys.filter(k => repos.exists(_.name == ("scala-js-" + k._2)))
-        case Some(x) => throw new IllegalStateException(s"Invalid filter [$x].")
-      }
-
-      Ok(views.html.index(q, filter, filteredKeys, outDirs, projectDirs, repos, app.config.debug))
+      val details = ProjectDetailsService.getAll(q, filter, repos)
+      Ok(views.html.list(q, filter, details, app.config.debug))
     }
   }
 

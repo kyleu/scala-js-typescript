@@ -1,6 +1,8 @@
 package models.parse
 
 object ProjectDefinition {
+  def normalize(key: String) = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "").replaceAllLiterally("_", "")
+
   def fromJson(dir: better.files.File) = {
     val file = dir / "project.json"
     val content = file.contentAsString
@@ -30,7 +32,7 @@ case class ProjectDefinition(
     buildVersion: String = "1.0.0",
     dependencies: Seq[String] = Nil
 ) {
-  val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "").replaceAllLiterally("_", "")
+  val keyNormalized = ProjectDefinition.normalize(key)
 
   val description = s"Scala.js facades for $name $version."
 

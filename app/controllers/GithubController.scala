@@ -26,7 +26,10 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
         }
         val gitDir = dir / ".git"
         val ret = gitDir.exists
-        if (!ret) {
+        if (ret) {
+          log.info(s"Skipping existing github repository for [${repo.name}].")
+        } else {
+          log.info(s"Merging github repository for [${repo.name}].")
           val parent = dir.parent
           dir.delete(swallowIOExceptions = true)
           val result = GitService.cloneRepo(parent, repo.name)

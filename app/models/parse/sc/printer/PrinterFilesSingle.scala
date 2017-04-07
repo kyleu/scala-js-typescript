@@ -16,7 +16,7 @@ case class PrinterFilesSingle(key: String, keyNormalized: String, file: File) ex
   file.append("import scala.scalajs.js\n")
 
   override def pushPackage(pkg: Name) = {
-    val p = pkg.name.replaceAllLiterally("-", "")
+    val p = pkg.name.replaceAllLiterally("-", "").replaceAllLiterally("_", "")
     file.append(s"package $p {\n")
   }
   override def popPackage(pkg: Name) = file.append(s"}\n")

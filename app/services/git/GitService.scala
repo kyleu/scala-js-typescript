@@ -12,7 +12,7 @@ object GitService extends Logging {
   }
 
   def status(dir: File) = {
-    call(dir, Seq("status"))
+    call(dir, Seq("status", "--short", "--ignore-submodules"))
   }
 
   def addRemote(dir: File) = if ((dir / ".git").exists) {

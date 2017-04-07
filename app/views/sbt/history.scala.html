@@ -5,17 +5,17 @@
     <div class="col s12">
       <div class="collection with-header">
         <div class="collection-header">
-          <div class="right"><a class="teal-text" href="@controllers.routes.SbtController.historyWrite()">Write History</a></div>
+          <div class="right"><a class="teal-text" href="@controllers.routes.SbtHistoryController.write()">Write History</a></div>
           <h5>@utils.NumberUtils.withCommas(histories.size) SBT History Files</h5>
         </div>
-        <form action="@controllers.routes.SbtController.historyCompare()" method="get">
+        <form action="@controllers.routes.SbtHistoryController.compare()" method="get">
           @histories.map { history =>
             <div class="collection-item">
               <div class="left">
                 <input id="check-@history" type="checkbox" name="q" value="@history" />
                 <label for="check-@history"></label>
               </div>
-              <a class="teal-text" href="@routes.SbtController.historyDetail(history)">@history</a>
+              <a class="teal-text" href="@routes.SbtHistoryController.detail(history)">@history</a>
             </div>
           }
           <div class="collection-item">

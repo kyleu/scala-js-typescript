@@ -25,11 +25,11 @@ class StaticSiteController @javax.inject.Inject() (override val app: Application
       val outDirs = FileService.getDir("out").list.filter(_.isDirectory).toSeq.map(_.name)
 
       val items = outDirs.filter { o =>
-        repos.exists(_.name.stripPrefix("scala-js-") == o.replaceAllLiterally("-", "").replaceAllLiterally(".", ""))
+        repos.exists(_.name.stripPrefix("scala-js-") == ProjectDefinition.normalize(o))
       }
 
       val itemsString = items.map { i =>
-        val projName = "scala-js-" + i.replaceAllLiterally("-", "")
+        val projName = "scala-js-" + ProjectDefinition.normalize(i)
         val outDir = FileService.getDir("out") / i
         val definition = ProjectDefinition.fromJson(outDir)
 

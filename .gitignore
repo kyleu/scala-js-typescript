@@ -9,6 +9,7 @@ dist
 /*.iml
 /out
 /data
+/typescript/DefinitelyScala/
 /.idea_modules
 /.classpath
 /.project

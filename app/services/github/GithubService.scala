@@ -37,11 +37,12 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
 
   def listRepos(includeTemplates: Boolean) = {
     fullList().map { repos =>
-      if (includeTemplates) {
+      val filtered = if (includeTemplates) {
         repos
       } else {
         repos.filterNot(r => r.name == "scala-js-template" || r.name == "definitelyscala.com")
       }
+      filtered.sortBy(_.name)
     }
   }
 

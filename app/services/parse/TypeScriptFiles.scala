@@ -1,26 +1,19 @@
 package services.parse
 
 import better.files._
-import services.file.FileService
 
 object TypeScriptFiles {
-  val root = {
-    val gitRepo = "typescript" / "DefinitelyTyped" / "types"
-    if (gitRepo.exists) {
-      gitRepo
-    } else {
-      FileService.getDir("DefinitelyTyped")
-    }
-  }
-
-  val overrideRoot = "typescript" / "DefinitelyScala"
+  private[this] val root = "typescript" / "DefinitelyTyped" / "types"
+  private[this] val overrideRoot = "typescript" / "DefinitelyScala" / "types"
 
   def list(q: Option[String]) = {
-    root.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+    val core = root.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+    val over = overrideRoot.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
+    (core.toSet ++ over).toSeq.sorted
   }
 
   def getContent(key: String) = {
-    val overrideFile = overrideRoot / s"$key.ts"
+    val overrideFile = overrideRoot / key / "index.d.ts"
     val f = if (overrideFile.exists) {
       overrideFile
     } else {

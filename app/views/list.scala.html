@@ -1,0 +1,67 @@
+@(
+    q: Option[String],
+    filter: Option[String],
+    details: Seq[services.project.ProjectDetailsService.Details],
+    debug: Boolean
+)(implicit request: Request[AnyContent], session: Session, flash: Flash)@layout.simple("Project List") {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection with-header">
+          <div class="collection-header">
+            <h5>@utils.NumberUtils.withCommas(details.size) Available Projects</h5>
+            @views.html.component.filterForm(q, filter)
+          </div>
+          <div class="collection-item">
+            <table class="bordered highlight">
+              <thead>
+                <tr>
+                  <th style="width: 40%;">Key</th>
+                  <th style="width: 10%;">Out</th>
+                  <th style="width: 10%;">Project</th>
+                  <th style="width: 10%;">Build</th>
+                  <th style="width: 10%;">Publish</th>
+                  <th style="width: 10%;">Repo</th>
+                  <th style="width: 10%;">Github</th>
+                </tr>
+              </thead>
+              <tbody>
+              @details.map { detail =>
+                <tr>
+                  <td>
+                    <a class="teal-text" href="@controllers.routes.HomeController.detail(detail.key)">@detail.key</a>
+                  </td>
+                  <td>
+                    <a class="teal-text" href="@controllers.routes.ParseController.parse(detail.key)">
+                      @if(detail.parsed) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                    </a>
+                  </td>
+                  <td>
+                    <a class="teal-text" href="@controllers.routes.ProjectController.update(detail.key)">
+                    @if(detail.project) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                    </a>
+                  </td>
+                  <td>
+                    @if(detail.built) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                  </td>
+                  <td>
+                    ...
+                  </td>
+                  <td>
+                    @if(detail.repo) { <i class="fa fa-check"></i> } else { <i class="fa fa-close"></i> }
+                  </td>
+                  <td>@if(detail.github) {
+                    <a class="teal-text" href="@controllers.routes.GithubController.detail(detail.keyNormal)"><i class="fa fa-check"></i></a>
+                  } else {
+                    <a class="teal-text" href="@controllers.routes.GithubController.create(detail.keyNormal)"><i class="fa fa-close"></i></a>
+                  }</td>
+                </tr>
+              }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

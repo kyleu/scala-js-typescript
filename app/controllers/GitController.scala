@@ -37,7 +37,8 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
         } catch {
           case NonFatal(x) => (-1, x.toString)
         }
-        (repo.name, result._1, result._2)
+        val out = result._2.split('\n').filterNot(_.contains("../../../")).mkString("\n")
+        (repo.name, result._1, out)
       }
     }
     results.map(r => Ok(views.html.git.results(r)))

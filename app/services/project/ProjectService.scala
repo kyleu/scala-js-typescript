@@ -6,7 +6,7 @@ import services.file.FileService
 object ProjectService {
   def outDirFor(key: String) = {
     val out = FileService.getDir("out")
-    out.children.find(_.name.replaceAllLiterally("-", "").replaceAllLiterally(".", "") == key).getOrElse(out / key)
+    out.children.find(x => ProjectDefinition.normalize(x.name) == key).getOrElse(out / key)
   }
 
   private[this] val dir = FileService.getDir("projects")
@@ -14,8 +14,7 @@ object ProjectService {
   def list(q: Option[String]) = dir.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
 
   def projectDir(key: String) = {
-    val keyNormalized = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "")
-    dir / ("scala-js-" + keyNormalized)
+    dir / ("scala-js-" + ProjectDefinition.normalize(key))
   }
 }
 
