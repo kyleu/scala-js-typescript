@@ -18,7 +18,7 @@
             @defining(r.get(key)) { rVal =>
               @if(lVal != rVal) {
                 <tr>
-                  <td>@key</td>
+                  <td><a href="@controllers.routes.HomeController.detail(key)" class="teal-text">@key</a></td>
                   <td>@lVal.map(_.toString).getOrElse("-")</td>
                   <td>@rVal.map(_.toString).getOrElse("-")</td>
                 </tr>
@@ -45,7 +45,7 @@
         <tbody>
         @keys.map { key =>
           <tr>
-            <td>@key</td>
+            <td><a href="@controllers.routes.HomeController.detail(key)" class="teal-text">@key</a></td>
             <td>@l.get(key).map(_.toString).getOrElse("-")</td>
             <td>@r.get(key).map(_.toString).getOrElse("-")</td>
           </tr>
