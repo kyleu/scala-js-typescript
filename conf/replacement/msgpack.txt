@@ -1,0 +1,3 @@
+=
+  var msgpack: MsgPackStatic = js.native
+  var msgpack: com.definitelyscala.msgpack.msgpack.MsgPackStatic = js.native

@@ -44,6 +44,7 @@ GET         /all/build/form                          controllers.SbtController.b
 GET         /all/build                               controllers.SbtController.buildAll(q: Option[String] ?= None, start: Option[String] ?= None)
 
 GET         /:key/build                              controllers.SbtController.build(key)
+GET         /:key/last                               controllers.SbtController.last(key)
 GET         /all/publish                             controllers.SbtController.publishAll(q: Option[String] ?= None)
 GET         /:key/publish                            controllers.SbtController.publish(key)
 

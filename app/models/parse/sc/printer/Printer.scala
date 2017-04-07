@@ -57,7 +57,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
       }
 
       if (!packageObjectMembers.forall(_.isInstanceOf[CommentSymbol])) {
-        val packageObjectName = Name((thisPackage.name.head.toUpper + thisPackage.name.tail).replaceAllLiterally("-", ""))
+        val packageObjectName = Name(thisPackage.name.replaceAllLiterally("-", ""))
 
         pln""
         files.setActiveObject(packageObjectName)

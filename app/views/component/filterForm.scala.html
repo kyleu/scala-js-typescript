@@ -1,5 +1,5 @@
 @(q: Option[String], filter: Option[String], showOptions: Boolean = true)
-<form action="@controllers.routes.HomeController.home()" method="get">
+<form action="@controllers.routes.HomeController.list()" method="get">
   <div class="row">
     <div class="col s12">
       <input name="q" type="text" placeholder="Filter" value="@q" />

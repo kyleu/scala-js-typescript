@@ -5,20 +5,30 @@ import utils.DateUtils
 
 object SbtHistoryService {
   private[this] val root = FileService.getDir("logs") / "history"
+  private[this] val logDir = FileService.getDir("logs") / "sbt"
 
   if (!root.exists) {
     root.createDirectories()
   }
 
+  def list() = root.children.map(_.name.stripSuffix(".csv")).toSeq.sorted
+
   def statuses() = {
-    val projects = (FileService.getDir("logs") / "sbt").list.filter(_.isRegularFile).toSeq
+    val projects = logDir.list.filter(_.isRegularFile).toSeq
     projects.map { p =>
       val content = p.contentAsString
       (p.name.stripPrefix("scala-js-").stripSuffix(".log"), content.contains("[success]"))
     }
   }
 
-  def list() = root.children.map(_.name.stripSuffix(".csv")).toSeq.sorted
+  def status(key: String) = {
+    val f = logDir / s"scala-js-$key.log"
+    if (f.exists) {
+      f.contentAsString
+    } else {
+      throw new IllegalStateException(s"No build history for [$key] (${f.path}).")
+    }
+  }
 
   def write() = {
     val file = root / (DateUtils.now.toString("yyyy-MM-dd HH:mm:ss") + ".csv")

@@ -70,9 +70,9 @@ case class PrinterService(key: String, t: List[DeclTree]) {
     }
     val dependencies = comments.filter(_.contains("<reference types")).map { dep =>
       dep.split('\"').toList match {
-        case _ :: x :: _ :: Nil => x
+        case _ :: x :: _ :: Nil => ProjectDefinition.normalize(x)
         case _ => dep.split('\'').toList match {
-          case _ :: x :: _ :: Nil => x
+          case _ :: x :: _ :: Nil => ProjectDefinition.normalize(x)
           case _ => throw new IllegalStateException(s"Invalid reference [$dep].")
         }
       }

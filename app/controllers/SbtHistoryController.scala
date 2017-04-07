@@ -14,7 +14,7 @@ class SbtHistoryController @javax.inject.Inject() (override val app: Application
   }
 
   def compare() = act(s"sbt.history.compare") { implicit request =>
-    val files = request.queryString.getOrElse("q", throw new IllegalStateException("Missing [q] param.")).toList
+    val files = request.queryString.getOrElse("q", Nil).toList
     files match {
       case lName :: rName :: Nil =>
         val lSeq = SbtHistoryService.read(lName)

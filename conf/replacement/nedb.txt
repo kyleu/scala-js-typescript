@@ -1,0 +1,3 @@
+=
+class Nedb protected () extends js.Object {
+class NedbObj protected () extends js.Object {

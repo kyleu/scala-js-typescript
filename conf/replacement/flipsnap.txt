@@ -1,0 +1,4 @@
+-
+  def addEventListener(`type`: String, listener: js.Function1[FlipsnapTouchMoveEvent, Any], useCapture: Boolean): Unit = js.native
+-
+  def addEventListener(`type`: String, listener: js.Function1[FlipsnapTouchEndEvent, Any], useCapture: Boolean): Unit = js.native

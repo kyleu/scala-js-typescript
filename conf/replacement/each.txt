@@ -1,6 +1,2 @@
-=
-  var debug: debug.IDebug = js.native
-  var debug: com.definitelyscala.debug.debug.IDebug = js.native
-=
-  def apply(namespace: String): debug.IDebugger = js.native
-  def apply(namespace: String): com.definitelyscala.debug.debug.IDebugger = js.native
+-
+  def on(eventName: String, onError: js.Function1[Error, Unit]): Each = js.native

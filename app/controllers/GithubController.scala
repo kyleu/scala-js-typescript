@@ -3,10 +3,9 @@ package controllers
 import models.parse.ProjectDefinition
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.twirl.api.Html
-import services.file.FileService
 import services.git.GitService
 import services.github.GithubService
-import services.project.ProjectService
+import services.project.{ProjectDetailsService, ProjectService}
 import utils.Application
 
 @javax.inject.Singleton

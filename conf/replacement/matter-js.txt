@@ -10,3 +10,11 @@
 *
 "@default "
 "default: "
+-
+  def on(obj: Engine, name: String, callback: js.Function1[IEventTimestamped[Runner], Unit]): Unit = js.native
+-
+  def on(obj: Engine, name: String, callback: js.Function1[IEventCollision[Engine], Unit]): Unit = js.native
+-
+  def on(obj: Engine, name: String, callback: js.Function1[IEventTimestamped[Render], Unit]): Unit = js.native
+-
+  def on(obj: Engine, name: String, callback: js.Function1[IEventTimestamped[Engine], Unit]): Unit = js.native

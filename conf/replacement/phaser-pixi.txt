@@ -94,6 +94,9 @@ object PixiObj extends js.Object {
 ".PIXI."
 "."
 *
+"Phaser.Game"
+"js.Object"
+*
 " interaction.InteractionEvent"
 " com.definitelyscala.pixijs.interaction.InteractionEvent"
 *

@@ -33,7 +33,6 @@ object ClassReferenceService extends Logging {
     )),
     ("com.definitelyscala.phaserp2._", Seq("/Physics/P2"), Seq("p2.")),
 
-    ("com.definitelyscala.node.Buffer", Seq("node/"), Seq("Buffer")),
     ("com.definitelyscala.node.NodeJS._", Seq("node/"), Seq("ReadWriteStream")),
     ("com.definitelyscala.node.crypto.Crypto._", Seq("node/"), Seq("Utf8AsciiBinaryEncoding", "HexBase64Latin1Encoding", "ECDHKeyFormat")),
     ("com.definitelyscala.node.NodeJS", Seq("node/"), Seq("NodeJS.")),
@@ -56,6 +55,7 @@ object ClassReferenceService extends Logging {
       "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement", "StyleMedia",
       "SVGElement", "DataTransfer", " Node", "WebGLFramebuffer", "MouseEvent", "KeyboardEvent"
     ),
+    "com.definitelyscala.node.Buffer" -> Seq(": Buffer"),
     "scala.scalajs.js.|" -> Seq(" | "),
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),
     "org.scalajs.dom.raw.Blob" -> Seq(" Blob "),
