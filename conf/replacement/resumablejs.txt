@@ -1,0 +1,6 @@
+-
+  def on(event: String, callback: js.Function2[ResumableFile, DragEvent, Unit]): Unit = js.native
+-
+  def on(event: String, callback: js.Function1[js.Array[ResumableFile], Unit]): Unit = js.native
+-
+  def on(event: String, callback: js.Function2[ResumableFile, String, Unit]): Unit = js.native
