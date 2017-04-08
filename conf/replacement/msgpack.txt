@@ -1,3 +1,6 @@
 =
-  var msgpack: MsgPackStatic = js.native
-  var msgpack: com.definitelyscala.msgpack.msgpack.MsgPackStatic = js.native
+  var msgpack: msgpack.MsgPackStatic = js.native
+  var msgpackObj: com.definitelyscala.msgpack.msgpack.MsgPackStatic = js.native
+=
+object msgpack extends js.Object {
+object msgpackObj extends js.Object {

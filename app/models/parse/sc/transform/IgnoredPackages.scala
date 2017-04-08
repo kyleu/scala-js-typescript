@@ -8,6 +8,7 @@ object IgnoredPackages {
     "alertify" -> Set("alertify"),
     "algoliasearch" -> Set("algoliasearch"),
     "amcharts" -> Set("AmCharts"),
+    "amplify" -> Set("amplify"),
     "atmosphere" -> Set("Atmosphere"),
     "bigint" -> Set("BigInt"),
     "busboy" -> Set("busboy"),
