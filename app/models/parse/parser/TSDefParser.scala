@@ -35,7 +35,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
     case lexical.Whitespace(chars) => WhitespaceDecl(chars)
   })
   def ws[T](p: Parser[T]) = opt(wsParser) ~> p <~ opt(wsParser)
-  val terminator = opt(commentDecl) ~ opt(";") ~ opt(commentDecl)
+  val terminator = opt(";")
 
   lexical.delimiters ++= List("{", "}", "(", ")", "[", "]", "<", ">", ".", ";", ",", "?", ":", "=", "|", "...", "=>")
 
@@ -94,7 +94,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
 
   lazy val ambientEnumDecl: Parser[DeclTree] = ws("enum") ~> typeName ~ (ws("{") ~> ambientEnumBody <~ ws("}")) ^^ EnumDecl
 
-  lazy val ambientEnumBody: Parser[List[Ident]] = repsep(opt(commentDecl) ~> identifier <~ opt(ws("=") ~ numericLit), ws(",") ~ opt(commentDecl)) <~ opt(",") ~ opt(commentDecl)
+  lazy val ambientEnumBody: Parser[List[Ident]] = repsep(identifier <~ opt(ws("=") ~ numericLit), ws(",")) <~ opt(",")
 
   lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ ws("class") ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ terminator ^^ {
     case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ => ClassDecl(abst, name, params, parent, impls, members)
@@ -114,7 +114,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
 
   lazy val intfInheritance = ws("extends") ~> repsep(typeRef, ws(",")) | success(Nil)
 
-  lazy val functionSignature = tparams ~ (ws("(") ~> repsep(functionParam, ws(",") ~ opt(commentDecl)) <~ ws(")")) ~ optResultType ^^ FunSignature
+  lazy val functionSignature = tparams ~ (ws("(") ~> repsep(functionParam, ws(",")) <~ ws(")")) ~ optResultType ^^ FunSignature
 
   lazy val functionParam = repeatedParamMarker ~ identifier ~ optionalMarker ~ optParamType ^^ {
     case false ~ i ~ o ~ t => FunParam(i, o, t)
@@ -177,7 +177,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
 
   lazy val objectType: Parser[TypeTree] = memberBlock ^^ ObjectType
 
-  lazy val memberBlock: Parser[List[MemberTree]] = ws("{") ~> rep(typeMember <~ opt(ws(";") | ws(",")) ~ opt(commentDecl)) <~ ws("}")
+  lazy val memberBlock: Parser[List[MemberTree]] = ws("{") ~> rep(typeMember <~ opt(ws(";") | ws(","))) <~ ws("}")
 
   lazy val typeMember: Parser[MemberTree] = commentMember | callMember | constructorMember | indexMember | namedMember
 
