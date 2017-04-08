@@ -16,7 +16,7 @@
               <i class="fa fa-close"></i> Error
             }
             @result.errors.map { err =>
-              <pre>@err</pre>
+              <pre style="border: 1px solid #e0e0e0; padding: 6px;">@err.content</pre>
             }
           </div>
           <div class="collection-item">

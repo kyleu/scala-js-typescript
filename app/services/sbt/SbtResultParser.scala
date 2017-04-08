@@ -9,18 +9,33 @@ object SbtResultParser {
     val success = errors.isEmpty
   }
 
-  private[this] val infoTag = "[info] "
-  private[this] val errorTag = "[error] "
+  private[this] def linesFor(lines: Array[(String, Int)], tag: String) = {
+    lines.filter(_._1.startsWith(tag)).map(x => x._1.stripPrefix(tag).replaceAllLiterally("^", "").trim -> x._2).filter(_._1.nonEmpty)
+  }
+
+  private[this] def parseErrors(lines: Array[(String, Int)]) = if (lines.isEmpty) {
+    Array.empty[Error]
+  } else {
+    lines.zipWithIndex.flatMap {
+      case ((line, lineNum), arrayIdx) => line match {
+        case _ if line.contains(".scala") =>
+          val trimmed = line.substring(line.indexOf("com/"))
+          val others = lines.drop(arrayIdx + 1).takeWhile(x => (!x._1.contains(".scala")) && (!x._1.contains("errors found")))
+          Some(Error(trimmed + "\n" + others.map("  " + _._1).mkString("\n")))
+        case _ => None
+      }
+    }
+  }
 
   def parse(f: File) = {
     val key = f.name.stripPrefix("scala-js-").stripSuffix(".log")
 
     val lines = f.lines.toArray.zipWithIndex
 
-    val infoLines = lines.filter(_._1.startsWith(infoTag)).map(x => x._1.stripPrefix(infoTag) -> x._2)
-    val errorLines = lines.filter(_._1.startsWith(errorTag)).map(x => x._1.stripPrefix(errorTag) -> x._2)
+    val infoLines = linesFor(lines, "[info] ")
+    val errorLines = linesFor(lines, "[error] ")
 
-    val errors = Nil
+    val errors = parseErrors(errorLines)
     Result(key, infoLines, errorLines, errors)
   }
 }
