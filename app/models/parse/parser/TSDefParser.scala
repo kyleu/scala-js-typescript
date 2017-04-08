@@ -35,6 +35,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
     case lexical.Whitespace(chars) => WhitespaceDecl(chars)
   })
   def ws[T](p: Parser[T]) = opt(wsParser) ~> p <~ opt(wsParser)
+  val terminator = opt(commentDecl) ~ opt(";") ~ opt(commentDecl)
 
   lexical.delimiters ++= List("{", "}", "(", ")", "[", "]", "<", ">", ".", ";", ",", "?", ":", "=", "|", "...", "=>")
 
@@ -43,10 +44,10 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
   lazy val ambientDeclarations: Parser[List[DeclTree]] = rep(ambientDeclaration)
 
   val exportDelaration = ws {
-    val simple = ws("export") ~ ws("=") ~ ws(identifier) <~ opt(";") ~ opt(commentDecl) ^^ {
+    val simple = ws("export") ~ ws("=") ~ ws(identifier) <~ terminator ^^ {
       case a ~ b ~ c => ExportDecl(Seq(a, b, c.name).mkString(" "))
     }
-    val namespaced = ws("export") ~ ws("as") ~ ws("namespace") ~ ws(identifier) <~ opt(";") ~ opt(commentDecl) ^^ {
+    val namespaced = ws("export") ~ ws("as") ~ ws("namespace") ~ ws(identifier) <~ terminator ^^ {
       case a ~ b ~ c ~ d => ExportDecl(Seq(a, b, c, d.name).mkString(" "))
     }
     simple | namespaced
@@ -75,7 +76,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
   lazy val moduleBody: Parser[List[DeclTree]] = ws("{") ~> rep(ws(moduleElementDecl)) <~ ws("}") ^^ (_.flatten)
 
   lazy val moduleElementDecl: Parser[Option[DeclTree]] = {
-    ws("export") ~> (moduleElementDecl1 ^^ (Some(_)) | ws("=") ~> identifier <~ opt(";") ~ opt(commentDecl) ^^^ None) | moduleElementDecl1 ^^ (Some(_))
+    ws("export") ~> (moduleElementDecl1 ^^ (Some(_)) | ws("=") ~> identifier <~ terminator ^^^ None) | moduleElementDecl1 ^^ (Some(_))
   }
 
   lazy val moduleElementDecl1: Parser[DeclTree] = ws {
@@ -83,25 +84,25 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
       ambientEnumDecl | ambientClassDecl | ambientInterfaceDecl | typeAliasDecl
   }
 
-  lazy val ambientVarDecl: Parser[DeclTree] = ws("var") ~> identifier ~ ws(optTypeAnnotation) <~ opt(";") ~ opt(commentDecl) ^^ VarDecl
+  lazy val ambientVarDecl: Parser[DeclTree] = ws("var") ~> identifier ~ ws(optTypeAnnotation) <~ terminator ^^ VarDecl
 
-  lazy val ambientValDecl: Parser[DeclTree] = ws("const" | "let") ~> identifier ~ ws(optTypeAnnotation) <~ opt(";") ~ opt(commentDecl) ^^ ValDecl
+  lazy val ambientValDecl: Parser[DeclTree] = ws("const" | "let") ~> identifier ~ ws(optTypeAnnotation) <~ terminator ^^ ValDecl
 
-  lazy val ambientFunctionDecl: Parser[DeclTree] = maybeProtected ~ ws("function") ~ identifier ~ functionSignature ~ opt(";") ~ opt(commentDecl) ^^ {
-    case prot ~ _ ~ id ~ sig ~ _ ~ _ => FunctionDecl(prot, id, sig)
+  lazy val ambientFunctionDecl: Parser[DeclTree] = maybeProtected ~ ws("function") ~ identifier ~ functionSignature ~ terminator ^^ {
+    case prot ~ _ ~ id ~ sig ~ _ => FunctionDecl(prot, id, sig)
   }
 
   lazy val ambientEnumDecl: Parser[DeclTree] = ws("enum") ~> typeName ~ (ws("{") ~> ambientEnumBody <~ ws("}")) ^^ EnumDecl
 
   lazy val ambientEnumBody: Parser[List[Ident]] = repsep(opt(commentDecl) ~> identifier <~ opt(ws("=") ~ numericLit), ws(",") ~ opt(commentDecl)) <~ opt(",") ~ opt(commentDecl)
 
-  lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ ws("class") ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ opt(";") ~ opt(commentDecl) ^^ {
-    case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ ~ _ => ClassDecl(abst, name, params, parent, impls, members)
+  lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ ws("class") ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ terminator ^^ {
+    case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ => ClassDecl(abst, name, params, parent, impls, members)
   }
 
-  lazy val ambientInterfaceDecl: Parser[DeclTree] = ws("interface") ~> typeName ~ tparams ~ intfInheritance ~ memberBlock <~ opt(";") ~ opt(commentDecl) ^^ InterfaceDecl
+  lazy val ambientInterfaceDecl: Parser[DeclTree] = ws("interface") ~> typeName ~ tparams ~ intfInheritance ~ memberBlock <~ terminator ^^ InterfaceDecl
 
-  lazy val typeAliasDecl: Parser[DeclTree] = ws("type") ~> typeName ~ tparams ~ (ws("=") ~> typeDesc) <~ opt(";") ~ opt(commentDecl) ^^ TypeAliasDecl
+  lazy val typeAliasDecl: Parser[DeclTree] = ws("type") ~> typeName ~ tparams ~ (ws("=") ~> typeDesc) <~ terminator ^^ TypeAliasDecl
 
   lazy val tparams = ws("<") ~> rep1sep(typeParam, ws(",")) <~ ws(">") | success(Nil)
 

@@ -24,7 +24,7 @@ object SbtHistoryService {
   def status(key: String) = {
     val f = logDir / s"scala-js-$key.log"
     if (f.exists) {
-      f.contentAsString
+      f
     } else {
       throw new IllegalStateException(s"No build history for [$key] (${f.path}).")
     }

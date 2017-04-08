@@ -3,7 +3,7 @@ package controllers
 import better.files.File
 import services.github.GithubService
 import services.project.ProjectService
-import services.sbt.{SbtHistoryService, SbtService}
+import services.sbt.{SbtHistoryService, SbtResultParser, SbtService}
 import utils.Application
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
@@ -18,14 +18,17 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
 
   def last(key: String) = act(s"sbt.last") { implicit request =>
     val status = SbtHistoryService.status(key)
-    Future.successful(Ok(views.html.sbt.result(key, 0, status)))
+    val result = SbtResultParser.parse(status)
+    Future.successful(Ok(views.html.sbt.result(key, result, status.contentAsString)))
   }
 
   def build(key: String) = act(s"sbt.build.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     if (projectDir.exists) {
-      val result = SbtService.build(projectDir)
-      Future.successful(Ok(views.html.sbt.result(key, result._1, result._2)))
+      val buildResult = SbtService.build(projectDir)
+      val status = SbtHistoryService.status(key)
+      val result = SbtResultParser.parse(status)
+      Future.successful(Ok(views.html.sbt.result(key, result, buildResult._2)))
     } else {
       throw new IllegalStateException(s"No project found for [$key].")
     }
@@ -80,8 +83,11 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
   def publish(key: String) = act(s"sbt.publish.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     if (projectDir.exists) {
-      val result = SbtService.publish(projectDir)
-      Future.successful(Ok(views.html.sbt.result(key, result._1, result._2)))
+      val publishResult = SbtService.publish(projectDir)
+
+      val result = SbtResultParser.Result(key, Nil, Nil, Nil)
+
+      Future.successful(Ok(views.html.sbt.result(key, result, publishResult._2)))
     } else {
       throw new IllegalStateException(s"No project found for [$key].")
     }
