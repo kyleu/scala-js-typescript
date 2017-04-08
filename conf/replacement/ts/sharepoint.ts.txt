@@ -1,0 +1,14 @@
+=
+    throttle<T extends (...args: any[]) => any>(fn: T, interval: number, shouldOverrideThrottle: boolean): T;
+    throttle<T>(fn: T, interval: number, shouldOverrideThrottle: boolean): T;
+-
+        /** Has no permissions on the Web site. Not available through the user interface. */
+-
+            /** Do not use this */
+-
+            /** No change was made */
+-
+            /** Result is unknown */
+=
+    SetItem<T extends { Key: string }>(strSearchTerm: string, objEntity: T): void;
+    SetItem<T>(strSearchTerm: string, objEntity: T): void;

@@ -93,7 +93,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
 
   lazy val ambientEnumDecl: Parser[DeclTree] = ws("enum") ~> typeName ~ (ws("{") ~> ambientEnumBody <~ ws("}")) ^^ EnumDecl
 
-  lazy val ambientEnumBody: Parser[List[Ident]] = repsep(identifier <~ opt(ws("=") ~ numericLit), ws(",") ~ opt(commentDecl)) <~ opt(",") ~ opt(commentDecl)
+  lazy val ambientEnumBody: Parser[List[Ident]] = repsep(opt(commentDecl) ~> identifier <~ opt(ws("=") ~ numericLit), ws(",") ~ opt(commentDecl)) <~ opt(",") ~ opt(commentDecl)
 
   lazy val ambientClassDecl: Parser[DeclTree] = maybeAbstract ~ ws("class") ~ typeName ~ tparams ~ classParent ~ classImplements ~ memberBlock ~ opt(";") ~ opt(commentDecl) ^^ {
     case abst ~ _ ~ name ~ params ~ parent ~ impls ~ members ~ _ ~ _ => ClassDecl(abst, name, params, parent, impls, members)
