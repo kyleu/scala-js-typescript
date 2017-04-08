@@ -1,3 +1,0 @@
-[submodule "typescript/DefinitelyTyped"]
-	path = typescript/DefinitelyTyped
-	url = git@github.com:DefinitelyTyped/DefinitelyTyped.git
