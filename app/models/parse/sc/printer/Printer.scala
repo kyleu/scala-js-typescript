@@ -6,8 +6,6 @@ import models.parse.sc.tree._
 class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: Set[String]) {
   import PrinterHelper._
 
-  val badNames = Seq("toString", "clone", "notify")
-
   private implicit val self = this
 
   private[this] val pendingComments = collection.mutable.ArrayBuffer.empty[CommentSymbol]
@@ -192,11 +190,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
       case s: ModuleSymbol => printModule(s)
       case s: TypeAliasSymbol => printTypeAlias(s)
       case s: FieldSymbol => printField(s)
-      case s: MethodSymbol => if (badNames.contains(s.name)) {
-        // Skipped
-      } else {
-        printMethod(s)
-      }
+      case s: MethodSymbol => printMethod(s)
       case s: ParamSymbol => printParam(s)
       case s: TypeParamSymbol => printTypeParam(s)
       case x => throw new IllegalStateException(s"Unhandled symbol [$x].")

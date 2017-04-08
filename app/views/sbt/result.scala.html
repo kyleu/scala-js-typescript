@@ -1,5 +1,5 @@
 @(key: String, result: Int, output: String)(implicit request: Request[AnyContent], session: Session, flash: Flash)
-@layout.simple(utils.Config.projectName) {
+@layout.simple(key) {
   <div class="row">
     <div class="col s12">
       <div class="panel-content">

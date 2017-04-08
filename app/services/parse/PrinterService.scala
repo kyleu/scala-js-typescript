@@ -5,7 +5,6 @@ import models.parse.{Importer, ProjectDefinition}
 import models.parse.parser.tree.{DeclTree, LineCommentDecl}
 import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
 import models.parse.sc.transform.IgnoredPackages
-import services.file.FileService
 import services.project.ProjectService
 
 case class PrinterService(key: String, t: List[DeclTree]) {

@@ -8,13 +8,10 @@ object ExcludedMembers {
   }
 
   object Exclusions extends Enum[Exclusions] {
-    case object Ace extends Exclusions("ace", files = Map("Range" -> Set("toString", "clone")))
     case object AmCharts extends Exclusions("amcharts", files = Map(
       "AmCoordinateChart" -> Set("addListener"), "AmPieChart" -> Set("addListener"), "ValueAxis" -> Set("position", "addGuide", "removeGuide")
     ))
-    case object AWSSDK extends Exclusions("aws-sdk", files = Map(
-      "ClientConfig" -> Set("credentials", "region")
-    ))
+    case object AWSSDK extends Exclusions("aws-sdk", files = Map("ClientConfig" -> Set("credentials", "region")))
     case object BigInteger extends Exclusions("big-integer", files = Map("BigInteger" -> Set("toString", "valueOf")))
     case object Blocks extends Exclusions("blocks", files = Map("BlocksArray" -> Set("update", "extend")))
     case object CanvasJS extends Exclusions("canvasjs", files = Map("ChartDataPoint" -> Set("legendMarkerColor")))
@@ -68,7 +65,10 @@ object ExcludedMembers {
     override val values = findValues
   }
 
+  val badNames = Seq("toString", "clone", "notify")
+
   def check(key: String, cls: String, member: String) = Exclusions.withNameInsensitiveOption(key) match {
+    case _ if badNames.contains(member) => false
     case Some(ex) =>
       val matchKey = ex.global(member)
       val matchMember = ex.files.get(cls).exists(_.contains(member))

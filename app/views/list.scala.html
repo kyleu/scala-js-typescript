@@ -10,6 +10,13 @@
         <div class="collection with-header">
           <div class="collection-header">
             <h5>@utils.NumberUtils.withCommas(details.size) Available Projects</h5>
+            <ul>
+              <li>@utils.NumberUtils.withCommas(details.count(_.parsed)) Parsed</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.project)) Project</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.built)) Built</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.repo)) Repo</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.github)) Github</li>
+            </ul>
             @views.html.component.filterForm(q, filter)
           </div>
           <div class="collection-item">
