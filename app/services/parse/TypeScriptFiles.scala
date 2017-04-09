@@ -5,6 +5,9 @@ import models.parse.ProjectDefinition
 
 object TypeScriptFiles {
   private[this] val source = "data" / "typescript"
+  if (!source.exists) {
+    source.createDirectory()
+  }
 
   private[this] val originalFiles = "typescript" / "DefinitelyTyped" / "types"
   private[this] val overrideFiles = "typescript" / "DefinitelyScala" / "types"
