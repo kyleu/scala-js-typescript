@@ -46,8 +46,10 @@ GET         /all/build                               controllers.SbtController.b
 
 GET         /:key/build                              controllers.SbtController.build(key)
 GET         /:key/last                               controllers.SbtController.last(key)
-GET         /all/publish                             controllers.SbtController.publishAll(q: Option[String] ?= None)
-GET         /:key/publish                            controllers.SbtController.publish(key)
+
+GET         /list/publish                            controllers.SbtPublishController.list()
+GET         /all/publish                             controllers.SbtPublishController.publishAll(q: Option[String] ?= None)
+GET         /:key/publish                            controllers.SbtPublishController.publish(key)
 
 GET         /history                                 controllers.SbtHistoryController.list()
 GET         /history/write                           controllers.SbtHistoryController.write()

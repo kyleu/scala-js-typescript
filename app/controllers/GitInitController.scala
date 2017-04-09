@@ -44,7 +44,7 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
   def thirdCommit(key: String) = act(s"git.third.commit.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     val result = GitService.thirdCommit(projectDir)
-    Future.successful(Ok(views.html.git.result(key, result._1, result._2, Some("Publish" -> controllers.routes.SbtController.publish(key)))))
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2, Some("Publish" -> controllers.routes.SbtPublishController.publish(key)))))
   }
 
   def fullInit(key: String) = act(s"git.full.init.$key") { implicit request =>

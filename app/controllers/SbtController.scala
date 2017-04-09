@@ -79,25 +79,4 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
       Ok(views.html.sbt.results(result))
     }
   }
-
-  def publish(key: String) = act(s"sbt.publish.$key") { implicit request =>
-    val projectDir = ProjectService.projectDir(key)
-    if (projectDir.exists) {
-      val publishResult = SbtService.publish(projectDir)
-
-      val result = SbtResultParser.Result(key, Nil, Nil, Nil)
-
-      Future.successful(Ok(views.html.sbt.result(key, result, publishResult._2)))
-    } else {
-      throw new IllegalStateException(s"No project found for [$key].")
-    }
-  }
-
-  def publishAll(q: Option[String]) = act(s"sbt.publish.all") { implicit request =>
-    val result = ProjectService.list(q).map { f =>
-      val x = SbtService.publish(f)
-      (f.name, x._1, x._2)
-    }
-    Future.successful(Ok(views.html.sbt.results(result)))
-  }
 }

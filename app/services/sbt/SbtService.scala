@@ -34,7 +34,7 @@ object SbtService extends Logging {
     log.info(s"Running build for [${dir.name}]...")
     val startMs = System.currentTimeMillis
     val logDir = FileService.getDir("logs") / "sbt"
-    if(!logDir.exists) {
+    if (!logDir.exists) {
       logDir.createDirectory
     }
     val f = logDir / (dir.name + ".log")
