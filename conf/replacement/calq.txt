@@ -1,0 +1,9 @@
+=
+trait Calq extends js.Object {
+trait CalqObj extends js.Object {
+=
+object Calq extends js.Object {
+object CalqObj extends js.Object {
+=
+  var calq: Calq = js.native
+  var calq: CalqObj = js.native

@@ -1,0 +1,3 @@
+=
+object Xterm extends js.Object {
+object XtermObj extends js.Object {

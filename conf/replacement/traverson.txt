@@ -1,0 +1,3 @@
+=
+object Traverson extends js.Object {
+object TraversonObj extends js.Object {

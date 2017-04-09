@@ -1,0 +1,6 @@
+=
+object js extends js.Object {
+object ApexJS extends js.Object {
+=
+  def λ(fn: js.Function2[js.Any, AWSLambda.Context, Any]): js.Function3[js.Any, AWSLambda.Context, AWSLambda.Callback, Unit] = js.native
+  def λ(fn: js.Function2[js.Any, com.definitelyscala.awslambda.Context, Any]): js.Function3[js.Any, com.definitelyscala.awslambda.Context, com.definitelyscala.awslambda.Awslambda.Callback, Unit] = js.native

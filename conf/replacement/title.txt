@@ -1,0 +1,3 @@
+=
+object Title extends js.Object {
+object TitleObj extends js.Object {

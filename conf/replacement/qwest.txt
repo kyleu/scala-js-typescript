@@ -1,0 +1,3 @@
+=
+object Qwest extends js.Object {
+object QwestObj extends js.Object {

@@ -1,0 +1,3 @@
+=
+object Combokeys extends js.Object {
+object CombokeysObj extends js.Object {

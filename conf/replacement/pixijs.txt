@@ -97,7 +97,7 @@ object PixiObj extends js.Object {
 " interaction.InteractionEvent"
 " com.definitelyscala.pixijs.interaction.InteractionEvent"
 *
-" loaders.Loader"
+"loaders.Loader"
 " com.definitelyscala.pixijs.loaders.Loader"
 *
 "= extras."

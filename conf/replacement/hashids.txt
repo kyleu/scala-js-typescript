@@ -1,0 +1,3 @@
+=
+object Hashids extends js.Object {
+object HashidsObj extends js.Object {

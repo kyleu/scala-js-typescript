@@ -1,0 +1,3 @@
+=
+object Faker extends js.Object {
+object FakerObj extends js.Object {

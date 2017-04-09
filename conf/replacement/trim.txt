@@ -1,0 +1,3 @@
+=
+object Trim extends js.Object {
+object TrimObj extends js.Object {

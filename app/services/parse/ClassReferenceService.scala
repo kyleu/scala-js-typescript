@@ -33,6 +33,8 @@ object ClassReferenceService extends Logging {
     )),
     ("com.definitelyscala.phaserp2._", Seq("/Physics/P2"), Seq("p2.")),
 
+    ("com.definitelyscala.materializecss.Materialize._", Seq("/Materialize"), Seq("options: CollapsibleOptions")),
+
     ("com.definitelyscala.node.NodeJS._", Seq("node/"), Seq("ReadWriteStream")),
     ("com.definitelyscala.node.crypto.Crypto._", Seq("node/"), Seq("Utf8AsciiBinaryEncoding", "HexBase64Latin1Encoding", "ECDHKeyFormat")),
     ("com.definitelyscala.node.NodeJS", Seq("node/"), Seq("NodeJS.")),

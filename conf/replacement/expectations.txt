@@ -1,0 +1,3 @@
+=
+object Expectations extends js.Object {
+object ExpectationsObj extends js.Object {

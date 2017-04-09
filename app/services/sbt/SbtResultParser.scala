@@ -19,7 +19,7 @@ object SbtResultParser {
     lines.zipWithIndex.flatMap {
       case ((line, lineNum), arrayIdx) => line match {
         case _ if line.contains(".scala") =>
-          val trimmed = line.substring(line.indexOf("com/"))
+          val trimmed = line.substring(line.indexOf("/com") + 1)
           val others = lines.drop(arrayIdx + 1).takeWhile(x => (!x._1.contains(".scala")) && (!x._1.contains(" found")))
           Some(Error(trimmed + "\n" + others.map("  " + _._1).mkString("\n")))
         case _ => None

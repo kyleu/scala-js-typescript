@@ -1,0 +1,3 @@
+=
+object Mixpanel extends js.Object {
+object MixpanelObj extends js.Object {
