@@ -41,6 +41,7 @@ case class QualifiedIdent(qualifier: List[Ident], name: Ident) extends Tree
 
 // Declarations
 case class ExportDecl(v: String) extends DeclTree
+case class ImportDecl(v: String) extends DeclTree
 case class ModuleDecl(name: PropertyName, members: List[DeclTree]) extends DeclTree
 case class ValDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
 case class VarDecl(name: Ident, tpe: Option[TypeTree]) extends DeclTree
@@ -65,12 +66,15 @@ case class StringLiteral(value: String) extends Literal with PropertyName {
 
 case class WhitespaceDecl(text: String) extends DeclTree
 
+case class ImportCommentDecl(text: String) extends DeclTree
 case class LineCommentDecl(text: String) extends DeclTree
 case class MultilineCommentDecl(text: String) extends DeclTree
 
+case class ImportCommentType(text: String) extends TypeTree
 case class LineCommentType(text: String) extends TypeTree
 case class MultilineCommentType(text: String) extends TypeTree
 
+case class ImportCommentMember(text: String) extends MemberTree
 case class LineCommentMember(text: String) extends MemberTree
 case class MultilineCommentMember(text: String) extends MemberTree
 

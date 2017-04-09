@@ -1,0 +1,36 @@
+@(details: Seq[services.project.ProjectDetailsService.Details], debug: Boolean)(implicit request: Request[AnyContent], session: Session, flash: Flash)
+
+@p(title: String, f: services.project.ProjectDetailsService.Details => Boolean) = {
+  @defining(details.filter(f)) { probs =>
+    <div class="collection-item">
+      @if(probs.nonEmpty) { <h5>@title</h5> }
+      @probs.map { detail =>
+        <div><a class="teal-text" href="@controllers.routes.HomeController.detail(detail.key)">@detail.key</a></div>
+      }
+    </div>
+  }
+}
+
+@layout.simple("Problems") {
+  <div class="row">
+    <div class="col s12">
+      <div class="panel-content">
+        <div class="collection with-header">
+          <div class="collection-header">
+            <h5>@utils.NumberUtils.withCommas(details.size) Available Projects</h5>
+            <ul>
+              <li>@utils.NumberUtils.withCommas(details.count(_.parsed)) Parsed</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.project)) Project</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.built)) Built</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.repo)) Repo</li>
+              <li>@utils.NumberUtils.withCommas(details.count(_.github)) Github</li>
+            </ul>
+          </div>
+          @p("Built, no repo", d => d.built && (!d.repo))
+          @p("Parsed, no project", d => d.parsed && (!d.project))
+          @p("Not parsed", d => !d.parsed)
+        </div>
+      </div>
+    </div>
+  </div>
+}

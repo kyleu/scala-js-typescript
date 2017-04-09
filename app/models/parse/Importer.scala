@@ -2,8 +2,6 @@ package models.parse
 
 import models.parse.sc.tree._
 import models.parse.parser.tree._
-import models.parse.sc._
-import models.parse.sc.printer.{Printer, PrinterFiles}
 import models.parse.sc.transform.{ExcludedMembers, Transformations}
 
 object Importer {
@@ -128,6 +126,7 @@ case class Importer(key: String) {
 
       case ExportDecl(v) => owner.members += new CommentSymbol(v, false)
 
+      case ImportCommentDecl(text) => owner.members += new CommentSymbol(text, multiline = false)
       case LineCommentDecl(text) => owner.members += new CommentSymbol(text, multiline = false)
       case MultilineCommentDecl(text) => owner.members += new CommentSymbol(text, multiline = true)
 
@@ -202,6 +201,7 @@ case class Importer(key: String) {
         setterSym.resultType = TypeRef.Unit
         setterSym.isBracketAccess = true
 
+      case ImportCommentMember(text) => owner.members += new CommentSymbol(text, multiline = false)
       case LineCommentMember(text) => owner.members += new CommentSymbol(text, multiline = false)
       case MultilineCommentMember(text) => owner.members += new CommentSymbol(text, multiline = true)
 

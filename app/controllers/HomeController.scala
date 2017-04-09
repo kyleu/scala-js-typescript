@@ -3,11 +3,9 @@ package controllers
 import models.parse.ProjectDefinition
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Action
-import services.file.FileService
 import services.github.GithubService
 import services.parse.TypeScriptFiles
 import services.project.{ProjectDetailsService, ProjectService}
-import services.sbt.SbtHistoryService
 import utils.Application
 
 import scala.concurrent.Future
@@ -25,6 +23,13 @@ class HomeController @javax.inject.Inject() (override val app: Application, gith
     githubService.listRepos(includeTemplates = false).map { repos =>
       val details = ProjectDetailsService.getAll(q, filter, repos)
       Ok(views.html.list(q, filter, details, app.config.debug))
+    }
+  }
+
+  def problems() = act("problems") { implicit request =>
+    githubService.listRepos(includeTemplates = false).map { repos =>
+      val details = ProjectDetailsService.getAll(None, None, repos)
+      Ok(views.html.problems(details, app.config.debug))
     }
   }
 

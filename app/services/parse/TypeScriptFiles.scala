@@ -41,7 +41,8 @@ object TypeScriptFiles {
         out.delete()
       }
 
-      src.copyTo(out)
+      val lines = src.lines
+      out.write(lines.mkString("\n"))
     }
 
     keys.size -> skipped

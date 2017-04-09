@@ -1,5 +1,6 @@
 GET         /                                        controllers.HomeController.home(q: Option[String] ?= None, filter: Option[String] ?= None)
 GET         /list                                    controllers.HomeController.list(q: Option[String] ?= None, filter: Option[String] ?= None)
+GET         /problems                                controllers.HomeController.problems()
 GET         /:key/detail                             controllers.HomeController.detail(key)
 GET         /ping                                    controllers.HomeController.ping(timestamp: Long)
 GET         /robots.txt                              controllers.HomeController.robots

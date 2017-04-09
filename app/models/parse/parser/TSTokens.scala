@@ -3,6 +3,10 @@ package models.parse.parser
 import scala.util.parsing.combinator.token.StdTokens
 
 trait TSTokens extends StdTokens {
+  case class ImportComment(chars: String) extends Token {
+    override def toString = "// [import]: " + chars
+  }
+
   case class LineComment(chars: String) extends Token {
     override def toString = "//" + chars
   }
