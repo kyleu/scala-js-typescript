@@ -44,6 +44,7 @@ GET         /all/sbt/status                          controllers.SbtController.l
 GET         /all/build/form                          controllers.SbtController.buildForm(q: Option[String] ?= None)
 GET         /all/build                               controllers.SbtController.buildAll(q: Option[String] ?= None, start: Option[String] ?= None)
 
+GET         /:key/clean                              controllers.SbtController.clean(key)
 GET         /:key/build                              controllers.SbtController.build(key)
 GET         /:key/last                               controllers.SbtController.last(key)
 

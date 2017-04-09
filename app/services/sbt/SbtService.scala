@@ -12,6 +12,12 @@ object SbtService extends Logging {
     "C:\\Users\\kyleu\\Projects\\Libraries\\sbt\\sbt-launch.jar".toFile
   }
 
+  def clean(dir: File) = if (dir.exists) {
+    sbt(dir, "clean")
+  } else {
+    throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
+  }
+
   def build(dir: File) = if (dir.exists) {
     sbt(dir, "compile", "doc", "publishLocal")
   } else {

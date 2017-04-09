@@ -22,6 +22,13 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
     Future.successful(Ok(views.html.sbt.result(key, result, status.contentAsString)))
   }
 
+  def clean(key: String) = act(s"sbt.build.$key") { implicit request =>
+    val projectDir = ProjectService.projectDir(key)
+    val buildResult = SbtService.clean(projectDir)
+    val result = SbtResultParser.Result(key, Nil, Nil, Nil)
+    Future.successful(Ok(views.html.sbt.result(key, result, buildResult._2)))
+  }
+
   def build(key: String) = act(s"sbt.build.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     if (projectDir.exists) {

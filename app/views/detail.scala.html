@@ -19,11 +19,18 @@
             <div>@details.name (@details.version)</div>
             <div><a class="teal-text" href="@details.url">@details.url</a></div>
             <div>@details.authors</div>
+          </div>
+          <div class="collection-item">
             <div><a class="teal-text" href="@controllers.routes.ParseController.parse(key)">Parse</a></div>
             <div><a class="teal-text" href="@controllers.routes.ProjectController.update(key)">Project</a></div>
             <div><a class="teal-text" href="@controllers.routes.ParseController.refresh(key)">Refresh</a></div>
+          </div>
+          <div class="collection-item">
+            <div><a class="teal-text" href="@controllers.routes.SbtController.clean(key)">Clean</a></div>
             <div><a class="teal-text" href="@controllers.routes.SbtController.build(key)">Build</a></div>
             <div><a class="teal-text" href="@controllers.routes.SbtController.last(key)">Last Build</a></div>
+          </div>
+          <div class="collection-item">
             <div><a class="teal-text" href="@controllers.routes.SbtPublishController.publish(key)">Publish</a></div>
             <div><a class="teal-text" href="https://bintray.com/definitelyscala/maven/scala-js-@key">JCenter</a></div>
           </div>
