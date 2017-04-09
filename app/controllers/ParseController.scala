@@ -1,6 +1,7 @@
 package controllers
 
 import models.parse.parser.tree.DeclTree
+import play.twirl.api.Html
 import services.parse.{PrinterService, TypeScriptFiles, TypeScriptImport}
 import utils.Application
 
@@ -12,6 +13,11 @@ object ParseController {
 
 @javax.inject.Singleton
 class ParseController @javax.inject.Inject() (override val app: Application) extends BaseController {
+  def copy() = act(s"parse.copy") { implicit request =>
+    val result = TypeScriptFiles.copy()
+    Future.successful(Ok(Html(s"[${utils.NumberUtils.withCommas(result._1 - result._2)}] of [${utils.NumberUtils.withCommas(result._1)}] files copied.")))
+  }
+
   def parseAll(q: Option[String]) = act("parse.all") { implicit request =>
     val scripts = TypeScriptFiles.list(q)
     val results = scripts.par.map { script =>

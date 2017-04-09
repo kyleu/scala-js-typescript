@@ -15,21 +15,26 @@
             <div><a href="@controllers.routes.HomeController.list()" class="teal-text">Project List</a></div>
           </div>
           <div class="collection-item">
+            <h6>TypeScript</h6>
+            <div><a href="@controllers.routes.ParseController.copy()" class="teal-text">Copy</a></div>
             <div><a href="@controllers.routes.ParseController.parseAll(q)" class="teal-text">Parse</a></div>
-            <div><a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update</a></div>
           </div>
           <div class="collection-item">
+            <h6>Project</h6>
+            <div><a href="@controllers.routes.ProjectController.updateAll(q)" class="teal-text">Update</a></div>
             <div><a href="@controllers.routes.SbtController.buildForm(q)" class="teal-text">Build</a></div>
             <div><a href="@controllers.routes.SbtController.list(q)" class="teal-text">Status</a></div>
             <div><a href="@controllers.routes.SbtHistoryController.list()" class="teal-text">History</a></div>
           </div>
           <div class="collection-item">
-            <div><a href="@controllers.routes.GitController.statusAll()" class="teal-text">Git Status</a></div>
+            <h6>Git</h6>
+            <div><a href="@controllers.routes.GitController.statusAll()" class="teal-text">Status</a></div>
             <div><a href="@controllers.routes.GitController.commitForm()" class="teal-text">Commit</a></div>
             <div><a href="@controllers.routes.GitController.pushAll()" class="teal-text">Push</a></div>
           </div>
           <div class="collection-item">
-            <div><a href="@controllers.routes.GithubController.list()" class="teal-text">Github List</a></div>
+            <h6>Github</h6>
+            <div><a href="@controllers.routes.GithubController.list()" class="teal-text">List</a></div>
             <div><a href="@controllers.routes.GithubController.mergeAll()" class="teal-text">Merge</a></div>
           </div>
           <div class="collection-item">
