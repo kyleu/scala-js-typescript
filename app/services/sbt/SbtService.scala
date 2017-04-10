@@ -18,6 +18,12 @@ object SbtService extends Logging {
     throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
   }
 
+  def format(dir: File) = if (dir.exists) {
+    sbt(dir, "scalariformFormat")
+  } else {
+    throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
+  }
+
   def build(dir: File) = if (dir.exists) {
     sbt(dir, "compile", "doc", "publishLocal")
   } else {
