@@ -14,7 +14,7 @@ object TypeScriptFiles {
 
   def copy() = {
     val original = originalFiles.list.filter(_.isDirectory).toSeq.map(_.name)
-    val over = overrideFiles.list.filter(_.isDirectory).toSeq.map(_.name)
+    val over = overrideFiles.list.filter(_.isRegularFile).toSeq.map(_.name)
     val keys = (original ++ over).distinct.sorted
 
     source.delete(swallowIOExceptions = true)
@@ -25,8 +25,8 @@ object TypeScriptFiles {
     keys.foreach { key =>
       val normalized = ProjectDefinition.normalize(key)
 
-      val src = if ((overrideFiles / key).exists) {
-        overrideFiles / key / "index.d.ts"
+      val src = if ((overrideFiles / s"$normalized.ts").exists) {
+        overrideFiles / s"$normalized.ts"
       } else {
         originalFiles / key / "index.d.ts"
       }
@@ -35,7 +35,7 @@ object TypeScriptFiles {
         throw new IllegalStateException(s"Cannot read [${src.path}].")
       }
 
-      val out = source / (normalized + ".ts")
+      val out = source / s"$normalized.ts"
       if (out.exists) {
         skipped += 1
         out.delete()
