@@ -5,21 +5,18 @@ object ProjectDefinition {
 
   def fromJson(dir: better.files.File) = {
     val file = dir / "project.json"
-    val content = file.contentAsString
-    val whatever = if (content.contains("dependencies")) {
-      if (content.contains("buildVersion")) {
-        content
-      } else {
-        content.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.0\"\n}")
-      }
+    val original = file.contentAsString
+    val depsReplaced = if (original.contains("dependencies")) {
+      original
     } else {
-      if (content.contains("buildVersion")) {
-        content.replaceAllLiterally("}", ",  \"dependencies\": []\n}")
-      } else {
-        content.replaceAllLiterally("}", ",  \"dependencies\": []\n,  \"buildVersion\": \"1.0.0\"\n}")
-      }
+      original.replaceAllLiterally("}", ",  \"dependencies\": []\n}")
     }
-    upickle.default.read[ProjectDefinition](whatever)
+    val buildVerReplaced = if (depsReplaced.contains("buildVersion")) {
+      depsReplaced
+    } else {
+      depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.0\"\n}")
+    }
+    upickle.default.read[ProjectDefinition](buildVerReplaced)
   }
 }
 
