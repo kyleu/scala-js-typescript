@@ -14,7 +14,7 @@ object ProjectDefinition {
     val buildVerReplaced = if (depsReplaced.contains("buildVersion")) {
       depsReplaced
     } else {
-      depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.0\"\n}")
+      depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.1\"\n}")
     }
     upickle.default.read[ProjectDefinition](buildVerReplaced)
   }
@@ -26,7 +26,7 @@ case class ProjectDefinition(
     url: String,
     version: String,
     authors: String,
-    buildVersion: String = "1.0.0",
+    buildVersion: String = "1.0.1",
     dependencies: Seq[String] = Nil
 ) {
   val keyNormalized = ProjectDefinition.normalize(key)
@@ -36,7 +36,7 @@ case class ProjectDefinition(
   private[this] val dependencyString = if (dependencies.isEmpty) {
     ""
   } else {
-    ", " + dependencies.map(d => s""""com.definitelyscala" %%% "scala-js-$d" % "1.0.0"""").mkString(", ")
+    ", " + dependencies.map(d => s""""com.definitelyscala" %%% "scala-js-$d" % "$buildVersion"""").mkString(", ")
   }
 
   private[this] val dependencySummary = if (dependencies.isEmpty) {

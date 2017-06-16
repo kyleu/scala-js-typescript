@@ -34,7 +34,7 @@ class SbtPublishController @javax.inject.Inject() (override val app: Application
     }
   }
 
-  def list() = act(s"sbt.list") { implicit request =>
+  def list() = act(s"publish.list") { implicit request =>
     getPublishedJars.flatMap { publishedKeys =>
       githubService.listRepos(false).map { repos =>
         val repoKeys = repos.map(_.key)

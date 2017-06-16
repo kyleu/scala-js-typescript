@@ -43,6 +43,7 @@ GET         /:key/github/create                      controllers.GithubControlle
 
 GET         /all/sbt/status                          controllers.SbtController.list(q: Option[String] ?= None)
 GET         /all/build/form                          controllers.SbtController.buildForm(q: Option[String] ?= None)
+GET         /all/clean                               controllers.SbtController.cleanAll(q: Option[String] ?= None)
 GET         /all/format                              controllers.SbtController.formatAll(q: Option[String] ?= None)
 GET         /all/build                               controllers.SbtController.buildAll(q: Option[String] ?= None, start: Option[String] ?= None)
 

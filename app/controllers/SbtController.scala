@@ -79,4 +79,16 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
       Ok(views.html.sbt.results(result))
     }
   }
+
+  def cleanAll(q: Option[String]) = act(s"sbt.clean.all") { implicit request =>
+    val projects = ProjectService.list(q)
+    val result = projects.par.map { x =>
+      val ret = SbtService.clean(x)
+      (x.name, ret._1, ret._2)
+    }.seq
+    Future.successful {
+      log.info(s"Processed [${result.size}] projects, with [${result.count(_._2 == 0)}] passing and [${result.count(_._2 != 0)}] failing.")
+      Ok(views.html.sbt.results(result))
+    }
+  }
 }

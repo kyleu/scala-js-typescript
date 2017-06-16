@@ -62,7 +62,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       case Some(l) => l -> l.substring("Definitions by:".length + 1).trim
       case None => "" -> key
     }
-    val buildVersion = "1.0.0"
+    val buildVersion = "1.0.1"
     val defsLine = comments.find(_.startsWith("Definitions:")) match {
       case Some(l) => l
       case None => ""
@@ -90,7 +90,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
 
   private[this] def printer(files: PrinterFiles, decls: List[DeclTree]) = {
     val pkg = Importer(key)(decls)
-    new Printer(files, key, ignoredPackages).printSymbol(pkg)
+    new Printer(files, key, ignoredPackages).printSymbol(pkg, inTrait = false)
     files.onComplete()
   }
 }

@@ -53,7 +53,7 @@ object ClassReferenceService extends Logging {
 
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(
-      " HTMLElement", " Promise", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
+      " HTMLElement", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
       "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement", "StyleMedia",
       "SVGElement", "DataTransfer", " Node", "WebGLFramebuffer", "MouseEvent", "KeyboardEvent"
     ),
@@ -62,7 +62,8 @@ object ClassReferenceService extends Logging {
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),
     "org.scalajs.dom.raw.Blob" -> Seq(" Blob "),
     "org.scalajs.css.Css.AtRule" -> Seq(" AtRule"),
-    "scala.scalajs.js.typedarray._" -> Seq(" ArrayBuffer", "Uint32Array", "Float32Array", "Uint16Array", "Uint8Array")
+    "scala.scalajs.js.typedarray._" -> Seq(" ArrayBuffer", "Uint32Array", "Float32Array", "Uint16Array", "Uint8Array"),
+    "scala.scalajs.js.Promise" -> Seq(" Promise")
   )
 
   def insertImports(path: String, content: Seq[String]) = {

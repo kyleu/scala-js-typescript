@@ -25,14 +25,14 @@ object SbtService extends Logging {
   }
 
   def build(dir: File) = if (dir.exists) {
-    sbt(dir, "compile", "doc", "publishLocal")
+    sbt(dir, "+clean", "+compile", "+doc", "+publishLocal")
   } else {
     throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
   }
 
   def publish(dir: File) = {
     if (dir.exists) {
-      sbt(dir, "publish")
+      sbt(dir, "+publish")
     } else {
       throw new IllegalStateException(s"No SBT project available for [${dir.name}].")
     }

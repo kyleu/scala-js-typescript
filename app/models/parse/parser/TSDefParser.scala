@@ -145,7 +145,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
   lazy val stringLiteralToType = stringLiteral.map(x => TypeRefTree(CoreType("string")))
   lazy val numericLiteralToType = numericLit.map(x => TypeRefTree(CoreType("number")))
 
-  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc | stringLiteralToType | numericLiteralToType, ws("&") | ws("|")) ^^ (_.reduceLeft(UnionType))
+  lazy val typeDesc: Parser[TypeTree] = rep1sep(singleTypeDesc | stringLiteralToType | numericLiteralToType, /* ws("&") | */ ws("|")) ^^ (_.reduceLeft(UnionType))
 
   lazy val singleTypeDesc: Parser[TypeTree] = baseTypeDesc ~ rep("[" ~ "]") ^^ {
     case base ~ arrayDims => (base /: arrayDims)((elem, _) => ArrayType(elem))

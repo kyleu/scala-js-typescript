@@ -297,7 +297,10 @@ case class Importer(key: String) {
 
       TypeRef(QualifiedName.Function(params.size), targs)
     }
-    case UnionType(left, right) => TypeRef.Union(typeToScala(left), typeToScala(right))
+    case UnionType(left, right) => right match {
+      case UnionType(rl, _) if left == rl => typeToScala(right)
+      case _ => TypeRef.Union(typeToScala(left), typeToScala(right))
+    }
     case TypeQuery(expr) => TypeRef.Singleton(QualifiedName((expr.qualifier :+ expr.name).map(ident => Name(ident.name)): _*))
     case TupleType(targs) => TypeRef(QualifiedName.Tuple(targs.length), targs map typeToScala)
     case RepeatedType(underlying) => TypeRef(Name.REPEATED, List(typeToScala(underlying)))

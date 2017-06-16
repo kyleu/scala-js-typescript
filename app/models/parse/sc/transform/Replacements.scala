@@ -1,6 +1,10 @@
 package models.parse.sc.transform
 
-object Replacements {
+import utils.Logging
+
+import scala.util.control.NonFatal
+
+object Replacements extends Logging {
   sealed trait Rule {
     def replace(lines: Seq[String]): Seq[String]
   }
@@ -33,7 +37,7 @@ object Replacements {
     }
   }
 
-  def toRules(lines: Seq[String]) = {
+  def toRules(id: String, lines: Seq[String]) = try {
     lines.zipWithIndex.foldLeft(Seq.empty[Rule]) { (rules, line) =>
       line._1 match {
         case "+" => rules :+ Rule.AddLine(lines(line._2 + 1), lines(line._2 + 2))
@@ -43,6 +47,10 @@ object Replacements {
         case _ => rules
       }
     }
+  } catch {
+    case NonFatal(x) =>
+      log.error(s"Error processing replacements for [$id].", x)
+      throw x
   }
 }
 
