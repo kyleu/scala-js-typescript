@@ -11,8 +11,7 @@ class ParamSymbol(nme: Name) extends Symbol(nme) {
   var allowDefaults: Boolean = true
   var tpe: TypeRef = TypeRef.Any
 
-  override def toString =
-    s"$name: $tpe" + (if (optional) " = _" else "")
+  override def toString = s"$name: $tpe" + (if (optional) " = _" else "")
 
   override def equals(that: Any): Boolean = that match {
     case that: ParamSymbol => this.name == that.name && this.tpe == that.tpe
