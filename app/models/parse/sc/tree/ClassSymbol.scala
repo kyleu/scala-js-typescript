@@ -7,6 +7,10 @@ class ClassSymbol(nme: Name) extends ContainerSymbol(nme) {
   val parents = new mutable.ListBuffer[TypeRef]
   var companionModule: ModuleSymbol = _
   var isTrait: Boolean = true
+  val isFancy: Boolean = members.exists {
+    case x: MethodSymbol if x.isBracketAccess || x.name.name == "apply" => true
+    case _ => false
+  }
   var isSealed: Boolean = false
   var isAbstract: Boolean = false
 

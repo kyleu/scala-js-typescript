@@ -90,7 +90,7 @@ case class PrinterService(key: String, t: List[DeclTree]) {
 
   private[this] def printer(files: PrinterFiles, decls: List[DeclTree]) = {
     val pkg = Importer(key)(decls)
-    new Printer(files, key, ignoredPackages).printSymbol(pkg, inTrait = false)
+    new Printer(files, key, ignoredPackages).printSymbol(pkg, fancy = false)
     files.onComplete()
   }
 }

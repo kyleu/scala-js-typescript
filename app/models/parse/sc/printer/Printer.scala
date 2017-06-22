@@ -53,7 +53,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
       printPending(1)
 
       for (sym <- topLevels) {
-        printSymbol(sym, inTrait = false)
+        printSymbol(sym, fancy = false)
       }
 
       if (!packageObjectMembers.forall(_.isInstanceOf[CommentSymbol])) {
@@ -72,7 +72,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
           pln"object $packageObjectName extends js.Object {"
         }
         for (sym <- packageObjectMembers) {
-          printSymbol(sym, inTrait = false)
+          printSymbol(sym, fancy = false)
         }
         pln"}"
         files.clearActiveObject(packageObjectName)
@@ -106,7 +106,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     pln""
     printPending(2)
     if (sym.isTrait) {
-      pln"@js.annotation.ScalaJSDefined"
+      pln"@js.native"
+      //pln"@js.annotation.ScalaJSDefined"
     } else {
       pln"@js.native"
       pln"""@js.annotation.JSGlobal("$currentJSNamespace${sym.name}")"""
@@ -155,7 +156,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     }
   }
 
-  private[this] def printMethod(sym: MethodSymbol) = {
+  private[this] def printMethod(sym: MethodSymbol, inTrait: Boolean) = {
     printPending(6)
     val params = sym.params
 
@@ -174,7 +175,12 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
       if (sym.tparams.nonEmpty) {
         p"[${sym.tparams}]"
       }
-      pln"($params): ${sym.resultType} = js.native"
+      if (inTrait) {
+        //pln"($params): ${sym.resultType}"
+        pln"($params): ${sym.resultType} = js.native"
+      } else {
+        pln"($params): ${sym.resultType} = js.native"
+      }
     }
   }
 
@@ -185,7 +191,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     sym.upperBound.foreach(bound => p" <: $bound")
   }
 
-  def printSymbol(sym: tree.Symbol, inTrait: Boolean) {
+  def printSymbol(sym: tree.Symbol, fancy: Boolean) {
     sym match {
       case s: CommentSymbol => pendingComments += s
       //case s: CommentSymbol => printComment(s.text, s.multiline)
@@ -196,8 +202,8 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
         files.clearActiveObject(s.name)
       case s: ModuleSymbol => printModule(s)
       case s: TypeAliasSymbol => printTypeAlias(s)
-      case s: FieldSymbol => printField(s, inTrait)
-      case s: MethodSymbol => printMethod(s)
+      case s: FieldSymbol => printField(s, fancy)
+      case s: MethodSymbol => printMethod(s, fancy)
       case s: ParamSymbol => printParam(s)
       case s: TypeParamSymbol => printTypeParam(s)
       case x => throw new IllegalStateException(s"Unhandled symbol [$x].")
@@ -208,8 +214,9 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     val (constructors, others) = owner.members.toList.partition(_.name == Name.CONSTRUCTOR)
     val l = constructors ++ others
     owner match {
-      case x: ClassSymbol if x.isTrait => for (sym <- l) { printSymbol(sym, inTrait = true) }
-      case _ => for (sym <- l) { printSymbol(sym, inTrait = false) }
+      case x: ClassSymbol if x.isTrait && x.isFancy => for (sym <- l) { printSymbol(sym, fancy = true) }
+      case x: ClassSymbol if x.isTrait => for (sym <- l) { printSymbol(sym, fancy = false) }
+      case _ => for (sym <- l) { printSymbol(sym, fancy = false) }
     }
   }
 
@@ -227,7 +234,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
   }
 
   def print(x: Any) = x match {
-    case x: tree.Symbol => printSymbol(x, inTrait = false)
+    case x: tree.Symbol => printSymbol(x, fancy = false)
     case x: TypeRef => printTypeRef(x)
     case QualifiedName(Name.scala, Name.scalajs, Name.js, name) =>
       files.print("js.")
