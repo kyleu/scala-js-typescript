@@ -150,7 +150,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
       pln"""  @js.annotation.JSName("$jsName")"""
     }
     if (inTrait) {
-      pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpeTranslated}"
+      pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpeTranslated} = js.native"
     } else {
       pln"  ${sym.p}${sym.decl} ${sym.name}: ${sym.tpeTranslated} = js.native"
     }
