@@ -6,8 +6,9 @@
       <div class="collection with-header">
         <div class="collection-header">
           <div class="right">
-            @utils.NumberUtils.withCommas(keys.size) Published Projects
+            <a href="@controllers.routes.SbtPublishController.publishAll()" class="teal-text">Publish All</a>
           </div>
+          @utils.NumberUtils.withCommas(keys.size) Published Projects
         </div>
         <div class="collection-item">
           <table class="bordered highlight">

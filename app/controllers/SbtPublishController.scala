@@ -60,10 +60,13 @@ class SbtPublishController @javax.inject.Inject() (override val app: Application
   }
 
   def publishAll(q: Option[String]) = act(s"sbt.publish.all") { implicit request =>
-    val result = ProjectService.list(q).map { f =>
-      val x = SbtService.publish(f)
-      (f.name, x._1, x._2)
+    getPublishedJars.map { publishedKeys =>
+      val results = publishedKeys._1.map { key =>
+        val f = ProjectService.projectDir(key)
+        val x = SbtService.publish(f)
+        (f.name, x._1, x._2)
+      }
+      Ok(views.html.sbt.results(results))
     }
-    Future.successful(Ok(views.html.sbt.results(result)))
   }
 }
