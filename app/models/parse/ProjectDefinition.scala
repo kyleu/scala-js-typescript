@@ -14,7 +14,7 @@ object ProjectDefinition {
     val buildVerReplaced = if (depsReplaced.contains("buildVersion")) {
       depsReplaced
     } else {
-      depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.0.2\"\n}")
+      depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.1.0\"\n}")
     }
     upickle.default.read[ProjectDefinition](buildVerReplaced)
   }
@@ -26,7 +26,7 @@ case class ProjectDefinition(
     url: String,
     version: String,
     authors: String,
-    buildVersion: String = "1.0.2",
+    buildVersion: String = "1.1.0",
     dependencies: Seq[String] = Nil
 ) {
   val keyNormalized = ProjectDefinition.normalize(key)
