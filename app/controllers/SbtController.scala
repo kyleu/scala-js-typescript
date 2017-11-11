@@ -72,8 +72,8 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
   }
 
   def buildAll(q: Option[String], start: Option[String]) = act(s"sbt.build.all") { implicit request =>
-    val projects = ProjectService.list(q)
-    val result = projects.par.map(x => test(x, start)).seq
+    val projects = ProjectService.list(q).sortBy(_.path)
+    val result = projects.map(x => test(x, start)).seq
     Future.successful {
       log.info(s"Processed [${result.size}] projects, with [${result.count(_._2 == 0)}] passing and [${result.count(_._2 != 0)}] failing.")
       Ok(views.html.sbt.results(result))

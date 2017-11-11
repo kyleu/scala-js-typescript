@@ -5,13 +5,28 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import services.file.FileService
 import services.git.GitService
 import services.github.GithubService
-import services.project.ProjectService
+import services.project.{ProjectDetailsService, ProjectService}
 import utils.Application
 
 import scala.concurrent.Future
 
 @javax.inject.Singleton
 class GitInitController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
+  def createAll(q: Option[String]) = act("git.create.all") { implicit request =>
+    val projects = ProjectDetailsService.getAll(q, Some("norepo"))
+    val results = projects.map { project =>
+      val projectDir = ProjectService.projectDir(project.key)
+      val dir = projectDir / ".git"
+      if (dir.exists) {
+        project.key + ": Skipping invalid project with repo."
+      } else {
+        val result = GitService.init(projectDir)
+        project.key + ": " + result._2
+      }
+    }
+    Future.successful(Ok("Ok:\n\n" + results.mkString("\n")))
+  }
+
   def create(key: String) = act(s"git.create.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     val dir = projectDir / ".git"
@@ -65,5 +80,22 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
 
       Ok(views.html.git.result(key, result4._1, result4._2, Some("Third" -> controllers.routes.GitInitController.thirdCommit(key))))
     }
+  }
+
+  def initCommitsAll(q: Option[String]) = act("git.create.all") { implicit request =>
+    val projects = ProjectDetailsService.getAll(q, Some("built"))
+    val results = projects.map { project =>
+      val projectDir = ProjectService.projectDir(project.key)
+      val commitCount = GitService.commitCount(projectDir)
+      if (commitCount == 0) {
+        //GitService.firstCommit(projectDir)
+        //GitService.secondCommit(projectDir)
+        //GitService.thirdCommit(projectDir)
+        project.key + ": GO!"
+      } else {
+        project.key + ": Skip."
+      }
+    }
+    Future.successful(Ok(s"Ok (${results.size}):\n\n" + results.mkString("\n")))
   }
 }

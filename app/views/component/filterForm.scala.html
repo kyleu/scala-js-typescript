@@ -5,7 +5,7 @@
       <input name="q" type="text" placeholder="Filter" value="@q" />
     </div>
     @if(showOptions) {
-      <div class="col s3">
+      <div class="col s2">
         @if(filter.contains("all") || filter.isEmpty) {
           <input name="filter" type="radio" id="filter-all" value="all" checked="checked" />
         } else {
@@ -13,7 +13,7 @@
         }
         <label for="filter-all">All</label>
       </div>
-      <div class="col s3">
+      <div class="col s2">
         @if(filter.contains("parsed")) {
           <input name="filter" type="radio" id="filter-parsed" value="parsed" checked="checked" />
         } else {
@@ -21,7 +21,15 @@
         }
         <label for="filter-parsed">Parsed</label>
       </div>
-      <div class="col s3">
+      <div class="col s2">
+        @if(filter.contains("project")) {
+          <input name="filter" type="radio" id="filter-project" value="project" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-project" value="project" />
+        }
+        <label for="filter-project">Project</label>
+      </div>
+      <div class="col s2">
         @if(filter.contains("built")) {
           <input name="filter" type="radio" id="filter-built" value="built" checked="checked" />
         } else {
@@ -29,7 +37,15 @@
         }
         <label for="filter-built">Built</label>
       </div>
-      <div class="col s3">
+      <div class="col s2">
+        @if(filter.contains("repo")) {
+          <input name="filter" type="radio" id="filter-repo" value="repo" checked="checked" />
+        } else {
+          <input name="filter" type="radio" id="filter-repo" value="repo" />
+        }
+        <label for="filter-repo">Repo</label>
+      </div>
+      <div class="col s2">
         @if(filter.contains("published")) {
           <input name="filter" type="radio" id="filter-published" value="published" checked="checked" />
         } else {

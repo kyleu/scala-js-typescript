@@ -11,8 +11,17 @@ object GitService extends Logging {
     call(dir, Seq("init"))
   }
 
-  def status(dir: File) = {
-    call(dir, Seq("status", "--short", "--ignore-submodules"))
+  def reset(dir: File) = call(dir, Seq("reset", "--hard", "origin/master"))
+
+  def status(dir: File) = call(dir, Seq("status", "--short", "--ignore-submodules"))
+
+  def commitCount(dir: File) = {
+    call(dir, Seq("log", "--pretty=oneline"))._2.split("\\n").toList match {
+      case Nil => -1
+      case h :: Nil if h.contains("does not have") => 0
+      case h :: Nil if h.contains("or any of the parent") => -1
+      case x => x.length
+    }
   }
 
   def addRemote(dir: File) = if ((dir / ".git").exists) {

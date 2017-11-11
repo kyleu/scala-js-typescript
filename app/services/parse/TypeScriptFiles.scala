@@ -1,5 +1,7 @@
 package services.parse
 
+import java.nio.charset.MalformedInputException
+
 import better.files._
 import models.parse.ProjectDefinition
 
@@ -10,11 +12,11 @@ object TypeScriptFiles {
   }
 
   private[this] val originalFiles = "typescript" / "DefinitelyTyped" / "types"
-  private[this] val overrideFiles = "typescript" / "DefinitelyScala" / "types"
+  private[this] val overrideFiles = "typescript" / "DefinitelyScala"
 
   def copy() = {
     val original = originalFiles.list.filter(_.isDirectory).toSeq.map(_.name)
-    val over = overrideFiles.list.filter(_.isRegularFile).toSeq.map(_.name)
+    val over = overrideFiles.list.filter(_.isRegularFile).toSeq.map(_.name.stripSuffix(".ts")).filterNot(_.startsWith("."))
     val keys = (original ++ over).distinct.sorted
 
     source.delete(swallowIOExceptions = true)
@@ -41,7 +43,11 @@ object TypeScriptFiles {
         out.delete()
       }
 
-      val lines = src.lines
+      val lines = try {
+        src.lines
+      } catch {
+        case x: MalformedInputException => Nil // throw new IllegalStateException(s"Failed to read [${src.pathAsString}].", x) }
+      }
       out.write(lines.mkString("\n"))
     }
 

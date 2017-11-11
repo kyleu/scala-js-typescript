@@ -39,6 +39,7 @@
             @if(hasRepo) {
               <div>Local repo ready.</div>
               <a class="teal-text" href="@controllers.routes.GitController.detail(key)">Details</a>
+              <a class="teal-text" href="@controllers.routes.GitController.reset(key)">Reset</a>
             } else {
               <div>No local repo.</div>
               <a class="teal-text" href="@controllers.routes.GitInitController.create(key)">Create</a>

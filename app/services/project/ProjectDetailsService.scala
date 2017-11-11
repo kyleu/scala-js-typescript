@@ -9,7 +9,7 @@ import services.sbt.SbtHistoryService
 object ProjectDetailsService {
   case class Details(key: String, keyNormal: String, parsed: Boolean, project: Boolean, built: Boolean, repo: Boolean, github: Boolean)
 
-  def getAll(q: Option[String], filter: Option[String], repos: Seq[GithubService.Repo]) = {
+  def getAll(q: Option[String], filter: Option[String], repos: Seq[GithubService.Repo] = Nil) = {
     val srcDirs = TypeScriptFiles.list(q)
     val outDirs = FileService.getDir("out").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.map(_.name)
     val projectDirs = FileService.getDir("projects").list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse("scala-js-" + ""))).toSeq
@@ -21,7 +21,10 @@ object ProjectDetailsService {
       case None => keys
       case Some("all") => keys
       case Some("parsed") => keys.filter(k => outDirs.contains(k._1))
-      case Some("built") => keys.filter(k => projectDirs.exists(d => d.name == ("scala-js-" + k._2)))
+      case Some("project") => keys.filter(k => projectDirs.exists(d => d.name == ("scala-js-" + k._2)))
+      case Some("built") => keys.filter(k => buildStatus.get(k._2).contains(true))
+      case Some("repo") => keys.filter(k => projectDirs.exists(d => d.name == ("scala-js-" + k._2) && (d / ".git").exists))
+      case Some("norepo") => keys.filter(k => buildStatus.get(k._2).contains(true) && projectDirs.exists(d => d.name == ("scala-js-" + k._2) && (!(d / ".git").exists)))
       case Some("published") => keys.filter(k => repos.exists(_.name == ("scala-js-" + k._2)))
       case Some(x) => throw new IllegalStateException(s"Invalid filter [$x].")
     }

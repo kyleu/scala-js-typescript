@@ -23,8 +23,7 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
   }
 
   def status(key: String) = act(s"git.status.$key") { implicit request =>
-    val projectDir = ProjectService.projectDir(key)
-    val result = GitService.status(projectDir)
+    val result = GitService.status(ProjectService.projectDir(key))
     Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
   }
 
@@ -34,6 +33,27 @@ class GitController @javax.inject.Inject() (override val app: Application, githu
         val key = repo.name.stripPrefix("scala").stripPrefix("-").stripPrefix("js")
         val result = try {
           GitService.status(ProjectService.projectDir(key))
+        } catch {
+          case NonFatal(x) => (-1, x.toString)
+        }
+        val out = result._2.split('\n').filterNot(_.contains("../../../")).mkString("\n")
+        (repo.name, result._1, out)
+      }
+    }
+    results.map(r => Ok(views.html.git.results(r)))
+  }
+
+  def reset(key: String) = act(s"git.reset.$key") { implicit request =>
+    val result = GitService.reset(ProjectService.projectDir(key))
+    Future.successful(Ok(views.html.git.result(key, result._1, result._2)))
+  }
+
+  def resetAll() = act("git.reset.all") { implicit request =>
+    val results = githubService.listRepos(includeTemplates = false).map { repos =>
+      repos.map { repo =>
+        val key = repo.name.stripPrefix("scala").stripPrefix("-").stripPrefix("js")
+        val result = try {
+          GitService.reset(ProjectService.projectDir(key))
         } catch {
           case NonFatal(x) => (-1, x.toString)
         }

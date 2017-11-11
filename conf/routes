@@ -21,9 +21,12 @@ GET         /:key/project                            controllers.ProjectControll
 
 GET         /git                                     controllers.GitController.commitForm()
 GET         /git/status                              controllers.GitController.statusAll()
+GET         /git/reset                               controllers.GitController.resetAll()
 POST        /git/commit                              controllers.GitController.commitAll()
 GET         /git/push                                controllers.GitController.pushAll()
 
+GET         /git/initAll                             controllers.GitInitController.initCommitsAll(q: Option[String] ?= None)
+GET         /git/createAll                           controllers.GitInitController.createAll(q: Option[String] ?= None)
 GET         /:key/git/create                         controllers.GitInitController.create(key)
 GET         /:key/git/addremote                      controllers.GitInitController.addRemote(key)
 GET         /:key/git/first                          controllers.GitInitController.firstCommit(key)
@@ -33,6 +36,7 @@ GET         /:key/git/fullinit                       controllers.GitInitControll
 
 GET         /:key/git                                controllers.GitController.detail(key)
 GET         /:key/git/status                         controllers.GitController.status(key)
+GET         /:key/git/reset                          controllers.GitController.reset(key)
 POST        /:key/git/update                         controllers.GitController.commit(key)
 GET         /:key/git/push                           controllers.GitController.push(key)
 
