@@ -37,7 +37,7 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
     result.toString
   }
 
-  def listRepos(includeTemplates: Boolean) = {
+  def listRepos(includeTemplates: Boolean = false) = {
     fullList().map { repos =>
       val filtered = if (includeTemplates) {
         repos

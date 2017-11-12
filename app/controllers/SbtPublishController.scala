@@ -2,7 +2,7 @@ package controllers
 
 import play.api.libs.ws.WSClient
 import services.github.GithubService
-import services.project.ProjectService
+import services.project.{ProjectDetailsService, ProjectService}
 import services.sbt.{SbtResultParser, SbtService}
 import utils.Application
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -36,7 +36,7 @@ class SbtPublishController @javax.inject.Inject() (override val app: Application
 
   def list() = act(s"publish.list") { implicit request =>
     getPublishedJars.flatMap { publishedKeys =>
-      githubService.listRepos(false).map { repos =>
+      githubService.listRepos().map { repos =>
         val repoKeys = repos.map(_.key)
 
         val keys = (publishedKeys._1 ++ publishedKeys._2 ++ repoKeys).distinct.sorted
@@ -60,13 +60,20 @@ class SbtPublishController @javax.inject.Inject() (override val app: Application
   }
 
   def publishAll(q: Option[String]) = act(s"sbt.publish.all") { implicit request =>
-    getPublishedJars.map { publishedKeys =>
-      val results = publishedKeys._1.map { key =>
-        val f = ProjectService.projectDir(key)
-        val x = SbtService.publish(f)
-        (f.name, x._1, x._2)
+    getPublishedJars.flatMap { publishedKeys =>
+      githubService.listRepos().map { repos =>
+        val deetSet = ProjectDetailsService.getAll(q = None, filter = Some("built"), repos = repos).filter(_.github).map(_.key).toSet
+        val results = repos.map { repo =>
+          val f = ProjectService.projectDir(repo.key)
+          if (deetSet(repo.key)) {
+            val x = SbtService.publish(f)
+            (f.name, x._1, x._2)
+          } else {
+            (f.name, 0, "Skipped")
+          }
+        }
+        Ok(views.html.sbt.results(results))
       }
-      Ok(views.html.sbt.results(results))
     }
   }
 }

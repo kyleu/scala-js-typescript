@@ -88,9 +88,12 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
       val projectDir = ProjectService.projectDir(project.key)
       val commitCount = GitService.commitCount(projectDir)
       if (commitCount == 0) {
-        //GitService.firstCommit(projectDir)
-        //GitService.secondCommit(projectDir)
-        //GitService.thirdCommit(projectDir)
+        val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(project.key))
+        githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
+          GitService.addRemote(projectDir)
+          GitService.firstCommit(projectDir)
+          GitService.secondCommit(projectDir)
+        }
         project.key + ": GO!"
       } else {
         project.key + ": Skip."

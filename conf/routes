@@ -41,6 +41,7 @@ POST        /:key/git/update                         controllers.GitController.c
 GET         /:key/git/push                           controllers.GitController.push(key)
 
 GET         /all/github                              controllers.GithubController.list()
+GET         /create/github                           controllers.GithubController.createAll(q: Option[String] ?= None)
 GET         /merge/github                            controllers.GithubController.mergeAll()
 GET         /:key/github                             controllers.GithubController.detail(key)
 GET         /:key/github/create                      controllers.GithubController.create(key)

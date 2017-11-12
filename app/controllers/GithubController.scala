@@ -8,6 +8,8 @@ import services.github.GithubService
 import services.project.{ProjectDetailsService, ProjectService}
 import utils.Application
 
+import scala.concurrent.Future
+
 @javax.inject.Singleton
 class GithubController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def list = act(s"github.list") { implicit request =>
@@ -50,6 +52,34 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
     val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(key))
     githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
       Redirect(controllers.routes.GithubController.detail(proj.keyNormalized))
+    }
+  }
+
+  def createAll(q: Option[String]) = act(s"github.create.all") { implicit request =>
+    githubService.listRepos().flatMap { repos =>
+      val projects = ProjectDetailsService.getAll(q, Some("built"), repos)
+      val results = projects.flatMap { project =>
+        val projectDir = ProjectService.projectDir(project.key)
+        //val commitCount = GitService.commitCount(projectDir)
+        if (project.repo && !project.github) {
+          val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(project.key))
+          Some(proj)
+        } else {
+          None
+        }
+      }
+      val f = results.foldLeft(Future.successful(Seq.empty[ProjectDefinition])) { (ret, p) =>
+        ret.flatMap { r =>
+          githubService.create("scala-js-" + p.keyNormalized, p.description).map { result =>
+            val projectDir = ProjectService.projectDir(p.key)
+            GitService.addRemote(projectDir)
+            GitService.push(projectDir)
+            log.info(p.key + "!!!!!!!!!")
+            r :+ p
+          }
+        }
+      }
+      f.map(results => Ok(s"Ok (${results.size}):\n\n" + results.mkString("\n")))
     }
   }
 }

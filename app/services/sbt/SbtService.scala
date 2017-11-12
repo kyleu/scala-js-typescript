@@ -43,7 +43,7 @@ object SbtService extends Logging {
   }
 
   private[this] def call(dir: File, cmd: Seq[String]) = {
-    log.info(s"Running build for [${dir.name}]...")
+    log.info(s"Running build for [${dir.name}] with arguments [${cmd.mkString(", ")}]...")
     val startMs = System.currentTimeMillis
     val logDir = FileService.getDir("logs") / "sbt"
     if (!logDir.exists) {
