@@ -7,8 +7,11 @@ object FileService {
 
   def setRootDir(d: File) = {
     dataDir = Some(d)
-    if ((!d.exists) || (!d.isDirectory)) {
-      throw new IllegalStateException(s"Cannot load data directory [$d].")
+    if (!d.exists) {
+      d.createDirectory()
+    }
+    if (!d.isDirectory) {
+      throw new IllegalStateException(s"Cannot load data directory [$d], as it is a file.")
     }
   }
 

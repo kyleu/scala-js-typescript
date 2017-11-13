@@ -5,11 +5,14 @@ import utils.DateUtils
 
 object SbtHistoryService {
   private[this] val root = FileService.getDir("logs") / "history"
-  private[this] val logDir = FileService.getDir("logs") / "sbt"
-
   if (!root.exists) {
     root.createDirectories()
   }
+  private[this] val logDir = FileService.getDir("logs") / "sbt"
+  if (!logDir.exists) {
+    logDir.createDirectories()
+  }
+
 
   def list() = root.children.map(_.name.stripSuffix(".csv")).toSeq.sorted
 

@@ -10,7 +10,7 @@ import scala.util.control.NonFatal
 
 object GithubService {
   val baseUrl = "https://api.github.com/"
-  val accessKey = "c84dee2da3dbea0ca720a3b6573238319275ffb5"
+  val accessKey = Option(System.getProperty("GITHUB_KEY")).getOrElse("INSERT_YOUR_KEY_HERE")
 
   case class Repo(id: Int, name: String, url: String, description: String, forks: Int, stars: Int, watchers: Int, size: Int) {
     val key = name.stripPrefix("scala-js-")

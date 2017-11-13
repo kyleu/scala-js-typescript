@@ -31,7 +31,7 @@ class StaticSiteController @javax.inject.Inject() (override val app: Application
       val src = root / "index.template.html"
       val dest = root / "index.html"
 
-      val outDirs = FileService.getDir("out").list.filter(_.isDirectory).toSeq.map(_.name)
+      val outDirs = FileService.getDir("out").list.filter(_.isDirectory).toSeq.map(_.name).sorted
 
       val items = outDirs.flatMap { o =>
         repos.find(_.name.stripPrefix("scala-js-") == ProjectDefinition.normalize(o)).map(o -> _)
