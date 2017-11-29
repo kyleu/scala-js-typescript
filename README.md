@@ -1,7 +1,7 @@
 # scala-js-typescript
 
 A TypeScript-to-Scala.js converter. 
-Designed for parsing [http://definitelytyped.org](), powers [http://definitelyscala.com]().
+Designed for parsing http://definitelytyped.org, powers http://definitelyscala.com.
 
 ## Running
 
@@ -12,9 +12,9 @@ To run for your own TypeScript definitions ("foo") rename your `index.d.ts` to "
 Then start the app with `sbt run`, and open [http://localhost:9000](). Select `Project List`, then your project.
 You'll see options to parse, build, and publish your project. Publishing won't work.
 
-In order to create the SBT project, you'll need to clone `git@github.com:DefinitelyScala/scala-js-template.git` in to `./util`.
+In order to create the SBT project, you'll need to clone `git@github.com:DefinitelyScala/scala-js-template.git` into `./util`.
 
-More documentation coming soon. Feel free to email me if you run in to trouble.
+More documentation coming soon. Feel free to email me if you run into trouble.
 
 ## License
 
