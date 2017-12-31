@@ -13,7 +13,6 @@ object SbtHistoryService {
     logDir.createDirectories()
   }
 
-
   def list() = root.children.map(_.name.stripSuffix(".csv")).toSeq.sorted
 
   def statuses() = {
