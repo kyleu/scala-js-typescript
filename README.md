@@ -12,7 +12,7 @@ To run for your own TypeScript definitions ("foo") rename your `index.d.ts` to "
 Then start the app with `sbt run`, and open [http://localhost:9000](). Select `Project List`, then your project.
 You'll see options to parse, build, and publish your project. Publishing won't work.
 
-In order to create the SBT project, you'll need to clone `git@github.com:DefinitelyScala/scala-js-template.git` into `./util`.
+In order to create the SBT project, you'll need to run `git submodule update --init`
 
 More documentation coming soon. Feel free to email me if you run into trouble.
 

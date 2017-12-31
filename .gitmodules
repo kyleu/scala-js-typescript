@@ -1,0 +1,3 @@
+[submodule "util/scala-js-template"]
+	path = util/scala-js-template
+	url = https://github.com/DefinitelyScala/scala-js-template.git

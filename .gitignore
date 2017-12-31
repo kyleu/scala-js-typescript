@@ -20,3 +20,4 @@ dist
 /util/megasingle/src
 
 buildinfo.properties
+/.sbt-hydra-history
