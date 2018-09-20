@@ -10,13 +10,10 @@ dist
 /out
 /backup
 /data
-/typescript/DefinitelyScala/
 /.idea_modules
 /.classpath
 /.project
 /RUNNING_PID
 /.settings
-
-/util/megasingle/src
 
 buildinfo.properties
