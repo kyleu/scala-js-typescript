@@ -191,7 +191,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     sym.upperBound.foreach(bound => p" <: $bound")
   }
 
-  def printSymbol(sym: tree.Symbol, fancy: Boolean) {
+  def printSymbol(sym: tree.Symbol, fancy: Boolean): Unit = {
     sym match {
       case s: CommentSymbol => pendingComments += s
       //case s: CommentSymbol => printComment(s.text, s.multiline)
@@ -210,7 +210,7 @@ class Printer(val files: PrinterFiles, outputPackage: String, ignoredPackages: S
     }
   }
 
-  private def printMemberDecls(owner: ContainerSymbol) {
+  private def printMemberDecls(owner: ContainerSymbol) = {
     val (constructors, others) = owner.members.toList.partition(_.name == Name.CONSTRUCTOR)
     val l = constructors ++ others
     owner match {

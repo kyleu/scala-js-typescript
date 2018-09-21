@@ -1,3 +1,6 @@
 [submodule "util/scala-js-template"]
 	path = util/scala-js-template
 	url = git@github.com:DefinitelyScala/scala-js-template.git
+[submodule "typescript/DefinitelyTyped"]
+	path = typescript/DefinitelyTyped
+	url = https://github.com/DefinitelyTyped/DefinitelyTyped.git

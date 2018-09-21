@@ -6,7 +6,6 @@ GET         /ping                                    controllers.HomeController.
 GET         /robots.txt                              controllers.HomeController.robots
 GET         /*path/                                  controllers.HomeController.untrail(path: String)
 
-GET         /metrics                                 controllers.MetricsController.showMetrics
 GET         /sandbox                                 controllers.SandboxController.list
 GET         /sandbox/:key                            controllers.SandboxController.sandbox(key)
 GET         /static                                  controllers.StaticSiteController.generate()

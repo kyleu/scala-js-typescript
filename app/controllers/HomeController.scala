@@ -1,11 +1,11 @@
 package controllers
 
 import models.parse.ProjectDefinition
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc.Action
 import services.github.GithubService
 import services.parse.TypeScriptFiles
-import services.project.{ProjectDetailsService, ProjectService}
+import services.project.{ ProjectDetailsService, ProjectService }
 import utils.Application
 
 import scala.concurrent.Future

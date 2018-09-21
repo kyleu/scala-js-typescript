@@ -2,7 +2,7 @@ package models.parse
 
 import models.parse.sc.tree._
 import models.parse.parser.tree._
-import models.parse.sc.transform.{ExcludedMembers, Transformations}
+import models.parse.sc.transform.{ ExcludedMembers, Transformations }
 
 object Importer {
   private val AnyType = TypeRefTree(CoreType("any"))
@@ -48,7 +48,7 @@ case class Importer(key: String) {
     rootPackage
   }
 
-  private def processDecl(owner: ContainerSymbol, declaration: DeclTree) {
+  private def processDecl(owner: ContainerSymbol, declaration: DeclTree): Unit = {
     declaration match {
       case ModuleDecl(PropertyNameName(name), innerDecls) =>
         assert(owner.isInstanceOf[PackageSymbol], s"Found package $name in non-package $owner")
@@ -134,7 +134,7 @@ case class Importer(key: String) {
     }
   }
 
-  private def processMembersDecls(nm: String, enclosing: ContainerSymbol, owner: ContainerSymbol, members: List[MemberTree]) {
+  private def processMembersDecls(nm: String, enclosing: ContainerSymbol, owner: ContainerSymbol, members: List[MemberTree]) = {
     val OwnerName = owner.name
 
     lazy val companionClassRef = {
@@ -224,7 +224,7 @@ case class Importer(key: String) {
     }
   }
 
-  private def processDefDecl(owner: ContainerSymbol, name: Name, signature: FunSignature, protectName: Boolean, prot: Boolean, allowDefaults: Boolean, readonly: Boolean) {
+  private def processDefDecl(owner: ContainerSymbol, name: Name, signature: FunSignature, protectName: Boolean, prot: Boolean, allowDefaults: Boolean, readonly: Boolean): Unit = {
     // Discard specialized signatures
     if (signature.params.exists(_.tpe.exists(_.isInstanceOf[ConstantType]))) {
       return

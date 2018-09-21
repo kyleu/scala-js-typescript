@@ -26,11 +26,9 @@ object Server {
   private[this] val dependencies = {
     import Dependencies._
     Seq(
-      Akka.actor, Akka.logging, Play.playFilters, Play.playWs, Serialization.uPickle, Utils.enumeratum,
-      WebJars.jquery, WebJars.fontAwesome, WebJars.materialize,
-      Utils.crypto, Utils.scalaGuice, Utils.commonsIo, Utils.betterFiles,
-      Akka.testkit, Play.playTest, Testing.scalaTest
-    )
+      Akka.actor, Akka.logging, Play.playFilters, Play.guice, Play.playWs, Utils.enumeratum, WebJars.jquery, WebJars.fontAwesome, WebJars.materialize,
+      Utils.commonsIo, Utils.betterFiles, Utils.commonsLang, Utils.scalaGuice, Utils.scopts, Akka.testkit, Play.playTest
+    ) ++ Dependencies.Serialization.circeProjects.map(c => "io.circe" %% c % Dependencies.Serialization.circeVersion)
   }
 
   private[this] lazy val serverSettings = Shared.commonSettings ++ Seq(
@@ -59,15 +57,8 @@ object Server {
     scapegoatIgnoredFiles := Seq(".*/Row.scala", ".*/Routes.scala", ".*/ReverseRoutes.scala", ".*/JavaScriptReverseRoutes.scala", ".*/*.template.scala")
   )
 
-  lazy val server = {
-    val ret = Project(
-      id = Shared.projectId,
-      base = file(".")
-    ).enablePlugins(
-      SbtWeb, play.sbt.PlayScala, JavaAppPackaging,
-      UniversalPlugin, LinuxPlugin, DebianPlugin, RpmPlugin, DockerPlugin, WindowsPlugin, JDKPackagerPlugin
-    ).settings(serverSettings: _*).settings(Packaging.settings: _*)
-
-    Shared.withProjects(ret, Seq(Utilities.metrics))
-  }
+  lazy val server = Project(id = Shared.projectId, base = file(".")).enablePlugins(
+    SbtWeb, play.sbt.PlayScala, JavaAppPackaging,
+    UniversalPlugin, LinuxPlugin, DebianPlugin, RpmPlugin, DockerPlugin, WindowsPlugin, JDKPackagerPlugin
+  ).settings(serverSettings: _*).settings(Packaging.settings: _*)
 }

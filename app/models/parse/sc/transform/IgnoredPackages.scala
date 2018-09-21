@@ -24,6 +24,5 @@ object IgnoredPackages {
     "pixijs" -> Set("PIXI"),
     "react" -> Set("React"),
     "test" -> Set("excluded"),
-    "" -> Set("")
-  )
+    "" -> Set(""))
 }

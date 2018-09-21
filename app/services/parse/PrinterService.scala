@@ -1,9 +1,8 @@
 package services.parse
 
-import better.files._
-import models.parse.{Importer, ProjectDefinition}
-import models.parse.parser.tree.{DeclTree, LineCommentDecl}
-import models.parse.sc.printer.{Printer, PrinterFiles, PrinterFilesMulti, PrinterFilesSingle}
+import models.parse.{ Importer, ProjectDefinition }
+import models.parse.parser.tree.{ DeclTree, LineCommentDecl }
+import models.parse.sc.printer.{ Printer, PrinterFiles, PrinterFilesMulti }
 import models.parse.sc.transform.IgnoredPackages
 import services.project.ProjectService
 
@@ -12,28 +11,19 @@ case class PrinterService(key: String, t: List[DeclTree]) {
 
   def export() = {
     val (proj, decls) = extractFrom(key, t)
-    exportSingle(key, proj.keyNormalized, decls)
+    // exportSingle(key, proj.keyNormalized, decls)
     exportMulti(proj, decls)
   }
 
-  private[this] def exportSingle(key: String, keyNormalized: String, decls: List[DeclTree]) = {
-    val dir = "util" / "megasingle" / "src" / "main" / "scala" / "com" / "definitelyscala"
-    if (dir.exists) {
-      val srcFile = dir / keyNormalized / (keyNormalized + ".scala")
-      srcFile.createIfNotExists(createParents = true)
-      val single = PrinterFilesSingle(key, keyNormalized, srcFile)
-      printer(single, decls)
-    }
-  }
-
   private[this] def exportMulti(project: ProjectDefinition, decls: List[DeclTree]) = {
+    import utils.JsonSerializers._
     val outDir = ProjectService.outDirFor(key)
     val multi = PrinterFilesMulti(key, project.keyNormalized, outDir)
     val ret = printer(multi, decls)
 
     val outJson = outDir / "project.json"
     outJson.createIfNotExists()
-    outJson.append(upickle.default.write(project, 2))
+    outJson.append(project.asJson.spaces2)
     ret
   }
 
@@ -59,8 +49,8 @@ case class PrinterService(key: String, t: List[DeclTree]) {
       case None => "" -> key
     }
     val (authorsLine, authors) = comments.find(_.startsWith("Definitions by:")) match {
-      case Some(l) => l -> l.substring("Definitions by:".length + 1).trim
-      case None => "" -> key
+      case Some(l) => l -> l.substring("Definitions by:".length).trim
+      case _ => "" -> key
     }
     val buildVersion = "1.1.0"
     val defsLine = comments.find(_.startsWith("Definitions:")) match {

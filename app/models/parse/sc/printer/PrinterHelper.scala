@@ -9,7 +9,7 @@ object PrinterHelper {
   }
 
   implicit class OutputHelper(val sc: StringContext) extends AnyVal {
-    def p(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma) {
+    def p(args: Any*)(implicit printer: Printer, sep: ListElemSeparator = ListElemSeparator.Comma): Unit = {
       val strings = sc.parts.iterator
       val expressions = args.iterator
 
@@ -32,12 +32,12 @@ object PrinterHelper {
       }
     }
 
-    def pln(args: Any*)(implicit printer: Printer) {
+    def pln(args: Any*)(implicit printer: Printer) = {
       p(args: _*)(printer, ListElemSeparator.Comma)
       printer.files.print("\n")
     }
 
-    def plnw(args: Any*)(implicit printer: Printer) {
+    def plnw(args: Any*)(implicit printer: Printer) = {
       p(args: _*)(printer, ListElemSeparator.WithKeyword)
       printer.files.print("\n")
     }

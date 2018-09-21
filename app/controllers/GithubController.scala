@@ -1,11 +1,11 @@
 package controllers
 
 import models.parse.ProjectDefinition
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.twirl.api.Html
 import services.git.GitService
 import services.github.GithubService
-import services.project.{ProjectDetailsService, ProjectService}
+import services.project.{ ProjectDetailsService, ProjectService }
 import utils.Application
 
 import scala.concurrent.Future
@@ -13,13 +13,13 @@ import scala.concurrent.Future
 @javax.inject.Singleton
 class GithubController @javax.inject.Inject() (override val app: Application, githubService: GithubService) extends BaseController {
   def list = act(s"github.list") { implicit request =>
-    githubService.listRepos(includeTemplates = false).map { repos =>
+    githubService.listRepos().map { repos =>
       Ok(views.html.github.list(repos))
     }
   }
 
   def mergeAll = act(s"github.merge") { implicit request =>
-    githubService.listRepos(includeTemplates = false).map { repos =>
+    githubService.listRepos().map { repos =>
       val result = repos.map { repo =>
         val dir = ProjectService.projectDir(repo.name.stripPrefix("scala-js-"))
         if (!dir.exists) {
@@ -33,7 +33,7 @@ class GithubController @javax.inject.Inject() (override val app: Application, gi
           log.info(s"Merging github repository for [${repo.name}].")
           val parent = dir.parent
           dir.delete(swallowIOExceptions = true)
-          val result = GitService.cloneRepo(parent, repo.name)
+          GitService.cloneRepo(parent, repo.name)
         }
         ret
       }

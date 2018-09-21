@@ -6,16 +6,17 @@ object Dependencies {
   }
 
   object Play {
-    private[this] val version = "2.5.14"
+    private[this] val version = "2.6.19"
     val playLib = "com.typesafe.play" %% "play" % version
     val playFilters = play.sbt.PlayImport.filters
+    val guice = play.sbt.PlayImport.guice
     val playWs = play.sbt.PlayImport.ws
     val playTest = "com.typesafe.play" %% "play-test" % version % "test"
     val playMailer = "com.typesafe.play" %% "play-mailer" % "5.0.0"
   }
 
   object Akka {
-    private[this] val version = "2.4.18"
+    private[this] val version = "2.5.16"
     val actor = "com.typesafe.akka" %% "akka-actor" % version
     val remote = "com.typesafe.akka" %% "akka-remote" % version
     val logging = "com.typesafe.akka" %% "akka-slf4j" % version
@@ -26,14 +27,14 @@ object Dependencies {
   }
 
   object Serialization {
-    val version = "0.4.4"
-    val uPickle = "com.lihaoyi" %% "upickle" % version
+    val circeVersion = "0.9.3"
+    val circeProjects = Seq("circe-core", "circe-generic", "circe-generic-extras", "circe-parser", "circe-java8")
   }
 
   object WebJars {
     val fontAwesome = "org.webjars" % "font-awesome" % "4.7.0"
     val jquery = "org.webjars" % "jquery" % "2.2.4"
-    val materialize = "org.webjars" % "materializecss" % "0.98.2"
+    val materialize = "org.webjars" % "materializecss" % "0.100.2"
   }
 
   object Metrics {
@@ -49,19 +50,14 @@ object Dependencies {
   }
 
   object Utils {
-    val scapegoatVersion = "1.3.0"
-    val enumeratumVersion = "1.5.11"
+    val scapegoatVersion = "1.3.8"
+    val enumeratumVersion = "1.5.17"
 
-    val commonsIo = "commons-io" % "commons-io" % "2.5"
-    val crypto = "xyz.wiedenhoeft" %% "scalacrypt" % "0.4.0"
-    val enumeratum = "com.beachape" %% "enumeratum-upickle" % enumeratumVersion
-    val scalaGuice = "net.codingwell" %% "scala-guice" % "4.1.0"
-    val betterFiles = "com.github.pathikrit" %% "better-files" % "2.17.1"
-  }
-
-  object Testing {
-    val scalaTest = "org.scalatest" %% "scalatest" % "3.0.3" % "test"
-    val gatlingCore = "io.gatling" % "gatling-test-framework" % "2.1.7" % "test"
-    val gatlingCharts = "io.gatling.highcharts" % "gatling-charts-highcharts" % "2.1.7" % "test"
+    val commonsIo = "commons-io" % "commons-io" % "2.6"
+    val commonsLang = "org.apache.commons" % "commons-lang3" % "3.8"
+    val enumeratum = "com.beachape" %% "enumeratum-circe" % enumeratumVersion
+    val scalaGuice = "net.codingwell" %% "scala-guice" % "4.2.1"
+    val betterFiles = "com.github.pathikrit" %% "better-files" % "3.6.0"
+    val scopts = "com.github.scopt" %% "scopt" % "3.7.0"
   }
 }

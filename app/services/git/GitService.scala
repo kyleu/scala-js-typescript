@@ -32,8 +32,7 @@ object GitService extends Logging {
 
   private[this] val firstCommitFiles = Seq(
     ".gitignore", "build.sbt", "readme.md", "scalastyle-config.xml",
-    "project/Projects.scala", "project/build.properties", "project/plugins.sbt"
-  )
+    "project/Projects.scala", "project/build.properties", "project/plugins.sbt")
   def firstCommit(dir: File) = {
     call(dir, Seq("add") ++ firstCommitFiles)
     call(dir, Seq("commit", "-m", "Initial project structure."))

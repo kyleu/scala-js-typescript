@@ -1,30 +1,31 @@
 package services.github
 
-import play.api.libs.ws.{WSAuthScheme, WSClient, WSRequest, WSResponse}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import upickle.Js
-import upickle.default._
+import io.circe.Json
+import utils.JsonSerializers._
+import play.api.libs.ws.{ WSAuthScheme, WSClient, WSRequest, WSResponse }
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal
 
 object GithubService {
   val baseUrl = "https://api.github.com/"
-  val accessKey = Option(System.getProperty("GITHUB_KEY")).getOrElse("INSERT_YOUR_KEY_HERE")
+  val accessKey = Option(System.getProperty("GITHUB_KEY")).orElse(Option(System.getenv("GITHUB_KEY"))).getOrElse(
+    throw new IllegalStateException("Please add a github key as an environment variable named [GITHUB_KEY]."))
 
   case class Repo(id: Int, name: String, url: String, description: String, forks: Int, stars: Int, watchers: Int, size: Int) {
     val key = name.stripPrefix("scala-js-")
   }
 
-  def repoFromObj(repo: Map[String, Js.Value]) = {
-    val id = repo("id").asInstanceOf[Js.Num].value.toInt
-    val name = repo("name").asInstanceOf[Js.Str].value
-    val url = repo("html_url").asInstanceOf[Js.Str].value
-    val description = repo.get("description").map(_.toString).getOrElse("")
-    val forks = repo("forks_count").asInstanceOf[Js.Num].value.toInt
-    val stars = repo("stargazers_count").asInstanceOf[Js.Num].value.toInt
-    val watchers = repo("watchers_count").asInstanceOf[Js.Num].value.toInt
-    val size = repo("size").asInstanceOf[Js.Num].value.toInt
+  def repoFromObj(repo: Map[String, Json]) = {
+    val id = repo("id").asNumber.get.toInt.get
+    val name = repo("name").asString.get
+    val url = repo("html_url").asString.get
+    val description = repo.get("description").map(_.asString.get).getOrElse("")
+    val forks = repo("forks_count").asNumber.get.toInt.get
+    val stars = repo("stargazers_count").asNumber.get.toInt.get
+    val watchers = repo("watchers_count").asNumber.get.toInt.get
+    val size = repo("size").asNumber.get.toInt.get
     GithubService.Repo(id, name, url, description, forks, stars, watchers, size)
   }
 }
@@ -52,7 +53,7 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
     val r = req(s"orgs/DefinitelyScala/repos?page=$page&per_page=$pageSize")
     val ret = trap(r, r.get()) { rsp =>
       getArray(rsp).map {
-        case repo: Js.Obj => GithubService.repoFromObj(repo.value.toMap)
+        case repo: Json => GithubService.repoFromObj(repo.asObject.get.toMap)
         case _ => throw new IllegalStateException()
       }.sortBy(_.name).reverse
     }
@@ -65,27 +66,26 @@ case class GithubService @javax.inject.Inject() (ws: WSClient) {
   def detail(key: String) = {
     val withPrefix = if (key.startsWith("scala-js-")) { key } else { "scala-js-" + key }
     val r = req(s"repos/DefinitelyScala/$withPrefix")
-    trap(r, r.get)(x => GithubService.repoFromObj(getObject(x))).map(Some(_)).recoverWith {
+    trap(r, r.get)(x => GithubService.repoFromObj(getObject(x).toMap)).map(Some(_)).recoverWith {
       case NonFatal(x) => Future.successful(None)
     }
   }
 
   def create(key: String, description: String) = {
-    val json = Js.Obj("name" -> Js.Str(s"$key"), "description" -> Js.Str(description), "has_wiki" -> Js.False)
+    val json = Json.obj("name" -> key.asJson, "description" -> description.asJson, "has_wiki" -> false.asJson)
     val r = req("orgs/DefinitelyScala/repos")
-    trap(r, r.post(write(json))) { x =>
-      GithubService.repoFromObj(getObject(x))
+    trap(r, r.post(json.spaces2)) { x =>
+      GithubService.repoFromObj(getObject(x).toMap)
     }
   }
 
-  private[this] def getArray(rsp: WSResponse) = read[Js.Arr](rsp.body).value
-  private[this] def getObject(rsp: WSResponse) = read[Js.Obj](rsp.body).value.toMap
+  private[this] def getArray(rsp: WSResponse) = parseJson(rsp.body).right.get.asArray.get
+  private[this] def getObject(rsp: WSResponse) = parseJson(rsp.body).right.get.asObject.get
 
   private[this] def req(page: String) = {
     val url = GithubService.baseUrl + page
-    ws.url(url).withAuth("KyleU", GithubService.accessKey, WSAuthScheme.BASIC).withHeaders(
-      "User-Agent" -> "scala-js-typescript"
-    )
+    ws.url(url).withAuth("KyleU", GithubService.accessKey, WSAuthScheme.BASIC).withHttpHeaders(
+      "User-Agent" -> "scala-js-typescript")
   }
 
   private[this] def trap[T](req: WSRequest, rsp: Future[WSResponse])(f: WSResponse => T) = rsp.map { response =>

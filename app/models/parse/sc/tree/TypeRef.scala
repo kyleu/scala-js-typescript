@@ -5,7 +5,7 @@ case class TypeRef(typeName: QualifiedName, targs: List[TypeRef] = Nil) {
 }
 
 object TypeRef {
-  import QualifiedName.{java_lang, scala, scala_js}
+  import QualifiedName.{ java_lang, scala, scala_js }
 
   val ScalaAny = TypeRef(scala dot Name("Any"))
 

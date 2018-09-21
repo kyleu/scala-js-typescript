@@ -1,11 +1,10 @@
 package controllers
 
 import models.parse.ProjectDefinition
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import services.file.FileService
+import scala.concurrent.ExecutionContext.Implicits.global
 import services.git.GitService
 import services.github.GithubService
-import services.project.{ProjectDetailsService, ProjectService}
+import services.project.{ ProjectDetailsService, ProjectService }
 import utils.Application
 
 import scala.concurrent.Future
@@ -65,7 +64,7 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
   def fullInit(key: String) = act(s"git.full.init.$key") { implicit request =>
     val projectDir = ProjectService.projectDir(key)
     val dir = projectDir / ".git"
-    val result1 = if (dir.exists) {
+    if (dir.exists) {
       throw new IllegalStateException(s"Git repo already exists for [$key].")
     } else {
       GitService.init(projectDir)
@@ -74,8 +73,8 @@ class GitInitController @javax.inject.Inject() (override val app: Application, g
     val proj = ProjectDefinition.fromJson(ProjectService.outDirFor(key))
 
     githubService.create("scala-js-" + proj.keyNormalized, proj.description).map { result =>
-      val result2 = GitService.addRemote(projectDir)
-      val result3 = GitService.firstCommit(projectDir)
+      GitService.addRemote(projectDir)
+      GitService.firstCommit(projectDir)
       val result4 = GitService.secondCommit(projectDir)
 
       Ok(views.html.git.result(key, result4._1, result4._2, Some("Third" -> controllers.routes.GitInitController.thirdCommit(key))))

@@ -11,7 +11,7 @@ object ProjectService {
 
   private[this] val dir = FileService.getDir("projects")
 
-  def list(q: Option[String]) = dir.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq
+  def list(q: Option[String]) = dir.list.filter(_.isDirectory).filter(_.name.contains(q.getOrElse(""))).toSeq.sortBy(_.name)
 
   def projectDir(key: String) = {
     dir / ("scala-js-" + ProjectDefinition.normalize(key))

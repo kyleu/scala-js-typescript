@@ -2,7 +2,7 @@ package controllers
 
 import models.parse.parser.tree.DeclTree
 import play.twirl.api.Html
-import services.parse.{PrinterService, TypeScriptFiles, TypeScriptImport}
+import services.parse.{ PrinterService, TypeScriptFiles, TypeScriptImport }
 import utils.Application
 
 import scala.concurrent.Future

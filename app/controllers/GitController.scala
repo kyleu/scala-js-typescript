@@ -5,7 +5,7 @@ import services.git.GitService
 import services.github.GithubService
 import services.project.ProjectService
 import utils.Application
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 import scala.util.control.NonFatal

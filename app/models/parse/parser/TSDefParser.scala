@@ -28,8 +28,7 @@ class TSDefParser() extends StdTokenParsers with ImplicitConversions {
     "public", "static", "yield",
 
     // Additional keywords of TypeScript
-    "declare", "module", "type", "namespace", "abstract", "//"
-  )
+    "declare", "module", "type", "namespace", "abstract", "//")
 
   lazy val wsParser = accept("ws", {
     case lexical.Whitespace(chars) => WhitespaceDecl(chars)

@@ -11,16 +11,17 @@ object Shared {
 
   object Versions {
     val app = "1.0.0"
-    val scala = "2.11.11"
+    val scala = "2.12.6"
   }
 
   lazy val commonSettings = Seq(
     version := Shared.Versions.app,
     scalaVersion := Shared.Versions.scala,
 
-    scalacOptions ++= Seq(
-      "-encoding", "UTF-8", "-feature", "-deprecation", "-unchecked", "–Xcheck-null", "-Xfatal-warnings", "-Xlint",
-      "-Ywarn-adapted-args", "-Ywarn-dead-code", "-Ywarn-inaccessible", "-Ywarn-nullary-override", "-Ywarn-numeric-widen"
+    scalacOptions := Seq(
+      "-target:jvm-1.8", "-encoding", "UTF-8", "-feature", "-deprecation", "-explaintypes", "-feature", "-unchecked",
+      "–Xcheck-null", "-Xfatal-warnings", /* "-Xlint", */ "-Xcheckinit", "-Xfuture", "-Yrangepos", "-Ypartial-unification",
+      "-Yno-adapted-args", "-Ywarn-dead-code", "-Ywarn-inaccessible", "-Ywarn-nullary-override", "-Ywarn-numeric-widen", "-Ywarn-infer-any"
     ),
     scalacOptions in Test ++= Seq("-Yrangepos"),
 

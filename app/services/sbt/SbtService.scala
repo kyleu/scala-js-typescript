@@ -2,16 +2,9 @@ package services.sbt
 
 import better.files._
 import services.file.FileService
-import utils.{DateUtils, Logging}
+import utils.{ DateUtils, Logging }
 
 object SbtService extends Logging {
-  val jarpathTest = "/Users/kyle/Projects/Libraries/sbt-0.13/sbt-launch.jar".toFile
-  val jarpath = if (jarpathTest.exists) {
-    jarpathTest
-  } else {
-    "C:\\Users\\kyleu\\Projects\\Libraries\\sbt\\sbt-launch.jar".toFile
-  }
-
   def clean(dir: File) = if (dir.exists) {
     sbt(dir, "clean")
   } else {
@@ -39,7 +32,7 @@ object SbtService extends Logging {
   }
 
   private[this] def sbt(dir: File, cmd: String*) = {
-    call(dir, Seq("java", "-Dsbt.log.noformat=true", "-jar", jarpath.pathAsString) ++ cmd)
+    call(dir, Seq("sbt", "-no-colors") ++ cmd)
   }
 
   private[this] def call(dir: File, cmd: Seq[String]) = {

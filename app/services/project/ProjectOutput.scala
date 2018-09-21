@@ -47,15 +47,13 @@ case class ProjectOutput(project: ProjectDefinition, projectDir: File) extends L
   }
 
   private[this] def replaceStrings(dir: File) = {
-    val files = Seq(
-      dir / "build.sbt",
-      dir / "readme.md",
-      dir / "project" / "Projects.scala"
-    )
+    val files = Seq(dir / "build.sbt", dir / "readme.md", dir / "project" / "Projects.scala")
     val replacements = project.asMap
     def replace(f: File) = {
       val oldContent = f.contentAsString
-      val newContent = replacements.foldLeft(oldContent)((content, r) => content.replaceAllLiterally("${" + r._1 + "}", r._2))
+      val newContent = replacements.foldLeft(oldContent) { (content, r) =>
+        content.replaceAllLiterally("${" + r._1 + "}", r._2).replaceAllLiterally("// $" + r._1, r._2).replaceAllLiterally("$" + r._1, r._2)
+      }.replaceAllLiterally("PROJNAME", replacements("keyNormalized")).replaceAllLiterally("/* PROJDEPS */", replacements("dependencies"))
       if (oldContent != newContent) {
         f.delete()
         f.write(newContent)

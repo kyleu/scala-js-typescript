@@ -1,6 +1,11 @@
 package models.parse
 
+import utils.JsonSerializers._
+
 object ProjectDefinition {
+  implicit val jsonEncoder: Encoder[ProjectDefinition] = deriveEncoder
+  implicit val jsonDecoder: Decoder[ProjectDefinition] = deriveDecoder
+
   def normalize(key: String) = key.replaceAllLiterally("-", "").replaceAllLiterally(".", "").replaceAllLiterally("_", "")
 
   def fromJson(dir: better.files.File) = {
@@ -16,19 +21,18 @@ object ProjectDefinition {
     } else {
       depsReplaced.replaceAllLiterally("}", ",  \"buildVersion\": \"1.1.0\"\n}")
     }
-    upickle.default.read[ProjectDefinition](buildVerReplaced)
+    decodeJson[ProjectDefinition](buildVerReplaced).right.get
   }
 }
 
 case class ProjectDefinition(
-    key: String,
-    name: String,
-    url: String,
-    version: String,
-    authors: String,
-    buildVersion: String = "1.1.0",
-    dependencies: Seq[String] = Nil
-) {
+  key: String,
+  name: String,
+  url: String,
+  version: String,
+  authors: String,
+  buildVersion: String = "1.1.0",
+  dependencies: Seq[String] = Nil) {
   val keyNormalized = ProjectDefinition.normalize(key)
 
   val description = s"Scala.js facades for $name $version."
@@ -54,6 +58,5 @@ case class ProjectDefinition(
     "authors" -> authors,
     "dependencies" -> dependencyString,
     "buildVersion" -> buildVersion,
-    "dependencySummary" -> dependencySummary
-  )
+    "dependencySummary" -> dependencySummary)
 }

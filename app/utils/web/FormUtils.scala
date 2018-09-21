@@ -1,7 +1,7 @@
 package utils.web
 
 import play.api.data.FormError
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{ AnyContent, Request }
 
 object FormUtils {
   def getForm(request: Request[AnyContent]) = request.body.asFormUrlEncoded match {

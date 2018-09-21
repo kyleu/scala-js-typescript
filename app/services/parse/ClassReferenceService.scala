@@ -11,16 +11,13 @@ object ClassReferenceService extends Logging {
     ("com.definitelyscala.less.LessStatic", Seq("less/Less/"), Seq("LessStatic")),
 
     ("com.definitelyscala.awssdk._", Seq(
-      "/AutoScaling/", "/SQS/", "/SES/", "/sts/", "/sts/"
-    ), Seq("ClientConfig", "Credentials", "Tags", "BlockDeviceMapping", "StepAdjustment")),
+      "/AutoScaling/", "/SQS/", "/SES/", "/sts/", "/sts/"), Seq("ClientConfig", "Credentials", "Tags", "BlockDeviceMapping", "StepAdjustment")),
 
     ("com.definitelyscala.pixijs._", Seq(
       "/accessibility", "/CanvasTinter", "/core", "/extras", "/extract", "/filters", "/glCore", "/GroupD8", "/interaction", "/loaders",
-      "/mesh", "/particles", "/prepare", "/utils", "pixijs/package.scala"
-    ), Seq(
+      "/mesh", "/particles", "/prepare", "/utils", "pixijs/package.scala"), Seq(
         "CanvasRenderer", "Container", "DisplayObject", " Filter", "IDecomposedDataUri", "IHitArea",
-        " Matrix", "ObjectRenderer", "Point", " Texture", "[Texture", "WebGLRenderer", "WebGLState"
-      )),
+        " Matrix", "ObjectRenderer", "Point", " Texture", "[Texture", "WebGLRenderer", "WebGLState")),
     ("com.definitelyscala.pixijs.extras._", Seq("pixijs/package.scala"), Seq("@js.native")),
     ("com.definitelyscala.pixijs.glCore._", Seq("pixijs/package.scala"), Seq("@js.native")),
 
@@ -29,8 +26,7 @@ object ClassReferenceService extends Logging {
     ("com.definitelyscala.react.React._", Seq("/react"), Seq("ReactNode", "Ref[T]", "CSSWideKeyword")),
 
     ("com.definitelyscala.phaser._", Seq("/Physics/", "/Particles/", "/Plugin/", "/Utils/", "/Filter/"), Seq(
-      "Physics.", "Particles.", " Plugin", " Game", " Filter"
-    )),
+      "Physics.", "Particles.", " Plugin", " Game", " Filter")),
     ("com.definitelyscala.phaserp2._", Seq("/Physics/P2"), Seq("p2.")),
 
     ("com.definitelyscala.materializecss.Materialize._", Seq("/Materialize"), Seq("options: CollapsibleOptions")),
@@ -48,23 +44,20 @@ object ClassReferenceService extends Logging {
     ("com.definitelyscala.node.ErrnoException", Seq("node/"), Seq("ErrnoException")),
     ("com.definitelyscala.node.WritableStream", Seq("node/"), Seq("WritableStream")),
     ("com.definitelyscala.node.path.ParsedPath", Seq("node/"), Seq("ParsedPath")),
-    ("com.definitelyscala.node.v8.V8.DoesZapCodeSpaceFlag", Seq("node/"), Seq("DoesZapCodeSpaceFlag"))
-  )
+    ("com.definitelyscala.node.v8.V8.DoesZapCodeSpaceFlag", Seq("node/"), Seq("DoesZapCodeSpaceFlag")))
 
   private[this] val refs = Seq(
     "org.scalajs.dom.raw._" -> Seq(
       " HTMLElement", " Event", "[Event", " Element", "[Element", "HTMLImageElement", "HTMLCanvasElement", "HTMLVideoElement",
       "WebGLRenderingContext", "CanvasPattern", "WebGLBuffer", "CanvasRenderingContext2D", "XMLHttpRequest", "SVGPathElement", "StyleMedia",
-      "SVGElement", "DataTransfer", " Node", "WebGLFramebuffer", "MouseEvent", "KeyboardEvent"
-    ),
+      "SVGElement", "DataTransfer", " Node", "WebGLFramebuffer", "MouseEvent", "KeyboardEvent"),
     "com.definitelyscala.node.Buffer" -> Seq(": Buffer"),
     "scala.scalajs.js.|" -> Seq(" | "),
     "scala.scalajs.js.Date" -> Seq(": Date", " Date "),
     "org.scalajs.dom.raw.Blob" -> Seq(" Blob "),
     "org.scalajs.css.Css.AtRule" -> Seq(" AtRule"),
     "scala.scalajs.js.typedarray._" -> Seq(" ArrayBuffer", "Uint32Array", "Float32Array", "Uint16Array", "Uint8Array"),
-    "scala.scalajs.js.Promise" -> Seq(" Promise")
-  )
+    "scala.scalajs.js.Promise" -> Seq(" Promise"))
 
   def insertImports(path: String, content: Seq[String]) = {
     var importIdx = content.indexOf("import scala.scalajs.js")

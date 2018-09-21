@@ -1,6 +1,6 @@
 package models.parse.sc.transform
 
-import models.parse.sc.tree.{Name, QualifiedName}
+import models.parse.sc.tree.{ Name, QualifiedName }
 
 object Transformations {
   def forName(n: QualifiedName) = {
@@ -15,6 +15,5 @@ object Transformations {
     "XMLDocument" -> "Document",
     "RegExp" -> "js.RegExp",
     "PointerEvent" -> "Event",
-    "WebGLContextEvent" -> "Event"
-  )
+    "WebGLContextEvent" -> "Event")
 }

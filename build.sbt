@@ -1,3 +1,3 @@
-lazy val server = Server.server
+scapegoatVersion in ThisBuild := Dependencies.Utils.scapegoatVersion
 
-lazy val metrics = Utilities.metrics
+lazy val server = Server.server

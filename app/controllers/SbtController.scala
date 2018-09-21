@@ -3,9 +3,8 @@ package controllers
 import better.files.File
 import services.github.GithubService
 import services.project.ProjectService
-import services.sbt.{SbtHistoryService, SbtResultParser, SbtService}
+import services.sbt.{ SbtHistoryService, SbtResultParser, SbtService }
 import utils.Application
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
 
@@ -61,7 +60,7 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
 
   def formatAll(q: Option[String]) = act(s"sbt.build.all") { implicit request =>
     val projects = ProjectService.list(q)
-    val result = projects.par.map { x =>
+    val result = projects.map { x =>
       val ret = SbtService.format(x)
       (x.name, ret._1, ret._2)
     }.seq
@@ -82,10 +81,10 @@ class SbtController @javax.inject.Inject() (override val app: Application, githu
 
   def cleanAll(q: Option[String]) = act(s"sbt.clean.all") { implicit request =>
     val projects = ProjectService.list(q)
-    val result = projects.par.map { x =>
+    val result = projects.map { x =>
       val ret = SbtService.clean(x)
       (x.name, ret._1, ret._2)
-    }.seq
+    }
     Future.successful {
       log.info(s"Processed [${result.size}] projects, with [${result.count(_._2 == 0)}] passing and [${result.count(_._2 != 0)}] failing.")
       Ok(views.html.sbt.results(result))

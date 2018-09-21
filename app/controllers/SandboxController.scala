@@ -2,7 +2,7 @@ package controllers
 
 import akka.util.Timeout
 import models.sandbox.SandboxTask
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import utils.Application
 
 import scala.concurrent.Future

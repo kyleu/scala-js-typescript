@@ -18,6 +18,5 @@ object Utils {
     "import", "lazy", "match", "new", "null", "object", "override",
     "package", "private", "protected", "return", "sealed", "super", "then", "this",
     "throw", "trait", "true", "try", "type", "val", "var", "with", "while",
-    "yield", ".", "_", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@"
-  )
+    "yield", ".", "_", ":", "=", "=>", "<-", "<:", "<%", ">:", "#", "@")
 }

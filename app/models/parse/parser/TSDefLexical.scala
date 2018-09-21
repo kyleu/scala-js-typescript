@@ -72,8 +72,7 @@ class TSDefLexical extends Lexical with TSTokens with ImplicitConversions {
       case 'f' => '\u000C'
       case 'r' => '\u000D'
       case c => c // including ' " \
-    }
-  )
+    })
 
   def octalDigit = elem("octal digit", c => '0' <= c && c <= '7') ^^ (_ - '0')
 
