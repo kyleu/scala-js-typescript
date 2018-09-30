@@ -10,6 +10,7 @@ dist
 /out
 /backup
 /data
+/util/ts-dump/node_modules
 /.idea_modules
 /.classpath
 /.project
