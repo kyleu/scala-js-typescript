@@ -1,4 +1,5 @@
 import Project, {Node, ScriptTarget, printNode, ts} from "ts-simple-ast";
+import {addProperties} from "./props";
 
 const project = new Project({
   tsConfigFilePath: "tsconfig.json",
@@ -27,24 +28,6 @@ function process(n: Node<ts.Node>) {
     ret.children = kids;
   }
   return ret;
-}
-
-function addProperties(n: Node<ts.Node>, ret: any) {
-  switch(ret.kind) {
-    case "SyntaxList":
-      processSyntax(n as Node<ts.SyntaxList>, ret);
-      break;
-    default:
-      ret.todo = ret.kind;
-  }
-}
-
-function processSyntax(n: Node<ts.SyntaxList>, ret: any) {
-  ret.file = n.getSourceFile().getBaseName();
-}
-
-function processModule(n: Node<ts.ModuleDeclaration>, ret: any) {
-  ret.name = n.compilerNode.name
 }
 
 const ret = sourceFile.getChildren().map((n, i, c) => process(n));
