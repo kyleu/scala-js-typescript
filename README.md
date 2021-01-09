@@ -1,5 +1,7 @@
 # scala-js-typescript
 
+# ARCHIVED: These projects are superceded by the great work at https://github.com/ScalablyTyped/Distribution
+
 A TypeScript-to-Scala.js converter. 
 Designed for parsing http://definitelytyped.org, powers http://definitelyscala.com.
 
